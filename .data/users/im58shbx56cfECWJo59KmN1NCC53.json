@@ -1,0 +1,417 @@
+{
+  "subjects": [
+    {
+      "id": "math",
+      "name": "Matematika",
+      "color": "#b09ce3"
+    },
+    {
+      "id": "theater",
+      "name": "Impro",
+      "color": "#b09ce3"
+    },
+    {
+      "id": "conversation",
+      "name": "Konverzace",
+      "color": "#ea8ae1"
+    },
+    {
+      "id": "physics",
+      "name": "Fyzika",
+      "color": "#b09ce3"
+    },
+    {
+      "id": "bio",
+      "name": "Prirodopis",
+      "color": "#a8f08a"
+    },
+    {
+      "id": "chem",
+      "name": "Chemie",
+      "color": "#a8f08a"
+    },
+    {
+      "id": "czech",
+      "name": "Cestina",
+      "color": "#ffd09e"
+    },
+    {
+      "id": "spanish",
+      "name": "Spanelstina",
+      "color": "#f68d8d"
+    },
+    {
+      "id": "music",
+      "name": "Hudba",
+      "color": "#f68d8d"
+    },
+    {
+      "id": "obcanka",
+      "name": "Obcanka",
+      "color": "#ffdf80"
+    },
+    {
+      "id": "english",
+      "name": "Anglictina",
+      "color": "#fbc1da"
+    },
+    {
+      "id": "farm",
+      "name": "Chynice",
+      "color": "#adadad"
+    },
+    {
+      "id": "it",
+      "name": "Informatika",
+      "color": "#adadad"
+    },
+    {
+      "id": "history",
+      "name": "Dejepis",
+      "color": "#9abffe"
+    },
+    {
+      "id": "geo",
+      "name": "Zemepis",
+      "color": "#9abffe"
+    },
+    {
+      "id": "other",
+      "name": "Ostatni",
+      "color": "#8f9cae"
+    },
+    {
+      "id": "sp",
+      "name": "SP",
+      "color": "#adadad"
+    },
+    {
+      "id": "art",
+      "name": "Vytvarka",
+      "color": "#c4e7ee"
+    }
+  ],
+  "weeks": {
+    "2026-02-16": {
+      "weekStart": "2026-02-16",
+      "days": [
+        {
+          "date": "2026-02-16",
+          "slots": [
+            {
+              "id": "2026-02-16:0:0",
+              "time": "08:00-08:15",
+              "fixed": true,
+              "fixedLabel": "Ranni kruh",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:0:1",
+              "time": "08:20-10:20",
+              "fixed": false,
+              "fixedLabel": "",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 1771619670799
+            },
+            {
+              "id": "2026-02-16:0:2",
+              "time": "10:30-11:30",
+              "fixed": false,
+              "fixedLabel": "",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:0:3",
+              "time": "11:40-12:40",
+              "fixed": true,
+              "fixedLabel": "Aktuality",
+              "allowTopic": true,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:0:4",
+              "time": "12:40-13:15",
+              "fixed": true,
+              "fixedLabel": "Obed",
+              "allowTopic": false,
+              "subjectId": "lunch",
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:0:5",
+              "time": "13:15-14:00",
+              "fixed": false,
+              "fixedLabel": "",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:0:6",
+              "time": "14:05-15:00",
+              "fixed": false,
+              "fixedLabel": "",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            }
+          ]
+        },
+        {
+          "date": "2026-02-17",
+          "slots": [
+            {
+              "id": "2026-02-16:1:0",
+              "time": "08:00-08:15",
+              "fixed": true,
+              "fixedLabel": "Ranni kruh",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:1:1",
+              "time": "08:20-10:20",
+              "fixed": false,
+              "fixedLabel": "",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 1771619671995
+            },
+            {
+              "id": "2026-02-16:1:2",
+              "time": "10:30-11:40",
+              "fixed": false,
+              "fixedLabel": "",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:1:3",
+              "time": "11:40-12:15",
+              "fixed": true,
+              "fixedLabel": "Obed",
+              "allowTopic": false,
+              "subjectId": "lunch",
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:1:4",
+              "time": "12:15-13:00",
+              "fixed": false,
+              "fixedLabel": "",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:1:5",
+              "time": "13:10-15:00",
+              "fixed": true,
+              "fixedLabel": "Telocvik",
+              "allowTopic": true,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            }
+          ]
+        },
+        {
+          "date": "2026-02-18",
+          "slots": [
+            {
+              "id": "2026-02-16:2:0",
+              "time": "08:00-08:15",
+              "fixed": true,
+              "fixedLabel": "Ranni kruh",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:2:1",
+              "time": "08:20-10:20",
+              "fixed": false,
+              "fixedLabel": "",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:2:2",
+              "time": "10:30-12:15",
+              "fixed": false,
+              "fixedLabel": "",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:2:3",
+              "time": "12:15-13:15",
+              "fixed": true,
+              "fixedLabel": "Obed",
+              "allowTopic": false,
+              "subjectId": "lunch",
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:2:4",
+              "time": "13:15-14:00",
+              "fixed": true,
+              "fixedLabel": "Shromazdeni",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:2:5",
+              "time": "14:05-15:00",
+              "fixed": false,
+              "fixedLabel": "",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            }
+          ]
+        },
+        {
+          "date": "2026-02-19",
+          "slots": [
+            {
+              "id": "2026-02-16:3:0",
+              "time": "08:00-08:15",
+              "fixed": true,
+              "fixedLabel": "Ranni kruh",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:3:1",
+              "time": "08:20-09:20",
+              "fixed": false,
+              "fixedLabel": "",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:3:2",
+              "time": "09:25-10:25",
+              "fixed": false,
+              "fixedLabel": "",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:3:3",
+              "time": "10:30-11:30",
+              "fixed": false,
+              "fixedLabel": "",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:3:4",
+              "time": "11:40-12:40",
+              "fixed": false,
+              "fixedLabel": "",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:3:5",
+              "time": "12:40-13:15",
+              "fixed": true,
+              "fixedLabel": "Obed",
+              "allowTopic": false,
+              "subjectId": "lunch",
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:3:6",
+              "time": "13:15-14:00",
+              "fixed": true,
+              "fixedLabel": "Tutor",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            },
+            {
+              "id": "2026-02-16:3:7",
+              "time": "14:05-15:00",
+              "fixed": false,
+              "fixedLabel": "",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            }
+          ]
+        },
+        {
+          "date": "2026-02-20",
+          "slots": [
+            {
+              "id": "2026-02-16:4:0",
+              "time": "08:00-15:00",
+              "fixed": false,
+              "fixedLabel": "",
+              "allowTopic": false,
+              "subjectId": null,
+              "topic": "",
+              "updatedAt": 0
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "lunches": {},
+  "deadlines": [
+    {
+      "id": "dl_1771606723688",
+      "text": "okokoko",
+      "date": "2026-02-20"
+    }
+  ],
+  "settings": {
+    "theme": "light"
+  }
+}
