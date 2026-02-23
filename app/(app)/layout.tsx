@@ -23,7 +23,7 @@ export default async function ProtectedLayout({
         <strong>Eindx</strong>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <span style={{ fontSize: 13 }}>{session.name || session.email || session.uid}</span>
-          <LogoutButton />
+          <LogoutButton uid={session.uid} />
         </div>
       </header>
 

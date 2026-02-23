@@ -2,6 +2,7 @@ import "server-only";
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { adminAuth } from "@/lib/firebase/admin";
 
 export type UserSession = {
   uid: string;
@@ -9,19 +10,23 @@ export type UserSession = {
   email: string;
 };
 
-const UID_COOKIE = "eindx_uid";
-const NAME_COOKIE = "eindx_name";
-const EMAIL_COOKIE = "eindx_email";
+const SESSION_COOKIE = "eindx_session";
 
 export async function getSession(): Promise<UserSession | null> {
   const cookieStore = await cookies();
-  const uid = cookieStore.get(UID_COOKIE)?.value || "";
-  if (!uid) return null;
-  return {
-    uid,
-    name: cookieStore.get(NAME_COOKIE)?.value || "User",
-    email: cookieStore.get(EMAIL_COOKIE)?.value || "",
-  };
+  const sessionCookie = cookieStore.get(SESSION_COOKIE)?.value || "";
+  if (!sessionCookie) return null;
+
+  try {
+    const decoded = await adminAuth.verifySessionCookie(sessionCookie, true);
+    return {
+      uid: decoded.uid,
+      name: (decoded.name as string) || (decoded.email as string) || "User",
+      email: (decoded.email as string) || "",
+    };
+  } catch {
+    return null;
+  }
 }
 
 export async function requireSession(): Promise<UserSession> {
@@ -31,7 +36,5 @@ export async function requireSession(): Promise<UserSession> {
 }
 
 export const sessionCookieKeys = {
-  uid: UID_COOKIE,
-  name: NAME_COOKIE,
-  email: EMAIL_COOKIE,
+  session: SESSION_COOKIE,
 } as const;

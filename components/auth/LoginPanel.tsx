@@ -11,17 +11,21 @@ import {
 import { auth, googleProvider } from "@/lib/firebase/client";
 
 async function establishSession(user: User) {
-  await fetch("/api/session", {
+  const idToken = await user.getIdToken(true);
+  const response = await fetch("/api/session", {
     method: "POST",
     headers: {
       "content-type": "application/json",
     },
     body: JSON.stringify({
-      uid: user.uid,
-      name: user.displayName || user.email || "User",
-      email: user.email || "",
+      idToken,
     }),
   });
+
+  if (!response.ok) {
+    const payload = (await response.json().catch(() => ({}))) as { error?: string };
+    throw new Error(payload.error || "Failed to establish server session.");
+  }
 }
 
 export default function LoginPanel() {

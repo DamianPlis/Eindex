@@ -2,6 +2,7 @@
 
 import { initializeApp, getApp, getApps } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 function cleanEnv(value: string | undefined): string {
   if (!value) return "";
@@ -36,6 +37,7 @@ if (!firebaseConfig.apiKey.startsWith("AIza")) {
 
 export const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+export const db = getFirestore(app);
 export const googleProvider = new GoogleAuthProvider();
 
 googleProvider.setCustomParameters({ prompt: "select_account" });

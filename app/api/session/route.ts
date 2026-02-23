@@ -1,54 +1,44 @@
 import { NextResponse } from "next/server";
+import { adminAuth } from "@/lib/firebase/admin";
 import { sessionCookieKeys } from "@/lib/session";
 
 type SessionBody = {
-  uid?: string;
-  name?: string;
-  email?: string;
+  idToken?: string;
 };
+
+const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 14;
 
 export async function POST(request: Request) {
   const body = (await request.json().catch(() => ({}))) as SessionBody;
-  const uid = String(body.uid || "").trim();
-  const name = String(body.name || "User").trim();
-  const email = String(body.email || "").trim();
+  const idToken = String(body.idToken || "").trim();
 
-  if (!uid) {
-    return NextResponse.json({ ok: false, error: "missing_uid" }, { status: 400 });
+  if (!idToken) {
+    return NextResponse.json({ ok: false, error: "missing_id_token" }, { status: 400 });
   }
 
-  const response = NextResponse.json({ ok: true });
-  const shared = {
-    httpOnly: true as const,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax" as const,
-    path: "/",
-    maxAge: 60 * 60 * 24 * 14,
-  };
+  try {
+    const expiresIn = SESSION_MAX_AGE_SECONDS * 1000;
+    const sessionCookie = await adminAuth.createSessionCookie(idToken, { expiresIn });
+    const response = NextResponse.json({ ok: true });
 
-  response.cookies.set(sessionCookieKeys.uid, uid, shared);
-  response.cookies.set(sessionCookieKeys.name, name || "User", shared);
-  response.cookies.set(sessionCookieKeys.email, email, shared);
-  return response;
+    response.cookies.set(sessionCookieKeys.session, sessionCookie, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: SESSION_MAX_AGE_SECONDS,
+    });
+
+    return response;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "session_create_failed";
+    return NextResponse.json({ ok: false, error: message }, { status: 401 });
+  }
 }
 
 export async function DELETE() {
   const response = NextResponse.json({ ok: true });
-  response.cookies.set(sessionCookieKeys.uid, "", {
-    path: "/",
-    maxAge: 0,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-  });
-  response.cookies.set(sessionCookieKeys.name, "", {
-    path: "/",
-    maxAge: 0,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-  });
-  response.cookies.set(sessionCookieKeys.email, "", {
+  response.cookies.set(sessionCookieKeys.session, "", {
     path: "/",
     maxAge: 0,
     httpOnly: true,

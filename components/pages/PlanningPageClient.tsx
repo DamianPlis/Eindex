@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import {
   addCustomSubjectAction,
   setSlotSubjectAction,
   setSlotTopicAction,
 } from "@/app/(app)/actions";
-import type { DaySchedule, Subject } from "@/lib/schedule/types";
+import type { DaySchedule, Slot, Subject } from "@/lib/schedule/types";
+import { getClientId } from "@/lib/sync/client-id";
 
 type PlanningPageClientProps = {
   weekStart: string;
@@ -23,7 +23,7 @@ function safeHexToRgb(hex: string) {
   if (h.startsWith("#")) h = h.slice(1);
   if (h.length === 3) h = h.split("").map((c) => c + c).join("");
   if (h.length !== 6) return null;
-  const n = parseInt(h, 16);
+  const n = Number.parseInt(h, 16);
   if (Number.isNaN(n)) return null;
   return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
 }
@@ -36,15 +36,21 @@ function contrastForHex(hex: string, fallback = "#000000") {
 }
 
 function formatDayLabel(isoDateStr: string) {
-  try {
-    return new Date(isoDateStr).toLocaleDateString("cs-CZ", {
-      weekday: "long",
-      day: "numeric",
-      month: "short",
-    });
-  } catch {
-    return isoDateStr;
-  }
+  const match = isoDateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return isoDateStr;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const utcDate = new Date(Date.UTC(year, month - 1, day));
+  if (Number.isNaN(utcDate.getTime())) return isoDateStr;
+
+  const weekdays = ["nedele", "pondeli", "utery", "streda", "ctvrtek", "patek", "sobota"];
+  // const months = ["led", "uno", "bre", "dub", "kve", "cer", "cvc", "srp", "zar", "rij", "lis", "pro"];
+
+  const weekday = weekdays[utcDate.getUTCDay()] || "";
+  // const monthLabel = months[month - 1] || "";
+  return `${weekday} ${day}. `// dont add ${monthLabel} i dont want it;
 }
 
 export default function PlanningPageClient({
@@ -54,15 +60,24 @@ export default function PlanningPageClient({
   days,
   subjects,
 }: PlanningPageClientProps) {
-  const router = useRouter();
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const customTargetRef = useRef<{ dayIndex: number; slotIndex: number } | null>(null);
+  const customTargetRef = useRef<{ dayIndex: number; slotIndex: number; slotId: string } | null>(null);
+  const pendingSubjectUpdatesRef = useRef<Record<string, string | null>>({});
+  const lastSyncedTopicsRef = useRef<Record<string, string>>({});
+  const clientIdRef = useRef("");
   const [isPending, startTransition] = useTransition();
 
   const [activeDayIndex, setActiveDayIndex] = useState(0);
   const [customModalOpen, setCustomModalOpen] = useState(false);
   const [customName, setCustomName] = useState("");
   const [customColor, setCustomColor] = useState("#64748b");
+
+  const [subjectOverrides, setSubjectOverrides] = useState<Record<string, string | null>>({});
+  const [topicOverrides, setTopicOverrides] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    clientIdRef.current = getClientId();
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -72,22 +87,126 @@ export default function PlanningPageClient({
     child.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
   }, [activeDayIndex, weekStart]);
 
-  function updateSubject(dayIndex: number, slotIndex: number, subjectId: string | null) {
+  useEffect(() => {
+    const topics: Record<string, string> = {};
+    const subjectsBySlot: Record<string, string | null> = {};
+    for (const day of days) {
+      for (const slot of day.slots) {
+        topics[slot.id] = slot.topic || "";
+        subjectsBySlot[slot.id] = slot.subjectId || null;
+      }
+    }
+    lastSyncedTopicsRef.current = topics;
+
+    // Keep optimistic subject overrides only while waiting for that exact server ack.
+    setSubjectOverrides((current) => {
+      const slotIds = Object.keys(current);
+      if (slotIds.length === 0) return current;
+
+      let changed = false;
+      const next: Record<string, string | null> = { ...current };
+      for (const slotId of slotIds) {
+        const hasServerSlot = Object.prototype.hasOwnProperty.call(subjectsBySlot, slotId);
+        if (!hasServerSlot) {
+          delete next[slotId];
+          delete pendingSubjectUpdatesRef.current[slotId];
+          changed = true;
+          continue;
+        }
+
+        const serverValue = subjectsBySlot[slotId];
+        const hasPending = Object.prototype.hasOwnProperty.call(
+          pendingSubjectUpdatesRef.current,
+          slotId,
+        );
+        const pendingValue = hasPending ? pendingSubjectUpdatesRef.current[slotId] : null;
+
+        if (hasPending && pendingValue === serverValue) {
+          delete next[slotId];
+          delete pendingSubjectUpdatesRef.current[slotId];
+          changed = true;
+          continue;
+        }
+
+        if (!hasPending) {
+          delete next[slotId];
+          changed = true;
+        }
+      }
+
+      return changed ? next : current;
+    });
+  }, [days, weekStart]);
+
+  function currentSubjectValue(slot: Slot): string {
+    if (slot.id in subjectOverrides) return subjectOverrides[slot.id] || "";
+    return slot.subjectId || "";
+  }
+
+  function currentTopicValue(slot: Slot): string {
+    if (slot.id in topicOverrides) return topicOverrides[slot.id];
+    return slot.topic || "";
+  }
+
+  function updateSubject(dayIndex: number, slotIndex: number, slot: Slot, subjectId: string | null) {
+    const nextSubjectId = subjectId || null;
+    if ((currentSubjectValue(slot) || null) === nextSubjectId) return;
+
+    pendingSubjectUpdatesRef.current[slot.id] = nextSubjectId;
+    setSubjectOverrides((current) => ({
+      ...current,
+      [slot.id]: nextSubjectId,
+    }));
+
     startTransition(async () => {
-      await setSlotSubjectAction({ weekStart, dayIndex, slotIndex, subjectId });
-      router.refresh();
+      try {
+        await setSlotSubjectAction({
+          weekStart,
+          dayIndex,
+          slotIndex,
+          subjectId: nextSubjectId,
+          writerId: clientIdRef.current,
+        });
+      } catch {
+        setSubjectOverrides((current) => {
+          if (!(slot.id in current)) return current;
+          const next = { ...current };
+          delete next[slot.id];
+          return next;
+        });
+      } finally {
+        delete pendingSubjectUpdatesRef.current[slot.id];
+      }
     });
   }
 
-  function updateTopic(dayIndex: number, slotIndex: number, topic: string) {
+  function updateTopicLocal(slot: Slot, topic: string) {
+    setTopicOverrides((current) => ({
+      ...current,
+      [slot.id]: topic,
+    }));
+  }
+
+  function commitTopic(dayIndex: number, slotIndex: number, slot: Slot, topic: string) {
+    const previous =
+      lastSyncedTopicsRef.current[slot.id] !== undefined
+        ? lastSyncedTopicsRef.current[slot.id]
+        : slot.topic || "";
+    if (topic === previous) return;
     startTransition(async () => {
-      await setSlotTopicAction({ weekStart, dayIndex, slotIndex, topic });
-      router.refresh();
+      await setSlotTopicAction({
+        weekStart,
+        dayIndex,
+        slotIndex,
+        topic,
+        writerId: clientIdRef.current,
+      });
+      lastSyncedTopicsRef.current[slot.id] = topic;
     });
   }
 
-  function openAddCustomForSlot(dayIndex: number, slotIndex: number) {
-    customTargetRef.current = { dayIndex, slotIndex };
+  function openAddCustomForSlot(dayIndex: number, slotIndex: number, slotId: string) {
+    customTargetRef.current = { dayIndex, slotIndex, slotId };
     setCustomName("");
     setCustomColor("#64748b");
     setCustomModalOpen(true);
@@ -100,18 +219,26 @@ export default function PlanningPageClient({
     if (!target) return;
 
     startTransition(async () => {
-      const newId = await addCustomSubjectAction({ name, color: customColor });
+      const newId = await addCustomSubjectAction({
+        name,
+        color: customColor,
+        writerId: clientIdRef.current,
+      });
       if (newId) {
         await setSlotSubjectAction({
           weekStart,
           dayIndex: target.dayIndex,
           slotIndex: target.slotIndex,
           subjectId: newId,
+          writerId: clientIdRef.current,
         });
+        setSubjectOverrides((current) => ({
+          ...current,
+          [target.slotId]: newId,
+        }));
       }
       setCustomModalOpen(false);
       customTargetRef.current = null;
-      router.refresh();
     });
   }
 
@@ -141,19 +268,20 @@ export default function PlanningPageClient({
                   {day.slots.map((slot, slotIndex) => {
                     const isFixed = slot.fixed;
                     const subjectObj =
-                      !isFixed && slot.subjectId
-                        ? subjects.find((s) => s.id === slot.subjectId) || null
+                      !isFixed && currentSubjectValue(slot)
+                        ? subjects.find((s) => s.id === currentSubjectValue(slot)) || null
                         : null;
                     const bg = isFixed ? "#ff7fbf" : subjectObj?.color || "#f1f5f9";
                     const textColor = contrastForHex(bg, "#000000");
                     const title = isFixed ? slot.fixedLabel || "Activity" : subjectObj?.name || "-";
+                    const topicValue = currentTopicValue(slot);
                     const fixedTopicValue =
                       isFixed &&
-                      slot.topic &&
+                      topicValue &&
                       slot.fixedLabel &&
-                      slot.topic.trim().toLowerCase() === slot.fixedLabel.trim().toLowerCase()
+                      topicValue.trim().toLowerCase() === slot.fixedLabel.trim().toLowerCase()
                         ? ""
-                        : slot.topic || "";
+                        : topicValue;
 
                     return (
                       <div
@@ -171,14 +299,13 @@ export default function PlanningPageClient({
                             <>
                               <select
                                 className="slot-select"
-                                value={slot.subjectId || ""}
-                                disabled={isPending}
+                                value={currentSubjectValue(slot)}
                                 onChange={(event) => {
                                   const value = event.target.value;
                                   if (value === "__add_custom__") {
-                                    openAddCustomForSlot(dayIndex, slotIndex);
+                                    openAddCustomForSlot(dayIndex, slotIndex, slot.id);
                                   } else {
-                                    updateSubject(dayIndex, slotIndex, value || null);
+                                    updateSubject(dayIndex, slotIndex, slot, value || null);
                                   }
                                 }}
                               >
@@ -194,11 +321,16 @@ export default function PlanningPageClient({
                               <input
                                 className="slot-input"
                                 type="text"
-                                value={slot.topic || ""}
-                                disabled={isPending}
-                                onChange={(event) =>
-                                  updateTopic(dayIndex, slotIndex, event.target.value)
+                                value={topicValue}
+                                onChange={(event) => updateTopicLocal(slot, event.target.value)}
+                                onBlur={(event) =>
+                                  commitTopic(dayIndex, slotIndex, slot, event.currentTarget.value)
                                 }
+                                onKeyDown={(event) => {
+                                  if (event.key === "Enter") {
+                                    event.currentTarget.blur();
+                                  }
+                                }}
                                 placeholder="Topic (optional)"
                               />
                             </>
@@ -209,10 +341,15 @@ export default function PlanningPageClient({
                               className="slot-input"
                               type="text"
                               value={fixedTopicValue}
-                              disabled={isPending}
-                              onChange={(event) =>
-                                updateTopic(dayIndex, slotIndex, event.target.value)
+                              onChange={(event) => updateTopicLocal(slot, event.target.value)}
+                              onBlur={(event) =>
+                                commitTopic(dayIndex, slotIndex, slot, event.currentTarget.value)
                               }
+                              onKeyDown={(event) => {
+                                if (event.key === "Enter") {
+                                  event.currentTarget.blur();
+                                }
+                              }}
                               placeholder={`Topic for ${slot.fixedLabel || "fixed slot"}`}
                             />
                           ) : null}
@@ -232,7 +369,6 @@ export default function PlanningPageClient({
               key={idx}
               className={`pager-dot ${idx === activeDayIndex ? "active" : ""}`}
               onClick={() => setActiveDayIndex(idx)}
-              disabled={isPending}
             />
           ))}
         </div>
