@@ -96,6 +96,7 @@ export async function addDeadlineAction(formData: FormData) {
       date,
     });
   });
+  //revalidatePath("/deadlines");
 }
 
 export async function removeDeadlineAction(formData: FormData) {
@@ -106,4 +107,5 @@ export async function removeDeadlineAction(formData: FormData) {
   await updateUserState(session.uid, (state) => {
     state.deadlines = state.deadlines.filter((item) => item.id !== id);
   });
+  //revalidatePath("/deadlines");
 }

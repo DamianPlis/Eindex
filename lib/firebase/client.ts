@@ -1,8 +1,13 @@
 "use client";
 
 import { initializeApp, getApp, getApps } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import {
+  browserLocalPersistence,
+  getAuth,
+  GoogleAuthProvider,
+  setPersistence,
+} from "firebase/auth";
+import { getFirestore, initializeFirestore } from "firebase/firestore";
 
 function cleanEnv(value: string | undefined): string {
   if (!value) return "";
@@ -37,7 +42,22 @@ if (!firebaseConfig.apiKey.startsWith("AIza")) {
 
 export const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+
+function createFirestore() {
+  try {
+    return initializeFirestore(app, {
+      experimentalAutoDetectLongPolling: true,
+    });
+  } catch {
+    return getFirestore(app);
+  }
+}
+
+export const db = createFirestore();
 export const googleProvider = new GoogleAuthProvider();
+
+void setPersistence(auth, browserLocalPersistence).catch(() => {
+  // noop
+});
 
 googleProvider.setCustomParameters({ prompt: "select_account" });
