@@ -1,14 +1,17 @@
 import Link from "next/link";
-import { addDeadlineAction, removeDeadlineAction } from "@/app/(app)/actions";
 import { isoDate } from "@/lib/schedule/defaults";
 import { getWeekStats } from "@/lib/schedule/selectors";
 import { getUserState } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
+import RemoveDeadline from "@/components/removeDeadline"
+import AddDeadline from "@/components/AddDeadline";
+import type { ScheduleState } from "@/lib/schedule/types";
 
 function renderStats(
   title: string,
   stats: Record<string, number>,
   subjectMap: Map<string, string>,
+  state: ScheduleState,
 ) {
   return (
     <div className="stats-card">
@@ -18,7 +21,9 @@ function renderStats(
       ) : (
         <ul>
           {Object.entries(stats).map(([subjectId, count]) => (
-            <li key={subjectId}>
+            <li key={subjectId} className="stats-entry" style={{
+              backgroundColor: `${state.subjects.find((s) => s.id === subjectId)?.color || "#000000"}55`,
+            }}>
               {subjectMap.get(subjectId) || subjectId}: {count} times
             </li>
           ))}
@@ -54,21 +59,7 @@ export default async function DeadlinesPage() {
   return (
     <div className="deadlines-container">
       <h2 className="deadlines-title">Homework Deadlines</h2>
-
-      <form action={addDeadlineAction} className="add-form">
-        <input
-          type="text"
-          name="text"
-          placeholder="Homework description"
-          className="add-input add-input-text"
-          required
-        />
-        <input type="date" name="date" className="add-input add-input-date" required />
-        <button type="submit" className="add-button">
-          Add
-        </button>
-      </form>
-
+      <AddDeadline />
       <ul className="deadlines-list">
         {state.deadlines.length === 0 ? <p>No deadlines yet</p> : null}
         {state.deadlines.map((deadline) => {
@@ -84,12 +75,7 @@ export default async function DeadlinesPage() {
                 </Link>{" "}
                 - {deadline.date}
               </span>
-              <form action={removeDeadlineAction}>
-                <input type="hidden" name="id" value={deadline.id} />
-                <button className="remove-button" type="submit">
-                  x
-                </button>
-              </form>
+              <RemoveDeadline deadline={deadline} />
             </li>
           );
         })}
@@ -97,9 +83,9 @@ export default async function DeadlinesPage() {
 
       <h2 className="deadlines-title">Statistics</h2>
       <div className="stats-container">
-        {renderStats("This Week", weekStats, subjectMap)}
-        {renderStats("This Month", monthStats, subjectMap)}
-        {renderStats("This Year", yearStats, subjectMap)}
+        {renderStats("This Week", weekStats, subjectMap, state)}
+        {renderStats("This Month", monthStats, subjectMap, state)}
+        {renderStats("This Year", yearStats, subjectMap, state)}
       </div>
     </div>
   );

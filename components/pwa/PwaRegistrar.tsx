@@ -10,6 +10,7 @@ export default function PwaRegistrar() {
 
     void navigator.serviceWorker.register("/sw.js").catch(() => {
       // noop
+      console.warn("Failed to register service worker");
     });
   }, []);
 
