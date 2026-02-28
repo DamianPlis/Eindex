@@ -3,8 +3,8 @@ import { isoDate } from "@/lib/schedule/defaults";
 import { getWeekStats } from "@/lib/schedule/selectors";
 import { getUserState } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
-import RemoveDeadline from "@/components/removeDeadline"
-import AddDeadline from "@/components/AddDeadline";
+import RemoveDeadline from "@/components/deadlines/RemoveDeadline"
+import AddDeadline from "@/components/deadlines/AddDeadline";
 import type { ScheduleState } from "@/lib/schedule/types";
 
 function renderStats(

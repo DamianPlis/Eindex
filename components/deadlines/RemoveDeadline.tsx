@@ -6,7 +6,6 @@ import { removeDeadlineAction } from '@/app/(app)/actions'
 
 function RemoveButton() {
     const formStatus = useFormStatus();
-    console.log(formStatus)
     const { pending } = formStatus;
 
 
