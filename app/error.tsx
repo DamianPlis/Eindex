@@ -15,19 +15,20 @@ export default function RootErrorPage({
   }, [error]);
 
   return (
-    <main className="container" style={{ margin: "16px", textAlign: "center" }}>
-      <h1 style={{ marginBottom: 8 }}>500 - Something went wrong</h1>
-      <p style={{ marginTop: 0 }}>
-        The page failed to render. Try again or return home.
-      </p>
-      <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 12 }}>
-        <button className="add-button" onClick={reset}>
-          Try Again
-        </button>
-        <Link href="/" className="add-button" style={{ textDecoration: "none" }}>
-          Home
-        </Link>
-      </div>
+    <main className="status-page">
+      <section className="status-panel page-enter">
+        <p className="status-code">500</p>
+        <h1 className="status-title">Something went wrong</h1>
+        <p className="status-copy">The page failed to render. Try again or return home.</p>
+        <div className="status-actions">
+          <button className="btn-primary" onClick={reset}>
+            Try Again
+          </button>
+          <Link href="/" className="btn-secondary">
+            Home
+          </Link>
+        </div>
+      </section>
     </main>
   );
 }

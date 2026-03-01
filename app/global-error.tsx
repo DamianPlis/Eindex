@@ -16,14 +16,15 @@ export default function GlobalErrorPage({
   return (
     <html lang="en">
       <body>
-        <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 20 }}>
-          <div className="container" style={{ textAlign: "center" }}>
-            <h1 style={{ marginBottom: 8 }}>500 - Unexpected Error</h1>
-            <p style={{ marginTop: 0 }}>A critical error occurred while rendering the app.</p>
-            <button className="add-button" onClick={reset}>
+        <main className="status-page">
+          <section className="status-panel page-enter">
+            <p className="status-code">500</p>
+            <h1 className="status-title">Unexpected error</h1>
+            <p className="status-copy">A critical error occurred while rendering the app.</p>
+            <button className="btn-primary" onClick={reset}>
               Reload
             </button>
-          </div>
+          </section>
         </main>
       </body>
     </html>

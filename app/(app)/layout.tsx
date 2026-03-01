@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { requireSession } from "@/lib/session";
 import LogoutButton from "@/components/auth/LogoutButton";
-// import { useRouter } from "next/router";
+import AppBottomNav from "@/components/layout/AppBottomNav";
 
 export default async function ProtectedLayout({
   children,
@@ -10,7 +9,6 @@ export default async function ProtectedLayout({
 }) {
   const session = await requireSession();
 
-  // const currentRoute = useRouter();
   const routes = [
     { to: "/", label: "Main" },
     { to: "/planning", label: "Planning" },
@@ -20,27 +18,18 @@ export default async function ProtectedLayout({
   return (
     <div className="app-shell">
       <header className="app-topbar">
-        <strong>Eindx</strong>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 13 }}>{session.name || session.email || session.uid}</span>
-          <LogoutButton uid={session.uid} />
+        <div className="app-topbar-inner">
+          <strong className="app-brand">Eindx</strong>
+          <div className="app-user-row">
+            <span className="app-user-pill">{session.name || session.email || session.uid}</span>
+            <LogoutButton uid={session.uid} />
+          </div>
         </div>
       </header>
 
-      <main style={{ flex: 1 }}>{children}</main>
+      <main className="app-main">{children}</main>
 
-      <nav className="nav-bar">
-        {routes.map((route) => (
-          <Link
-            key={route.to}
-            href={route.to}
-            className={`nav-link 
-              `}
-          >
-            {route.label}
-          </Link>
-        ))}
-      </nav>
+      <AppBottomNav routes={routes} />
     </div>
   );
 }

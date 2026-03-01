@@ -16,12 +16,15 @@ export default async function DeadlineDetailPage({
   if (!item) notFound();
 
   return (
-    <div className="container" style={{ margin: "16px" }}>
-      <h2>{item.text}</h2>
-      <p>Due: {item.date}</p>
-      <Link href="/deadlines" className="inline-link">
-        Back to deadlines
-      </Link>
-    </div>
+    <main className="status-page">
+      <section className="status-panel page-enter">
+        <p className="status-code">Deadline</p>
+        <h1 className="status-title">{item.text}</h1>
+        <p className="status-copy">Due: {item.date}</p>
+        <Link href="/deadlines" className="btn-secondary">
+          Back to deadlines
+        </Link>
+      </section>
+    </main>
   );
 }

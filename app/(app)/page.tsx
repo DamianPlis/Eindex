@@ -34,83 +34,144 @@ function contrastColor(hex: string) {
   return lum > 0.6 ? "#000000" : "#ffffff";
 }
 
+function daysLate(dateISO: string, todayISO: string) {
+  const due = new Date(`${dateISO}T00:00:00`);
+  const today = new Date(`${todayISO}T00:00:00`);
+  const diffMs = today.getTime() - due.getTime();
+  return Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+}
+
 export default async function MainPage() {
   const session = await requireSession();
   const [state, lunchPerDay] = await Promise.all([getUserState(session.uid), getLunchPerDay()]);
   const todayISO = getTodayISO();
   const slots = pickTodaySchedule(state, todayISO);
-  const { today: todaysReminders, expired } = splitDeadlines(state.deadlines, todayISO);
+  const { today: todaysDeadlines, expired } = splitDeadlines(state.deadlines, todayISO);
+  const upcomingCount = state.deadlines.filter((item) => item.date > todayISO).length;
+  const overdueItems = [...expired].sort(
+    (a, b) => b.date.localeCompare(a.date) || a.text.localeCompare(b.text),
+  );
 
   return (
-    <div className="main-container">
-      <h2 className="main-title">Today - {todayISO}</h2>
+    <div className="dashboard-page page-enter">
+      <header className="page-hero">
+        <div>
+          <p className="page-kicker">Dashboard</p>
+          <h1 className="page-title">Today</h1>
+        </div>
+        <p className="page-date">{todayISO}</p>
+      </header>
 
-      <div className="reminders-section">
-        {todaysReminders.length > 0 ? (
-          todaysReminders.map((item) => (
-            <div key={item.id} className="reminder-card">
-              <div className="reminder-content">
-                <div>
-                  <div className="reminder-title">{item.text}</div>
-                  <div className="reminder-date">{item.date}</div>
-                </div>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="empty-reminders">No reminders for today</div>
-        )}
+      <div className="summary-chips" aria-label="Today summary">
+        <div className="summary-chip">
+          <span className="chip-label">Due today</span>
+          <span className="chip-value">{todaysDeadlines.length}</span>
+        </div>
+        <div className="summary-chip">
+          <span className="chip-label">Overdue</span>
+          <span className="chip-value">{overdueItems.length}</span>
+        </div>
+        <div className="summary-chip">
+          <span className="chip-label">Upcoming</span>
+          <span className="chip-value">{upcomingCount}</span>
+        </div>
+        <div className="summary-chip">
+          <span className="chip-label">Slots</span>
+          <span className="chip-value">{slots.length}</span>
+        </div>
       </div>
 
-      {expired.length > 0 ? (
-        <div className="expired-section">
-          <h3>Expired deadlines</h3>
-          {expired.map((item) => (
-            <div key={item.id} className="expired-card">
-              <div className="expired-text">{item.text}</div>
-              <div className="reminder-date">{item.date}</div>
-            </div>
-          ))}
+      <section className="section-block">
+        <div className="section-head">
+          <h2>Due Today</h2>
         </div>
+        {todaysDeadlines.length > 0 ? (
+          <ul className="list-grid">
+            {todaysDeadlines.map((item) => (
+              <li key={item.id} className="list-card">
+                <div>
+                  <p className="list-title">{item.text}</p>
+                  <p className="list-sub">{item.date}</p>
+                </div>
+                <span className="status-pill is-today">Due today</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="empty-state">No reminders for today.</div>
+        )}
+      </section>
+
+      {overdueItems.length > 0 ? (
+        <section className="section-block">
+          <div className="section-head">
+            <h2>Overdue</h2>
+          </div>
+          <ul className="list-grid">
+            {overdueItems.map((item) => {
+              const lateDays = daysLate(item.date, todayISO);
+              const lateLabel = lateDays === 1 ? "1 day late" : `${lateDays} days late`;
+              return (
+                <li key={item.id} className="list-card is-overdue">
+                  <div>
+                    <p className="list-title">{item.text}</p>
+                    <p className="list-sub">{item.date}</p>
+                  </div>
+                  <span className="status-pill is-overdue">{lateLabel}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
       ) : null}
 
-      <div className="schedule-list">
-        {slots.length > 0 ? (
-          slots.map((slot) => {
-            const subject = slot.subjectId
-              ? state.subjects.find((s) => s.id === slot.subjectId) || null
-              : null;
-            const isLunch = slot.subjectId === "lunch" || /obed|lunch/i.test(slot.fixedLabel || "");
-            const lunchText = isLunch ? lunchPerDay[todayISO] : "";
-            const bg = slot.fixed ? "#ff7fbf" : subject?.color || "#ffffff";
-            const color = contrastColor(bg);
-            const title = slot.fixed ? slot.fixedLabel || "Activity" : subject?.name || slot.topic || "-";
+      <section className="section-block">
+        <div className="section-head">
+          <h2>Today&apos;s Schedule</h2>
+        </div>
 
-            let subtitle = "";
-            if (isLunch && lunchText) subtitle = `Meal: ${lunchText}`;
-            else if (slot.fixed && slot.allowTopic && slot.topic) subtitle = slot.topic;
-            else if (!slot.fixed && slot.topic) subtitle = slot.topic;
+        <div className="schedule-grid">
+          {slots.length > 0 ? (
+            slots.map((slot) => {
+              const subject = slot.subjectId
+                ? state.subjects.find((s) => s.id === slot.subjectId) || null
+                : null;
+              const isLunch = slot.subjectId === "lunch" || /obed|lunch/i.test(slot.fixedLabel || "");
+              const lunchText = isLunch ? lunchPerDay[todayISO] : "";
+              const isLive = isCurrentSlot(slot.time);
+              const bg = slot.fixed ? "#ffd0df" : subject?.color || "#e2e8f0";
+              const color = contrastColor(bg);
+              const title = slot.fixed ? slot.fixedLabel || "Activity" : subject?.name || slot.topic || "-";
 
-            return (
-              <div
-                key={slot.id}
-                className={`slot-bubble ${isCurrentSlot(slot.time) ? "active" : ""}`}
-                style={{ background: bg, color }}
-              >
-                <div className="slot-content">
-                  <div>
-                    <div className="slot-title-text">{title}</div>
-                    {subtitle ? <div className="slot-subtitle">{subtitle}</div> : null}
+              let subtitle = "";
+              if (isLunch && lunchText) subtitle = `Meal: ${lunchText}`;
+              else if (slot.fixed && slot.allowTopic && slot.topic) subtitle = slot.topic;
+              else if (!slot.fixed && slot.topic) subtitle = slot.topic;
+
+              return (
+                <article
+                  key={slot.id}
+                  className={`schedule-card ${isLive ? "is-active" : ""}`}
+                  style={{ backgroundColor: bg, color }}
+                >
+                  <div className="schedule-main">
+                    <p className="schedule-title">{title}</p>
+                    {subtitle ? <p className="schedule-sub">{subtitle}</p> : null}
                   </div>
-                  <div className="slot-time-text">{slot.time}</div>
-                </div>
-              </div>
-            );
-          })
-        ) : (
-          <div className="empty-schedule">No schedule for today.</div>
-        )}
-      </div>
+                  <div className="schedule-side">
+                    <span className="schedule-time">{slot.time}</span>
+                    <span className={`status-pill ${isLive ? "is-today" : "is-neutral"}`}>
+                      {isLive ? "Now" : slot.fixed ? "Fixed" : "Planned"}
+                    </span>
+                  </div>
+                </article>
+              );
+            })
+          ) : (
+            <div className="empty-state">No schedule for today.</div>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

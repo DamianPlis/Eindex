@@ -35,22 +35,39 @@ function contrastForHex(hex: string, fallback = "#000000") {
   return lum > 0.6 ? "#000000" : "#ffffff";
 }
 
-function formatDayLabel(isoDateStr: string) {
+function getDayLabels(isoDateStr: string) {
   const match = isoDateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (!match) return isoDateStr;
+  if (!match) {
+    return {
+      shortName: isoDateStr,
+      longName: isoDateStr,
+      shortDate: isoDateStr,
+    };
+  }
 
   const year = Number(match[1]);
   const month = Number(match[2]);
   const day = Number(match[3]);
   const utcDate = new Date(Date.UTC(year, month - 1, day));
-  if (Number.isNaN(utcDate.getTime())) return isoDateStr;
+  if (Number.isNaN(utcDate.getTime())) {
+    return {
+      shortName: isoDateStr,
+      longName: isoDateStr,
+      shortDate: isoDateStr,
+    };
+  }
 
-  const weekdays = ["nedele", "pondeli", "utery", "streda", "ctvrtek", "patek", "sobota"];
-  // const months = ["led", "uno", "bre", "dub", "kve", "cer", "cvc", "srp", "zar", "rij", "lis", "pro"];
+  const weekdaysLong = ["nedele", "pondeli", "utery", "streda", "ctvrtek", "patek", "sobota"];
+  const weekdaysShort = ["Ne", "Po", "Ut", "St", "Ct", "Pa", "So"];
 
-  const weekday = weekdays[utcDate.getUTCDay()] || "";
-  // const monthLabel = months[month - 1] || "";
-  return `${weekday} ${day}. `// dont add ${monthLabel} i dont want it;
+  const dayIndex = utcDate.getUTCDay();
+  const shortDate = `${day}.${month}.`;
+
+  return {
+    shortName: weekdaysShort[dayIndex] || "",
+    longName: weekdaysLong[dayIndex] || "",
+    shortDate,
+  };
 }
 
 export default function PlanningPageClient({
@@ -60,7 +77,6 @@ export default function PlanningPageClient({
   days,
   subjects,
 }: PlanningPageClientProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
   const customTargetRef = useRef<{ dayIndex: number; slotIndex: number; slotId: string } | null>(null);
   const pendingSubjectUpdatesRef = useRef<Record<string, string | null>>({});
   const lastSyncedTopicsRef = useRef<Record<string, string>>({});
@@ -80,12 +96,8 @@ export default function PlanningPageClient({
   }, []);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    const child = container.children.item(activeDayIndex);
-    if (!child) return;
-    child.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
-  }, [activeDayIndex, weekStart]);
+    setActiveDayIndex(0);
+  }, [weekStart]);
 
   useEffect(() => {
     const topics: Record<string, string> = {};
@@ -98,7 +110,7 @@ export default function PlanningPageClient({
     }
     lastSyncedTopicsRef.current = topics;
 
-    // Keep optimistic subject overrides only while waiting for that exact server ack.
+    // Keep optimistic subject overrides only while waiting for matching server acks.
     setSubjectOverrides((current) => {
       const slotIds = Object.keys(current);
       if (slotIds.length === 0) return current;
@@ -243,104 +255,116 @@ export default function PlanningPageClient({
   }
 
   return (
-    <div className="planning-root" aria-live="polite">
-      <div className="planning-inner">
-        <div className="controls" role="region" aria-label="Week controls">
-          <Link className="nav-btn" href={`/planning?week=${encodeURIComponent(prevWeek)}`}>
+    <div className="planning-page page-enter" aria-live="polite">
+      <section className="section-block planning-header">
+        <div className="planning-week-controls" role="region" aria-label="Week controls">
+          <Link className="btn-secondary week-arrow" href={`/planning?week=${encodeURIComponent(prevWeek)}`}>
             {"<"}
           </Link>
-          <div className="week-title">Week starts {weekStart}</div>
-          <Link className="nav-btn" href={`/planning?week=${encodeURIComponent(nextWeek)}`}>
+
+          <div>
+            <p className="page-kicker">Planner</p>
+            <h1 className="page-title planning-week-title">Week starts {weekStart}</h1>
+          </div>
+
+          <Link className="btn-secondary week-arrow" href={`/planning?week=${encodeURIComponent(nextWeek)}`}>
             {">"}
           </Link>
         </div>
 
-        <div ref={containerRef} className="days-scroll" role="list" aria-label="Days">
-          {days.map((day, dayIndex) => (
-            <article key={day.date} className="day-card" role="listitem">
-              <div className="day-inner">
-                <header className="day-header">
-                  <div className="day-name">{formatDayLabel(day.date)}</div>
-                  <div className="day-date">{day.date}</div>
-                </header>
+        <div className="planning-day-tabs" role="tablist" aria-label="Days">
+          {days.map((day, dayIndex) => {
+            const labels = getDayLabels(day.date);
+            const isActive = dayIndex === activeDayIndex;
+            return (
+              <button
+                key={day.date}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                className={`planning-day-tab ${isActive ? "is-active" : ""}`}
+                onClick={() => setActiveDayIndex(dayIndex)}
+              >
+                <span className="planning-day-tab-name">{labels.shortName}</span>
+                <span className="planning-day-tab-date">{labels.shortDate}</span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
-                <div className="slots">
-                  {day.slots.map((slot, slotIndex) => {
-                    const isFixed = slot.fixed;
-                    const subjectObj =
-                      !isFixed && currentSubjectValue(slot)
-                        ? subjects.find((s) => s.id === currentSubjectValue(slot)) || null
-                        : null;
-                    const bg = isFixed ? "#ff7fbf" : subjectObj?.color || "#f1f5f9";
-                    const textColor = contrastForHex(bg, "#000000");
-                    const title = isFixed ? slot.fixedLabel || "Activity" : subjectObj?.name || "-";
-                    const topicValue = currentTopicValue(slot);
-                    const fixedTopicValue =
-                      isFixed &&
-                      topicValue &&
-                      slot.fixedLabel &&
-                      topicValue.trim().toLowerCase() === slot.fixedLabel.trim().toLowerCase()
-                        ? ""
-                        : topicValue;
+      <div className="planning-panels" role="list" aria-label="Days">
+        {days.map((day, dayIndex) => {
+          const labels = getDayLabels(day.date);
+          return (
+            <article
+              key={day.date}
+              className={`planning-day-panel ${dayIndex === activeDayIndex ? "is-active" : ""}`}
+              role="listitem"
+            >
+              <header className="planning-day-head">
+                <p className="planning-day-name">{labels.longName}</p>
+                <p className="planning-day-date">{day.date}</p>
+              </header>
 
-                    return (
-                      <div
-                        key={slot.id}
-                        className="slot-card"
-                        style={{ background: bg, color: textColor }}
-                      >
-                        <div className="slot-top">
-                          <div className="slot-title">{title}</div>
-                          <div className="slot-time">{slot.time}</div>
-                        </div>
+              <div className="planning-slot-list">
+                {day.slots.map((slot, slotIndex) => {
+                  const isFixed = slot.fixed;
+                  const subjectObj =
+                    !isFixed && currentSubjectValue(slot)
+                      ? subjects.find((s) => s.id === currentSubjectValue(slot)) || null
+                      : null;
+                  const bg = isFixed ? "#ffd8e5" : subjectObj?.color || "#e2e8f0";
+                  const textColor = contrastForHex(bg, "#000000");
+                  const title = isFixed ? slot.fixedLabel || "Activity" : subjectObj?.name || "-";
+                  const topicValue = currentTopicValue(slot);
+                  const fixedTopicValue =
+                    isFixed &&
+                    topicValue &&
+                    slot.fixedLabel &&
+                    topicValue.trim().toLowerCase() === slot.fixedLabel.trim().toLowerCase()
+                      ? ""
+                      : topicValue;
 
-                        <div className="slot-body">
-                          {!isFixed ? (
-                            <>
-                              <select
-                                className="slot-select"
-                                value={currentSubjectValue(slot)}
-                                onChange={(event) => {
-                                  const value = event.target.value;
-                                  if (value === "__add_custom__") {
-                                    openAddCustomForSlot(dayIndex, slotIndex, slot.id);
-                                  } else {
-                                    updateSubject(dayIndex, slotIndex, slot, value || null);
-                                  }
-                                }}
-                              >
-                                <option value="">- Select subject -</option>
-                                {subjects.map((subject) => (
-                                  <option key={subject.id} value={subject.id}>
-                                    {subject.name}
-                                  </option>
-                                ))}
-                                <option value="__add_custom__">+ Add custom subject</option>
-                              </select>
+                  return (
+                    <article
+                      key={slot.id}
+                      className={`planning-slot-card ${isFixed ? "is-fixed" : "is-editable"}`}
+                      style={{ backgroundColor: bg, color: textColor }}
+                    >
+                      <div className="planning-slot-top">
+                        <div className="planning-slot-title">{title}</div>
+                        <div className="planning-slot-time">{slot.time}</div>
+                      </div>
 
-                              <input
-                                className="slot-input"
-                                type="text"
-                                value={topicValue}
-                                onChange={(event) => updateTopicLocal(slot, event.target.value)}
-                                onBlur={(event) =>
-                                  commitTopic(dayIndex, slotIndex, slot, event.currentTarget.value)
+                      <div className="planning-slot-body">
+                        {!isFixed ? (
+                          <>
+                            <select
+                              className="field-control"
+                              value={currentSubjectValue(slot)}
+                              onChange={(event) => {
+                                const value = event.target.value;
+                                if (value === "__add_custom__") {
+                                  openAddCustomForSlot(dayIndex, slotIndex, slot.id);
+                                } else {
+                                  updateSubject(dayIndex, slotIndex, slot, value || null);
                                 }
-                                onKeyDown={(event) => {
-                                  if (event.key === "Enter") {
-                                    event.currentTarget.blur();
-                                  }
-                                }}
-                                placeholder="Topic (optional)"
-                              />
-                            </>
-                          ) : null}
+                              }}
+                            >
+                              <option value="">- Select subject -</option>
+                              {subjects.map((subject) => (
+                                <option key={subject.id} value={subject.id}>
+                                  {subject.name}
+                                </option>
+                              ))}
+                              <option value="__add_custom__">+ Add custom subject</option>
+                            </select>
 
-                          {isFixed && slot.allowTopic ? (
                             <input
-                              className="slot-input"
+                              className="field-control"
                               type="text"
-                              value={fixedTopicValue}
+                              value={topicValue}
                               onChange={(event) => updateTopicLocal(slot, event.target.value)}
                               onBlur={(event) =>
                                 commitTopic(dayIndex, slotIndex, slot, event.currentTarget.value)
@@ -350,64 +374,70 @@ export default function PlanningPageClient({
                                   event.currentTarget.blur();
                                 }
                               }}
-                              placeholder={`Topic for ${slot.fixedLabel || "fixed slot"}`}
+                              placeholder="Topic (optional)"
                             />
-                          ) : null}
-                        </div>
+                          </>
+                        ) : null}
+
+                        {isFixed && slot.allowTopic ? (
+                          <input
+                            className="field-control"
+                            type="text"
+                            value={fixedTopicValue}
+                            onChange={(event) => updateTopicLocal(slot, event.target.value)}
+                            onBlur={(event) =>
+                              commitTopic(dayIndex, slotIndex, slot, event.currentTarget.value)
+                            }
+                            onKeyDown={(event) => {
+                              if (event.key === "Enter") {
+                                event.currentTarget.blur();
+                              }
+                            }}
+                            placeholder={`Topic for ${slot.fixedLabel || "fixed slot"}`}
+                          />
+                        ) : null}
                       </div>
-                    );
-                  })}
-                </div>
+                    </article>
+                  );
+                })}
               </div>
             </article>
-          ))}
-        </div>
-
-        <div className="pager" role="navigation" aria-label="Day pager">
-          {days.map((_, idx) => (
-            <button
-              key={idx}
-              className={`pager-dot ${idx === activeDayIndex ? "active" : ""}`}
-              onClick={() => setActiveDayIndex(idx)}
-            />
-          ))}
-        </div>
+          );
+        })}
       </div>
 
       {customModalOpen ? (
         <div className="modal-overlay" role="dialog" aria-modal="true">
-          <div className="modal">
+          <div className="modal-panel">
             <div className="modal-header">
-              <div style={{ fontWeight: 800 }}>Add custom subject</div>
-              <button className="modal-save" onClick={handleSaveCustomSubject} disabled={isPending}>
-                Save
-              </button>
+              <h2 className="modal-title">Add custom subject</h2>
             </div>
 
             <div className="modal-body">
-              <label style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>Name</label>
+              <label className="modal-label">Name</label>
               <input
-                className="slot-input"
-                style={{ marginBottom: 12, fontSize: 16 }}
+                className="field-control"
                 value={customName}
                 onChange={(event) => setCustomName(event.target.value)}
                 placeholder="Example: Theater"
               />
 
-              <label style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>Color</label>
-              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <label className="modal-label">Color</label>
+              <div className="modal-color-row">
                 <input
+                  className="color-picker"
                   type="color"
                   value={customColor}
                   onChange={(event) => setCustomColor(event.target.value)}
                 />
-                <div style={{ fontSize: 13 }}>{customColor}</div>
+                <span className="color-value">{customColor}</span>
               </div>
             </div>
 
             <div className="modal-footer">
               <button
-                className="modal-cancel"
+                type="button"
+                className="btn-secondary"
                 onClick={() => {
                   setCustomModalOpen(false);
                   customTargetRef.current = null;
@@ -415,6 +445,14 @@ export default function PlanningPageClient({
                 disabled={isPending}
               >
                 Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={handleSaveCustomSubject}
+                disabled={isPending}
+              >
+                Save
               </button>
             </div>
           </div>

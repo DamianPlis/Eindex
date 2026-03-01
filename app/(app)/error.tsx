@@ -10,20 +10,23 @@ export default function ErrorPage({
   reset: () => void;
 }) {
   return (
-    <div className="container" style={{ margin: "16px", textAlign: "center" }}>
-      <h2 style={{ marginBottom: 8 }}>500 - App Error</h2>
-      <p style={{ marginTop: 0 }}>Something went wrong while rendering this page.</p>
-      {process.env.NODE_ENV === "development" ? (
-        <pre style={{ whiteSpace: "pre-wrap", textAlign: "left" }}>{error.message}</pre>
-      ) : null}
-      <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 12 }}>
-        <button className="add-button" onClick={reset}>
-          Try Again
-        </button>
-        <Link href="/" className="add-button" style={{ textDecoration: "none" }}>
-          Home
-        </Link>
-      </div>
-    </div>
+    <main className="status-page">
+      <section className="status-panel page-enter">
+        <p className="status-code">500</p>
+        <h1 className="status-title">App error</h1>
+        <p className="status-copy">Something went wrong while rendering this page.</p>
+        {process.env.NODE_ENV === "development" ? (
+          <pre className="status-debug">{error.message}</pre>
+        ) : null}
+        <div className="status-actions">
+          <button className="btn-primary" onClick={reset}>
+            Try Again
+          </button>
+          <Link href="/" className="btn-secondary">
+            Home
+          </Link>
+        </div>
+      </section>
+    </main>
   );
 }

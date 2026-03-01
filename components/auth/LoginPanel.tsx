@@ -78,17 +78,16 @@ export default function LoginPanel() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 20 }}>
-      <div className="container" style={{ maxWidth: 520, width: "100%", textAlign: "center" }}>
-        <h1 style={{ marginTop: 0 }}>Eindx</h1>
-        <p>Sign in with your Google account.</p>
-        {error ? (
-          <p style={{ color: "var(--danger-text)", fontSize: 13, marginTop: 8 }}>{error}</p>
-        ) : null}
-        <button className="add-button" onClick={signInWithGoogle} disabled={loading}>
+    <div className="center-page">
+      <section className="auth-panel page-enter">
+        <p className="page-kicker">Welcome back</p>
+        <h1 className="auth-title">Eindx</h1>
+        <p className="auth-copy">Sign in with your Google account.</p>
+        {error ? <p className="auth-error">{error}</p> : null}
+        <button className="btn-primary auth-button" onClick={signInWithGoogle} disabled={loading}>
           {loading ? "Checking..." : "Sign in with Google"}
         </button>
-      </div>
+      </section>
     </div>
   );
 }

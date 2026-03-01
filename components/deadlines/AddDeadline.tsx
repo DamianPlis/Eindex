@@ -8,7 +8,12 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <button type="submit" className="add-button" disabled={pending} aria-busy={pending}>
+    <button
+      type="submit"
+      className="btn-primary deadline-add-submit"
+      disabled={pending}
+      aria-busy={pending}
+    >
       {pending ? "Adding..." : "Add"}
     </button>
   );
@@ -24,16 +29,16 @@ export default function AddDeadlinePending() {
         await addDeadlineAction(formData);
         formRef.current?.reset();
       }}
-      className="add-form"
+      className="deadline-add-form"
     >
       <input
         type="text"
         name="text"
         placeholder="Homework description"
-        className="add-input add-input-text"
+        className="field-control field-text"
         required
       />
-      <input type="date" name="date" className="add-input add-input-date" required />
+      <input type="date" name="date" className="field-control field-date" required />
       <SubmitButton />
     </form>
   );

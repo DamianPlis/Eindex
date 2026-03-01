@@ -1,28 +1,32 @@
-"use client"
+"use client";
 
-import React from 'react'
 import { useFormStatus } from "react-dom";
-import { removeDeadlineAction } from '@/app/(app)/actions'
+import { removeDeadlineAction } from "@/app/(app)/actions";
 
 function RemoveButton() {
-    const formStatus = useFormStatus();
-    const { pending } = formStatus;
+  const formStatus = useFormStatus();
+  const { pending } = formStatus;
 
-
-    return (        
-      <button className="remove-button" type="submit" disabled={pending} aria-busy={pending}>
-        {pending ? "Removing..." : "X"}
-      </button>
-    )
+  return (
+    <button
+      className="btn-danger remove-button"
+      type="submit"
+      disabled={pending}
+      aria-busy={pending}
+      aria-label="Remove deadline"
+    >
+      {pending ? "Removing..." : "Remove"}
+    </button>
+  );
 }
 
 function RemoveDeadline({ deadline }: { deadline: { id: string } }) {
   return (
-    <form action={removeDeadlineAction}>
-        <input type="hidden" name="id" value={deadline.id} />
-        <RemoveButton />
+    <form action={removeDeadlineAction} className="remove-inline-form">
+      <input type="hidden" name="id" value={deadline.id} />
+      <RemoveButton />
     </form>
-  )
+  );
 }
 
-export default RemoveDeadline
+export default RemoveDeadline;
