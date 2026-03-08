@@ -66,6 +66,7 @@ export default async function DeadlinesPage() {
           const isExpired = deadline.date < todayISO;
           const isToday = deadline.date === todayISO;
           const statusClass = isToday ? "today" : isExpired ? "expired" : "upcoming";
+          const statusLabel = isToday ? "Due Today" : isExpired ? "Expired" : "Upcoming";
 
           return (
             <li key={deadline.id} className={`deadline-item ${statusClass}`}>
@@ -75,7 +76,10 @@ export default async function DeadlinesPage() {
                 </Link>{" "}
                 - {deadline.date}
               </span>
-              <RemoveDeadline deadline={deadline} />
+              <div className="deadline-actions">
+                <span className={`status-pill ${statusClass}`}>{statusLabel}</span>
+                <RemoveDeadline deadline={deadline} />
+              </div>
             </li>
           );
         })}

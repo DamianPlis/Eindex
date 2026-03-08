@@ -1,7 +1,8 @@
-import Link from "next/link";
+//import Link from "next/link";
 import { requireSession } from "@/lib/session";
 import LogoutButton from "@/components/auth/LogoutButton";
 // import { useRouter } from "next/router";
+import BottomNav from "@/components/layout/BottomNav";
 
 export default async function ProtectedLayout({
   children,
@@ -29,18 +30,7 @@ export default async function ProtectedLayout({
 
       <main style={{ flex: 1 }}>{children}</main>
 
-      <nav className="nav-bar">
-        {routes.map((route) => (
-          <Link
-            key={route.to}
-            href={route.to}
-            className={`nav-link 
-              `}
-          >
-            {route.label}
-          </Link>
-        ))}
-      </nav>
+      <BottomNav routes={routes} />
     </div>
   );
 }

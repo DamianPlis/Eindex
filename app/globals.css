@@ -18,6 +18,7 @@
   --warning-bg: #fff3f3;
   --warning-border: #ffb3b3;
   --warning-text: #a00;
+  --success: #0f766e;
   --nav-bg: #ffffff;
   --nav-active-bg: rgba(37, 99, 235, 0.08);
   --pad: 16px;
@@ -463,6 +464,42 @@ a {
   background: var(--bubble);
 }
 
+.deadline-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 0.75rem;
+  font-weight: 680;
+  white-space: nowrap;
+}
+
+.status-pill.today {
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
+  color: var(--accent-strong);
+}
+
+.status-pill.upcoming {
+  background: color-mix(in srgb, var(--success) 21%, transparent);
+  color: var(--success);
+}
+
+.status-pill.expired {
+  background: color-mix(in srgb, var(--danger) 20%, transparent);
+  color: var(--danger);
+}
+
+.status-pill.is-neutral {
+  background: color-mix(in srgb, var(--text-soft) 22%, transparent);
+  color: var(--text-1);
+}
+
 .remove-button {
   margin-left: 10px;
   padding: 7px 12px;
@@ -474,8 +511,7 @@ a {
 }
 
 .stats-container {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 15px;
 }
 
@@ -493,24 +529,33 @@ a {
 
 .nav-bar {
   position: fixed;
-  bottom: 0;
   left: 0;
   right: 0;
-  height: 60px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  background: var(--nav-bg);
-  border-top: 1px solid var(--border-medium);
-  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.06);
+  bottom: 0;
+  padding: 0 12px calc(env(safe-area-inset-bottom) + 10px);
   z-index: 1000;
 }
 
+.nav-track {
+  margin: 0 auto;
+  width: min(620px, 100%);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-light);
+  background: color-mix(in srgb, var(--bubble) 80%, transparent);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(1px);
+}
+
 .nav-link {
+  text-align: center;
   font-weight: 500;
   color: var(--muted);
-  padding: 6px 12px;
-  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  border-radius: 999px;
   transition: all 0.2s;
 }
 
@@ -519,9 +564,10 @@ a {
 }
 
 .nav-link.active {
+  border-radius: 999px;
   font-weight: 700;
-  color: var(--primary);
-  background: var(--nav-active-bg);
+  background: var(--primary);
+  color: white;
 }
 
 @media (min-width: 900px) {
@@ -549,5 +595,9 @@ a {
 
   .pager {
     display: none;
+  }
+
+  .stats-container {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
