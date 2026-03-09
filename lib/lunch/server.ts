@@ -1,16 +1,17 @@
 import "server-only";
 
+import { load } from "cheerio";
 import { unstable_cache } from "next/cache";
 
-function decodeHtml(text: string): string {
+function normalizeText(text: string): string {
   return text
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, "\"")
-    .replace(/&#39;/g, "'")
-    .replace(/<[^>]+>/g, " ")
+    .replace(/\u00a0/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function stripDiacritics(text: string): string {
+  return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
 function parseDateToISO(label: string): string | null {
@@ -22,47 +23,87 @@ function parseDateToISO(label: string): string | null {
   return `${year}-${month}-${day}`;
 }
 
+function isSoupLabel(label: string): boolean {
+  const normalized = stripDiacritics(label).toLowerCase();
+  return normalized.includes("polevka") || normalized.includes("soup");
+}
+
+function isMainCourseLabel(label: string): boolean {
+  const normalized = stripDiacritics(label).toLowerCase();
+  return (
+    normalized.includes("jidlo") ||
+    normalized.includes("obed") ||
+    normalized.includes("hlavni") ||
+    normalized.includes("main")
+  );
+}
+
+function findCommaOutsideBrackets(text: string): number {
+  let depth = 0;
+  for (let i = 0; i < text.length; i += 1) {
+    const ch = text[i];
+    if (ch === "[") depth += 1;
+    else if (ch === "]" && depth > 0) depth -= 1;
+    else if (ch === "," && depth === 0) return i;
+  }
+  return -1;
+}
+
+function removeLeadingSoup(text: string): string {
+  const cleaned = normalizeText(text);
+  const commaIndex = findCommaOutsideBrackets(cleaned);
+  if (commaIndex === -1) return cleaned;
+
+  const firstPart = cleaned.slice(0, commaIndex);
+  if (!isSoupLabel(firstPart)) return cleaned;
+
+  return cleaned.slice(commaIndex + 1).replace(/^[,;.\s-]+/, "").trim();
+}
+
+function pickMeal(items: Array<{ type: string; text: string }>): string {
+  const mainCourse = items.find((item) => isMainCourseLabel(item.type) && !isSoupLabel(item.type));
+  if (mainCourse) return removeLeadingSoup(mainCourse.text);
+
+  const nonSoup = items.find((item) => !isSoupLabel(item.type));
+  if (nonSoup) return removeLeadingSoup(nonSoup.text);
+
+  return removeLeadingSoup(items[0]?.text || "");
+}
+
 function extractPerDay(html: string): Record<string, string> {
   const perDay: Record<string, string> = {};
-  const dayBlocks = html.split(/<div[^>]*class="[^"]*den[^"]*container-fluid[^"]*"[^>]*>/i).slice(1);
+  const $ = load(html);
 
-  for (const block of dayBlocks) {
-    const dateMatch = block.match(/<[^>]*class="[^"]*datum[^"]*"[^>]*>([\s\S]*?)<\/[^>]+>/i);
-    if (!dateMatch) continue;
-    const dateISO = parseDateToISO(decodeHtml(dateMatch[1]));
-    if (!dateISO) continue;
+  $(".den.container-fluid").each((_, dayEl) => {
+    const dateLabel = normalizeText($(dayEl).find(".datum").first().text());
+    const dateISO = parseDateToISO(dateLabel);
+    if (!dateISO) return;
 
-    const schoolBlocks = block
-      .split(/<div[^>]*class="[^"]*castDne[^"]*"[^>]*>/i)
-      .slice(1)
-      .map((x) => x.trim());
+    const partNodes = $(dayEl).find(".castDne").toArray();
+    const chosenPart =
+      partNodes.find((partEl) => {
+        const headerText = normalizeText($(partEl).find(".hlavicka").first().text());
+        return stripDiacritics(headerText).toLowerCase().includes("radlick");
+      }) || partNodes[0];
 
-    const chosen =
-      schoolBlocks.find((s) => /Radlick/i.test(s)) ||
-      schoolBlocks.find((s) => /hlavicka/i.test(s)) ||
-      "";
-
-    const itemBlocks = [
-      ...chosen.matchAll(/<div[^>]*class="[^"]*menuJidla[^"]*"[^>]*>([\s\S]*?)<\/div>\s*<\/div>/gi),
-    ];
-
-    let mainCourse = "";
-    for (const item of itemBlocks) {
-      const chunk = item[1];
-      const typeMatch = chunk.match(/<[^>]*class="[^"]*popiskaJidla[^"]*"[^>]*>([\s\S]*?)<\/[^>]+>/i);
-      const textMatch = chunk.match(/<[^>]*class="[^"]*textJidla[^"]*"[^>]*>([\s\S]*?)<\/[^>]+>/i);
-      const type = decodeHtml(typeMatch?.[1] || "");
-      const text = decodeHtml(textMatch?.[1] || "");
-      if (!text) continue;
-      if (/jidlo|obed|hlavni/i.test(type) && !/polevka|soup/i.test(type)) {
-        mainCourse = text;
-        break;
-      }
-      if (!mainCourse) mainCourse = text;
+    if (!chosenPart) {
+      perDay[dateISO] = "Menu unavailable";
+      return;
     }
 
-    perDay[dateISO] = mainCourse || "Menu unavailable";
-  }
+    const items: Array<{ type: string; text: string }> = [];
+    $(chosenPart)
+      .find(".menuJidla")
+      .each((_, itemEl) => {
+        const type = normalizeText($(itemEl).find(".popiskaJidla").first().text());
+        const text = normalizeText($(itemEl).find(".textJidla").first().text());
+        if (!text) return;
+        items.push({ type, text });
+      });
+
+    const pickedMeal = pickMeal(items);
+    perDay[dateISO] = pickedMeal || "Menu unavailable";
+  });
 
   return perDay;
 }

@@ -35,6 +35,41 @@ function contrastForHex(hex: string, fallback = "#000000") {
   return lum > 0.6 ? "#000000" : "#ffffff";
 }
 
+function getDayLabels(isoDateStr: string) {
+  const match = isoDateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) {
+    return {
+      shortName: isoDateStr,
+      longName: isoDateStr,
+      shortDate: isoDateStr,
+    };
+  }
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const utcDate = new Date(Date.UTC(year, month - 1, day));
+  if (Number.isNaN(utcDate.getTime())) {
+    return {
+      shortName: isoDateStr,
+      longName: isoDateStr,
+      shortDate: isoDateStr,
+    };
+  }
+
+  const weekdaysLong = ["nedele", "pondeli", "utery", "streda", "ctvrtek", "patek", "sobota"];
+  const weekdaysShort = ["Ne", "Po", "Ut", "St", "Ct", "Pa", "So"];
+
+  const dayIndex = utcDate.getUTCDay();
+  const shortDate = `${day}.${month}.`;
+
+  return {
+    shortName: weekdaysShort[dayIndex] || "",
+    longName: weekdaysLong[dayIndex] || "",
+    shortDate,
+  };
+}
+
 function formatDayLabel(isoDateStr: string) {
   const match = isoDateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!match) return isoDateStr;
@@ -60,11 +95,13 @@ export default function PlanningPageClient({
   days,
   subjects,
 }: PlanningPageClientProps) {
+  const planningRootRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const customTargetRef = useRef<{ dayIndex: number; slotIndex: number; slotId: string } | null>(null);
   const pendingSubjectUpdatesRef = useRef<Record<string, string | null>>({});
   const lastSyncedTopicsRef = useRef<Record<string, string>>({});
   const clientIdRef = useRef("");
+  const isActiveDayIndexTriggeredByObserver = useRef(false);
   const [isPending, startTransition] = useTransition();
 
   const [activeDayIndex, setActiveDayIndex] = useState(0);
@@ -80,12 +117,62 @@ export default function PlanningPageClient({
   }, []);
 
   useEffect(() => {
+    const planningRoot = planningRootRef.current;
+    if (!planningRoot) return;
     const container = containerRef.current;
     if (!container) return;
     const child = container.children.item(activeDayIndex);
     if (!child) return;
-    child.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+    if (isActiveDayIndexTriggeredByObserver.current) {
+      isActiveDayIndexTriggeredByObserver.current = false;
+      return; // skip if triggered by observer to avoid stutering
+    }
+    try {
+      child.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+      //planningRoot.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+    } catch {
+      container.scrollLeft = activeDayIndex * container.clientWidth;
+    }
+
   }, [activeDayIndex, weekStart]);
+
+    // Update pager dots when user scrolls (scroll snap) using Intersection Observer
+  // Much more performant than scroll events—only fires when visibility changes
+  // Use isActiveDayIndexTriggeredByObserver to stop animation useEffect from firing, avoiding stutter
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || !days) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Find the most visible day card (highest intersection ratio)
+        let mostVisibleIndex = 0;
+        let highestRatio = 0;
+
+        entries.forEach((entry) => {
+          if (entry.intersectionRatio > highestRatio) {
+            highestRatio = entry.intersectionRatio;
+            // Get the index from the card's position in the container
+            mostVisibleIndex = Array.from(el.children).indexOf(entry.target);
+          }
+        });
+
+        if (mostVisibleIndex !== -1) {
+          isActiveDayIndexTriggeredByObserver.current = true;
+          setActiveDayIndex(mostVisibleIndex);
+        }
+      },
+      {
+        root: el,
+        threshold: [0.51], // Detect visibility changes
+      }
+    );
+
+    // Observe all day cards
+    Array.from(el.children).forEach((child) => observer.observe(child));
+
+    return () => observer.disconnect();
+  }, [days]);
 
   useEffect(() => {
     const topics: Record<string, string> = {};
@@ -243,7 +330,7 @@ export default function PlanningPageClient({
   }
 
   return (
-    <div className="planning-root" aria-live="polite">
+    <div ref={planningRootRef} className="planning-root" aria-live="polite">
       <div className="planning-inner">
         <div className="controls" role="region" aria-label="Week controls">
           <Link className="nav-btn" href={`/planning?week=${encodeURIComponent(prevWeek)}`}>
@@ -253,6 +340,26 @@ export default function PlanningPageClient({
           <Link className="nav-btn" href={`/planning?week=${encodeURIComponent(nextWeek)}`}>
             {">"}
           </Link>
+        </div>
+
+        <div className="planning-day-tabs" role="tablist" aria-label="Days">
+          {days.map((day, dayIndex) => {
+            const labels = getDayLabels(day.date);
+            const isActive = dayIndex === activeDayIndex;
+            return (
+              <button
+                key={day.date}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                className={`planning-day-tab ${isActive ? "is-active" : ""}`}
+                onClick={() => setActiveDayIndex(dayIndex)}
+              >
+                <span className="planning-day-tab-name">{labels.shortName}</span>
+                <span className="planning-day-tab-date">{labels.shortDate}</span>
+              </button>
+            );
+          })}
         </div>
 
         <div ref={containerRef} className="days-scroll" role="list" aria-label="Days">
@@ -363,15 +470,6 @@ export default function PlanningPageClient({
           ))}
         </div>
 
-        <div className="pager" role="navigation" aria-label="Day pager">
-          {days.map((_, idx) => (
-            <button
-              key={idx}
-              className={`pager-dot ${idx === activeDayIndex ? "active" : ""}`}
-              onClick={() => setActiveDayIndex(idx)}
-            />
-          ))}
-        </div>
       </div>
 
       {customModalOpen ? (
