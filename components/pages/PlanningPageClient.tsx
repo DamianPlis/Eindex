@@ -129,7 +129,7 @@ export default function PlanningPageClient({
     }
     try {
       child.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
-      //planningRoot.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+      //planningRoot.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
     } catch {
       container.scrollLeft = activeDayIndex * container.clientWidth;
     }

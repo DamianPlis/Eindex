@@ -42,5 +42,8 @@ export function pickTodaySchedule(state: ScheduleState, todayISO: string): Slot[
 export function splitDeadlines(deadlines: DeadlineItem[], todayISO: string) {
   const today = deadlines.filter((d) => d.date === todayISO);
   const expired = deadlines.filter((d) => d.date < todayISO).sort((a, b) => a.date.localeCompare(b.date));
-  return { today, expired };
+  const expiredWithStatus = expired.map((d) => ({ ...d, status: "expired" as const }));
+  const todayWithStatus = today.map((d) => ({ ...d, status: "today" as const }));
+  const final = [...todayWithStatus, ...expiredWithStatus];
+  return  final ;
 }

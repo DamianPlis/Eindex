@@ -102,19 +102,20 @@ a {
   margin-bottom: 8px;
   border-radius: var(--radius-sm);
   padding: 12px;
-  background: var(--warning-bg);
-  border: 1px solid var(--warning-border);
+  background: var(--card);
+  border: 1px solid var(--border-medium);
 }
 
 .reminder-content {
   display: flex;
+  align-items: center;
+  gap: 8px;
   justify-content: space-between;
-  gap: 12px;
 }
 
 .reminder-title {
   font-weight: 700;
-  color: var(--warning-text);
+  color: var(--text-primary);
 }
 
 .reminder-date {
@@ -129,23 +130,6 @@ a {
   border-radius: 14px;
   background: rgba(2, 6, 23, 0.03);
   color: var(--muted);
-}
-
-.expired-section {
-  margin-bottom: 18px;
-}
-
-.expired-card {
-  margin-bottom: 8px;
-  border-radius: 10px;
-  padding: 10px;
-  background: #fff5f5;
-  border: 1px solid #ffd6d6;
-}
-
-.expired-text {
-  font-weight: 700;
-  color: var(--danger-text);
 }
 
 .schedule-list {
@@ -221,6 +205,7 @@ a {
   flex-direction: column;
   align-items: flex-start;
   gap: 2px;
+  color: var(--text-primary);
 }
 
 .planning-day-tab-name {

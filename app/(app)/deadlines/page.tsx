@@ -5,6 +5,7 @@ import { getUserState } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
 import RemoveDeadline from "@/components/deadlines/RemoveDeadline"
 import AddDeadline from "@/components/deadlines/AddDeadline";
+import StatusPill from "@/components/deadlines/StatusPill";
 import type { ScheduleState } from "@/lib/schedule/types";
 
 function renderStats(
@@ -65,11 +66,10 @@ export default async function DeadlinesPage() {
         {state.deadlines.map((deadline) => {
           const isExpired = deadline.date < todayISO;
           const isToday = deadline.date === todayISO;
-          const statusClass = isToday ? "today" : isExpired ? "expired" : "upcoming";
-          const statusLabel = isToday ? "Due Today" : isExpired ? "Expired" : "Upcoming";
+
 
           return (
-            <li key={deadline.id} className={`deadline-item ${statusClass}`}>
+            <li key={deadline.id} className={`deadline-item`}>
               <span>
                 <Link className="inline-link" href={`/deadlines/${deadline.id}`}>
                   {deadline.text}
@@ -77,7 +77,7 @@ export default async function DeadlinesPage() {
                 - {deadline.date}
               </span>
               <div className="deadline-actions">
-                <span className={`status-pill ${statusClass}`}>{statusLabel}</span>
+                <StatusPill status={isExpired ? "expired" : isToday ? "today" : "upcoming"} />
                 <RemoveDeadline deadline={deadline} />
               </div>
             </li>
