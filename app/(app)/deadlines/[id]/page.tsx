@@ -27,7 +27,7 @@ export default async function DeadlineDetailPage({
   const isExpired = item.date < todayISO;
   const isToday = item.date === todayISO;
   const backHref = redirectParam === "main" ? "/" : "/deadlines";
-  const backLabel = redirectParam === "main" ? "Main Page" : "Deadlines";
+  const backLabel = redirectParam === "main" ? "Home Page" : "Deadlines";
   
   return (
     <div className="container" style={{ margin: "16px" }}>

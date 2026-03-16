@@ -4,23 +4,24 @@ import React from 'react'
 import Link from "next/link";
 //import { requireSession } from "@/lib/session";
 import { usePathname } from "next/navigation";
+import Calendar from "@/icons/calendar_month_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import Home from "@/icons/home_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import Checklist from "@/icons/checklist_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 
-type Route = {
-  to: string;
-  label: string;
-};
-
-type AppBottomNavProps = {
-  routes: Route[];
-};
 
 function isRouteActive(pathname: string, route: string) {
   if (route === "/") return pathname === "/";
   return pathname === route || pathname.startsWith(`${route}/`);
 }
 
+const routes = [
+    { to: "/", label: "Home", icon: <Home fill="currentColor" alt="Home" /> },
+    { to: "/planning", label: "Planning", icon: <Calendar fill="currentColor" alt="Planning" /> },
+    { to: "/deadlines", label: "Deadlines", icon: <Checklist fill="currentColor" alt="Deadlines" /> },
+  ];
 
-function BottomNav({ routes }: AppBottomNavProps) {
+
+function BottomNav() {
   const pathname = usePathname() || "/";
 
 
@@ -35,6 +36,7 @@ function BottomNav({ routes }: AppBottomNavProps) {
               ${isRouteActive(pathname, route.to) ? "active" : ""}
               `}
           >
+            {route.icon ? <span className="nav-icon">{route.icon}</span> : null}
             {route.label}
           </Link>
         ))}

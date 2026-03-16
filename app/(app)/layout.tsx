@@ -4,19 +4,14 @@ import LogoutButton from "@/components/auth/LogoutButton";
 // import { useRouter } from "next/router";
 import BottomNav from "@/components/layout/BottomNav";
 
+
+
 export default async function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const session = await requireSession();
-
-  // const currentRoute = useRouter();
-  const routes = [
-    { to: "/", label: "Main" },
-    { to: "/planning", label: "Planning" },
-    { to: "/deadlines", label: "Deadlines" },
-  ];
 
   return (
     <div className="app-shell">
@@ -30,7 +25,7 @@ export default async function ProtectedLayout({
 
       <main style={{ flex: 1 }}>{children}</main>
 
-      <BottomNav routes={routes} />
+      <BottomNav />
     </div>
   );
 }

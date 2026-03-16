@@ -85,6 +85,17 @@ a {
   cursor: pointer;
 }
 
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-medium);
+  background: var(--card);
+  cursor: pointer;
+}
+
 .main-container {
   padding: 16px;
   padding-bottom: 96px;
@@ -169,6 +180,8 @@ a {
 .slot-subtitle {
   font-size: 14px;
   opacity: 0.9;
+  display: flex;
+  align-items: center;
 }
 
 .slot-time-text {
@@ -190,6 +203,7 @@ a {
 
 .planning-day-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   overflow-x: auto;
   padding-bottom: 2px;
@@ -544,16 +558,19 @@ a {
   border: 1px solid var(--border-light);
   background: color-mix(in srgb, var(--bubble) 30%, transparent);
   box-shadow: var(--shadow-sm);
-  backdrop-filter: blur(1px);
+  backdrop-filter: blur(2px);
 }
 
 .nav-link {
+  display: flex;
+  align-items: center;
   text-align: center;
   font-weight: 500;
   color: var(--muted);
   padding: 10px 12px;
   border-radius: 999px;
   transition: all 0.2s;
+  gap: 5px;
 }
 
 .nav-link:hover {
@@ -565,6 +582,11 @@ a {
   font-weight: 700;
   background: color-mix(in srgb, var(--primary) 90%, transparent);
   color: white;
+}
+
+.nav-icon {
+  display: flex;
+  align-items: center;
 }
 
 @media (min-width: 900px) {
@@ -592,5 +614,9 @@ a {
 
   .stats-container {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .planning-day-tab {
+    display: none;
   }
 }

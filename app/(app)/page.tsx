@@ -2,9 +2,10 @@ import { getLunchPerDay } from "@/lib/lunch/server";
 import { getTodayISO, pickTodaySchedule, splitDeadlines } from "@/lib/schedule/selectors";
 import { getUserState } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
-import Image from "next/image";
+//import Image from "next/image";
 import StatusPill from "@/components/deadlines/StatusPill";
 import Link from "next/link";
+import LunchIcon from "@/icons/restaurant_24dp_999999_FILL0_wght400_GRAD0_opsz24.svg";
 
 function parseRange(timeStr: string) {
   if (!timeStr || !timeStr.includes("-")) return null;
@@ -103,8 +104,8 @@ export default async function MainPage() {
                     <div className="slot-title-text">{title}</div>
                     {subtitle ? <div className="slot-subtitle">
                       {isLunch && lunchText ? 
-                      <Image src="/restaurant_24dp_999999_FILL0_wght400_GRAD0_opsz24.svg" alt="Lunch" width={16} height={16} style={{ verticalAlign: "middle" }} />
-                       : null}
+                      <LunchIcon fill="currentColor" alt="Lunch" height={16} width={16} />
+                      : null}
                        {subtitle}</div> : null}
                   </div>
                   <div className="slot-time-text">{slot.time}</div>

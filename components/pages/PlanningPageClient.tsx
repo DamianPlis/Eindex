@@ -9,6 +9,9 @@ import {
 } from "@/app/(app)/actions";
 import type { DaySchedule, Slot, Subject } from "@/lib/schedule/types";
 import { getClientId } from "@/lib/sync/client-id";
+import Image from "next/image";
+import ArrowLeft from "@/icons/arrow_left_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import ArrowRight from "@/icons/arrow_right_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 
 type PlanningPageClientProps = {
   weekStart: string;
@@ -102,6 +105,7 @@ export default function PlanningPageClient({
   const lastSyncedTopicsRef = useRef<Record<string, string>>({});
   const clientIdRef = useRef("");
   const isActiveDayIndexTriggeredByObserver = useRef(false);
+  const activeDayIndexRef = useRef(0);
   const [isPending, startTransition] = useTransition();
 
   const [activeDayIndex, setActiveDayIndex] = useState(0);
@@ -117,6 +121,12 @@ export default function PlanningPageClient({
   }, []);
 
   useEffect(() => {
+    activeDayIndexRef.current = activeDayIndex;
+    console.log("Active ref day index set to:", activeDayIndexRef.current);
+  }, [activeDayIndex]);
+
+  useEffect(() => {
+    console.log("Active day index changed:", activeDayIndex);
     const planningRoot = planningRootRef.current;
     if (!planningRoot) return;
     const container = containerRef.current;
@@ -124,6 +134,7 @@ export default function PlanningPageClient({
     const child = container.children.item(activeDayIndex);
     if (!child) return;
     if (isActiveDayIndexTriggeredByObserver.current) {
+      console.log("Skipping scrollIntoView due to observer trigger");
       isActiveDayIndexTriggeredByObserver.current = false;
       return; // skip if triggered by observer to avoid stutering
     }
@@ -142,7 +153,6 @@ export default function PlanningPageClient({
   useEffect(() => {
     const el = containerRef.current;
     if (!el || !days) return;
-
     const observer = new IntersectionObserver(
       (entries) => {
         // Find the most visible day card (highest intersection ratio)
@@ -157,7 +167,8 @@ export default function PlanningPageClient({
           }
         });
 
-        if (mostVisibleIndex !== -1) {
+        if (mostVisibleIndex !== -1 && mostVisibleIndex !== activeDayIndexRef.current) {
+          console.log("Most visible day index:", mostVisibleIndex, "Ratio:", highestRatio);
           isActiveDayIndexTriggeredByObserver.current = true;
           setActiveDayIndex(mostVisibleIndex);
         }
@@ -167,7 +178,6 @@ export default function PlanningPageClient({
         threshold: [0.51], // Detect visibility changes
       }
     );
-
     // Observe all day cards
     Array.from(el.children).forEach((child) => observer.observe(child));
 
@@ -334,11 +344,11 @@ export default function PlanningPageClient({
       <div className="planning-inner">
         <div className="controls" role="region" aria-label="Week controls">
           <Link className="nav-btn" href={`/planning?week=${encodeURIComponent(prevWeek)}`}>
-            {"<"}
+            <ArrowLeft fill="currentColor" />
           </Link>
           <div className="week-title">Week starts {weekStart}</div>
           <Link className="nav-btn" href={`/planning?week=${encodeURIComponent(nextWeek)}`}>
-            {">"}
+            <ArrowRight fill="currentColor" />
           </Link>
         </div>
 

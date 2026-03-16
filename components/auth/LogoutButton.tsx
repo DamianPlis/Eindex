@@ -6,6 +6,7 @@ import { signOut } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase/client";
 import { getClientId } from "@/lib/sync/client-id";
+import LogoutIcon from "@/icons/logout_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 
 type LogoutButtonProps = {
   uid: string;
@@ -161,8 +162,9 @@ export default function LogoutButton({ uid }: LogoutButtonProps) {
   }
 
   return (
-    <button className="ghost-button" onClick={handleLogout}>
-      Logout
+    <button className="logout-button" onClick={handleLogout}>
+      <span>Logout</span>
+      <LogoutIcon fill="currentColor" alt="Logout" height={16} width={16} />
     </button>
   );
 }
