@@ -1,9 +1,9 @@
 :root {
   --primary: #6b5cf6;
-  --bg: #f5f7fb;
-  --card: #ffffff;
+  --bg: hsl(223, 47%, 96%);
+  --card: hsl(0, 0%, 100%);
   --muted: #6b7280;
-  --bubble: #f1f5f9;
+  --bubble: hsl(210, 40%, 97%);
   --fixed: #ff7fbf;
   --text-primary: #0f1724;
   --text-inverse: #ffffff;
@@ -457,6 +457,7 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: var(--bubble);
 }
 
 .deadline-item.today {
@@ -532,6 +533,35 @@ a {
   background: var(--bubble);
 }
 
+.stats-card-header {
+  display: flex;
+  fill: var(--muted);
+  align-items: center;
+  margin-bottom: 1em;
+  gap: 2em;
+}
+
+.stats-card-header-icons {
+  display: flex;
+  gap: 10px;
+}
+
+.stats-card-header-icon {
+  --pad: 4px;
+  --size: calc(1em + (var(--pad) * 2));
+  width: var(--size) !important;
+  height: var(--size) !important;
+  cursor: pointer;
+  /* color: var(--muted); */
+  padding: var(--pad);
+  border-radius: var(--pad);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.stats-card-header-icon:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
 .stats-entry {
   margin-bottom: 5px;
   border-radius: 7px;
@@ -545,6 +575,13 @@ a {
   bottom: 0;
   padding: 0 12px calc(env(safe-area-inset-bottom) + 10px);
   z-index: 1000;
+}
+
+@media (max-width: 400px) {
+  .nav-bar {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
 }
 
 .nav-track {

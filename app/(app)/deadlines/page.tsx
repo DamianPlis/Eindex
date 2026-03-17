@@ -7,6 +7,8 @@ import RemoveDeadline from "@/components/deadlines/RemoveDeadline"
 import AddDeadline from "@/components/deadlines/AddDeadline";
 import StatusPill from "@/components/deadlines/StatusPill";
 import type { ScheduleState } from "@/lib/schedule/types";
+import SortIcon from "@/icons/sort_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import FilterIcon from "@/icons/filter_list_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 
 function renderStats(
   title: string,
@@ -16,7 +18,13 @@ function renderStats(
 ) {
   return (
     <div className="stats-card">
-      <h3 style={{ marginTop: 0 }}>{title}</h3>
+        <div className="stats-card-header">
+          <h3 style={{ margin: 0 }}>{title}</h3>
+          <div className="stats-card-header-icons">
+              <SortIcon alt="Sort stats" fill="currentColor" className="stats-card-header-icon"/>
+              <FilterIcon alt="Filter stats" fill="currentColor" className="stats-card-header-icon" />
+          </div>
+        </div>
       {Object.keys(stats).length === 0 ? (
         <p>No data</p>
       ) : (

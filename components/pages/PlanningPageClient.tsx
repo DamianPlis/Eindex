@@ -9,7 +9,7 @@ import {
 } from "@/app/(app)/actions";
 import type { DaySchedule, Slot, Subject } from "@/lib/schedule/types";
 import { getClientId } from "@/lib/sync/client-id";
-import Image from "next/image";
+//import Image from "next/image";
 import ArrowLeft from "@/icons/arrow_left_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import ArrowRight from "@/icons/arrow_right_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 
@@ -122,11 +122,9 @@ export default function PlanningPageClient({
 
   useEffect(() => {
     activeDayIndexRef.current = activeDayIndex;
-    console.log("Active ref day index set to:", activeDayIndexRef.current);
   }, [activeDayIndex]);
 
   useEffect(() => {
-    console.log("Active day index changed:", activeDayIndex);
     const planningRoot = planningRootRef.current;
     if (!planningRoot) return;
     const container = containerRef.current;
@@ -134,7 +132,6 @@ export default function PlanningPageClient({
     const child = container.children.item(activeDayIndex);
     if (!child) return;
     if (isActiveDayIndexTriggeredByObserver.current) {
-      console.log("Skipping scrollIntoView due to observer trigger");
       isActiveDayIndexTriggeredByObserver.current = false;
       return; // skip if triggered by observer to avoid stutering
     }
@@ -168,7 +165,6 @@ export default function PlanningPageClient({
         });
 
         if (mostVisibleIndex !== -1 && mostVisibleIndex !== activeDayIndexRef.current) {
-          console.log("Most visible day index:", mostVisibleIndex, "Ratio:", highestRatio);
           isActiveDayIndexTriggeredByObserver.current = true;
           setActiveDayIndex(mostVisibleIndex);
         }
