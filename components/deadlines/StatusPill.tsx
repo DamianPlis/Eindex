@@ -1,7 +1,8 @@
 import React from 'react'
+import type { DeadlineItem } from '@/lib/schedule/types';
 
 type StatusPillProps = {
-  status: "today" | "expired" | "upcoming";
+  status: DeadlineItem["status"];
 }
 
 function StatusPill(props: StatusPillProps) {
@@ -14,7 +15,11 @@ function StatusPill(props: StatusPillProps) {
     } else if (status === "expired") {
         statusClass = "expired"
         statusLabel = "Expired"
-    } else {
+    } else if (status === "done") {
+        statusClass = "done"
+        statusLabel = "Done"
+    }
+     else {
         statusClass = "upcoming"
         statusLabel = "Upcoming"
     }

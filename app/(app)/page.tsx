@@ -43,7 +43,7 @@ export default async function MainPage() {
   const [state, lunchPerDay] = await Promise.all([getUserState(session.uid), getLunchPerDay()]);
   const todayISO = getTodayISO();
   const slots = pickTodaySchedule(state, todayISO);
-  const deadlines  = splitDeadlines(state.deadlines, todayISO);
+  const deadlines = splitDeadlines(state.deadlines);
 
   return (
     <div className="main-container">

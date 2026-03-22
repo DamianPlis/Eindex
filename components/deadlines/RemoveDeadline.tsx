@@ -10,7 +10,7 @@ function RemoveButton() {
 
 
     return (        
-      <button className="remove-button" type="submit" disabled={pending} aria-busy={pending}>
+      <button className="deadline-action-button remove-button" type="submit" disabled={pending} aria-busy={pending}>
         {pending ? "Removing..." : "X"}
       </button>
     )

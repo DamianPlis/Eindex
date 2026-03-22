@@ -403,7 +403,8 @@ a {
 }
 
 .modal-save,
-.add-button {
+.add-button,
+.show-done-deadlines-button {
   padding: 8px 12px;
   border-radius: 10px;
   border: none;
@@ -512,14 +513,22 @@ a {
   color: var(--text-1);
 }
 
-.remove-button {
+.deadline-action-button {
   margin-left: 10px;
   padding: 7px 12px;
   border-radius: var(--radius-sm);
-  background: var(--danger);
+  width: 32px;
   color: var(--text-inverse);
   border: none;
   cursor: pointer;
+}
+
+.remove-button {
+  background: var(--danger);
+}
+
+.done-button {
+  background: var(--success);
 }
 
 .stats-container {

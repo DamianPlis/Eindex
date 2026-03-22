@@ -1,5 +1,6 @@
 "use server";
 
+import { resolveDeadlineStatus } from "@/lib/schedule/defaults";
 import { ensureWeekExists, updateUserState } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
 
@@ -94,6 +95,7 @@ export async function addDeadlineAction(formData: FormData) {
       id: `dl_${Date.now()}`,
       text,
       date,
+      status: resolveDeadlineStatus({ date }),
     });
   });
   //revalidatePath("/deadlines");
@@ -106,6 +108,19 @@ export async function removeDeadlineAction(formData: FormData) {
 
   await updateUserState(session.uid, (state) => {
     state.deadlines = state.deadlines.filter((item) => item.id !== id);
+  });
+  //revalidatePath("/deadlines");
+}
+
+export async function markAsDoneDeadlineAction(formData: FormData) {
+  const session = await requireSession();
+  const id = String(formData.get("id") || "");
+  if (!id) return;
+
+  await updateUserState(session.uid, (state) => {
+    state.deadlines = state.deadlines.map((item) =>
+      item.id === id ? { ...item, status: "done" } : item,
+    );
   });
   //revalidatePath("/deadlines");
 }

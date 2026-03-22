@@ -39,11 +39,10 @@ export function pickTodaySchedule(state: ScheduleState, todayISO: string): Slot[
   return [];
 }
 
-export function splitDeadlines(deadlines: DeadlineItem[], todayISO: string) {
-  const today = deadlines.filter((d) => d.date === todayISO);
-  const expired = deadlines.filter((d) => d.date < todayISO).sort((a, b) => a.date.localeCompare(b.date));
-  const expiredWithStatus = expired.map((d) => ({ ...d, status: "expired" as const }));
-  const todayWithStatus = today.map((d) => ({ ...d, status: "today" as const }));
-  const final = [...todayWithStatus, ...expiredWithStatus];
-  return  final ;
+export function splitDeadlines(deadlines: DeadlineItem[]) {
+  const today = deadlines.filter((deadline) => deadline.status === "today");
+  const expired = deadlines
+    .filter((deadline) => deadline.status === "expired")
+    .sort((a, b) => a.date.localeCompare(b.date));
+  return [...today, ...expired];
 }

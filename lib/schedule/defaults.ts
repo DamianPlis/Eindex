@@ -1,4 +1,4 @@
-import type { ScheduleState, Slot, Subject } from "@/lib/schedule/types";
+import type { ScheduleState, Slot, Subject, DeadlineItem } from "@/lib/schedule/types";
 
 type SlotTemplate = {
   time: string;
@@ -140,14 +140,73 @@ export function createDefaultState(): ScheduleState {
   };
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object";
+}
+
+export function resolveDeadlineStatus(
+  deadline: Pick<DeadlineItem, "date"> & Partial<Pick<DeadlineItem, "status">>,
+  todayISO: string = isoDate(new Date()),
+): DeadlineItem["status"] {
+  if (deadline.status === "done") return "done";
+  if (deadline.date === todayISO) return "today";
+  if (deadline.date < todayISO) return "expired";
+  return "upcoming";
+}
+
+export function normalizeDeadlines(
+  rawDeadlines: unknown,
+  todayISO: string = isoDate(new Date()),
+): DeadlineItem[] {
+  const deadlineSource = Array.isArray(rawDeadlines)
+    ? rawDeadlines
+    : isRecord(rawDeadlines)
+      ? Object.keys(rawDeadlines)
+          .filter((key) => /^\d+$/.test(key))
+          .sort((a, b) => Number(a) - Number(b))
+          .map((key) => rawDeadlines[key])
+      : [];
+
+  const validDeadlines: DeadlineItem[] = [];
+
+  for (const rawDeadline of deadlineSource) {
+    if (!isRecord(rawDeadline)) continue;
+
+    const id = typeof rawDeadline.id === "string" ? rawDeadline.id.trim() : "";
+    const text = typeof rawDeadline.text === "string" ? rawDeadline.text.trim() : "";
+    const date = typeof rawDeadline.date === "string" ? rawDeadline.date : "";
+
+    if (!id || !text || !date) continue;
+
+    validDeadlines.push({
+      id,
+      text,
+      date,
+      status: resolveDeadlineStatus(
+        {
+          date,
+          status: rawDeadline.status as DeadlineItem["status"] | undefined,
+        },
+        todayISO,
+      ),
+    });
+  }
+
+  return validDeadlines;
+}
+
 export function migrateState(raw: unknown): ScheduleState {
   if (!raw || typeof raw !== "object") return createDefaultState();
 
   const source = raw as Partial<ScheduleState>;
   const base = createDefaultState();
-
+  
   base.subjects = Array.isArray(source.subjects) && source.subjects.length ? source.subjects : defaultSubjects;
-  base.deadlines = Array.isArray(source.deadlines) ? source.deadlines : [];
+
+  const todayISO = isoDate(new Date());
+  base.deadlines = normalizeDeadlines(source.deadlines, todayISO);
+
+
   base.lunches = source.lunches && typeof source.lunches === "object" ? source.lunches : {};
   base.settings = source.settings?.theme === "dark" ? { theme: "dark" } : { theme: "light" };
 

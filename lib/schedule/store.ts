@@ -70,15 +70,16 @@ export async function getUserState(uid: string): Promise<ScheduleState> {
 }
 
 export async function saveUserState(uid: string, state: ScheduleState) {
+  const normalizedState = migrateState(state);
   const ref = userDocRef(uid);
   await ref.set(
     {
-      state,
+      state: normalizedState,
       updatedAt: adminFieldValue.serverTimestamp(),
     },
     { merge: true },
   );
-  if (CACHE_TTL_MS > 0) setCachedState(uid, state);
+  if (CACHE_TTL_MS > 0) setCachedState(uid, normalizedState);
 }
 
 export async function updateUserState(
@@ -92,7 +93,7 @@ export async function updateUserState(
     const current = migrateState(snap.exists ? snap.data()?.state : null);
     const draft = cloneState(current);
     const result = mutate(draft);
-    const next = (result || draft) as ScheduleState;
+    const next = migrateState((result || draft) as ScheduleState);
     tx.set(
       ref,
       {

@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { getUserState } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
 import StatusPill from "@/components/deadlines/StatusPill";
-import { isoDate } from "@/lib/schedule/defaults";
 
 export default async function DeadlineDetailPage({
   params,
@@ -23,15 +22,12 @@ export default async function DeadlineDetailPage({
 
   if (!item) notFound();
 
-  const todayISO = isoDate(new Date());
-  const isExpired = item.date < todayISO;
-  const isToday = item.date === todayISO;
   const backHref = redirectParam === "main" ? "/" : "/deadlines";
   const backLabel = redirectParam === "main" ? "Home Page" : "Deadlines";
   
   return (
     <div className="container" style={{ margin: "16px" }}>
-      <StatusPill status={isExpired ? "expired" : isToday ? "today" : "upcoming"} />
+      <StatusPill status={item.status} />
       <h2>{item.text}</h2>
       <p>Due: {item.date}</p>
       <Link href={backHref} className="inline-link">

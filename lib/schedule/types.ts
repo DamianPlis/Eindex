@@ -29,6 +29,7 @@ export type DeadlineItem = {
   id: string;
   text: string;
   date: string;
+  status: "upcoming" | "today" | "expired" | "done";
 };
 
 export type ScheduleState = {
