@@ -8,8 +8,8 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <button type="submit" className="add-button" disabled={pending} aria-busy={pending}>
-      {pending ? "Adding..." : "Add"}
+    <button type="submit" className={`add-button ${pending ? "pending" : ""}`} disabled={pending} aria-busy={pending}>
+      Add
     </button>
   );
 }

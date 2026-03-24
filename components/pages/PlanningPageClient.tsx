@@ -10,8 +10,12 @@ import {
 import type { DaySchedule, Slot, Subject } from "@/lib/schedule/types";
 import { getClientId } from "@/lib/sync/client-id";
 //import Image from "next/image";
-import ArrowLeft from "@/icons/arrow_left_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import ArrowRight from "@/icons/arrow_right_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import { normalizeWeekKey } from "@/lib/schedule/defaults";
+// Icons as React components via SVGR
+import ArrowLeft from "@/icons/keyboard_arrow_left_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import ArrowRight from "@/icons/keyboard_arrow_right_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import DoubleArrowLeft from "@/icons/keyboard_double_arrow_left_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import DoubleArrowRight from "@/icons/keyboard_double_arrow_right_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 
 type PlanningPageClientProps = {
   weekStart: string;
@@ -38,27 +42,23 @@ function contrastForHex(hex: string, fallback = "#000000") {
   return lum > 0.6 ? "#000000" : "#ffffff";
 }
 
+function getFallbackDayLabels(isoDateStr: string) {
+  return {
+    shortName: isoDateStr,
+    longName: isoDateStr,
+    shortDate: isoDateStr,
+  };
+}
+
 function getDayLabels(isoDateStr: string) {
   const match = isoDateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (!match) {
-    return {
-      shortName: isoDateStr,
-      longName: isoDateStr,
-      shortDate: isoDateStr,
-    };
-  }
+  if (!match) return getFallbackDayLabels(isoDateStr);
 
   const year = Number(match[1]);
   const month = Number(match[2]);
   const day = Number(match[3]);
   const utcDate = new Date(Date.UTC(year, month - 1, day));
-  if (Number.isNaN(utcDate.getTime())) {
-    return {
-      shortName: isoDateStr,
-      longName: isoDateStr,
-      shortDate: isoDateStr,
-    };
-  }
+  if (Number.isNaN(utcDate.getTime())) return getFallbackDayLabels(isoDateStr);
 
   const weekdaysLong = ["nedele", "pondeli", "utery", "streda", "ctvrtek", "patek", "sobota"];
   const weekdaysShort = ["Ne", "Po", "Ut", "St", "Ct", "Pa", "So"];
@@ -88,7 +88,15 @@ function formatDayLabel(isoDateStr: string) {
 
   const weekday = weekdays[utcDate.getUTCDay()] || "";
   // const monthLabel = months[month - 1] || "";
-  return `${weekday} ${day}. `// dont add ${monthLabel} i dont want it;
+  return `${weekday} ${day}. `; // dont add ${monthLabel} i dont want it
+}
+
+function getWeekOffsetInDays(displayedWeekStart: string, currentWeekStart: string) {
+  const displayedWeekDate = new Date(displayedWeekStart);
+  const currentWeekDate = new Date(currentWeekStart);
+  const millisecondsPerDay = 1000 * 60 * 60 * 24;
+
+  return (displayedWeekDate.getTime() - currentWeekDate.getTime()) / millisecondsPerDay;
 }
 
 export default function PlanningPageClient({
@@ -115,6 +123,14 @@ export default function PlanningPageClient({
 
   const [subjectOverrides, setSubjectOverrides] = useState<Record<string, string | null>>({});
   const [topicOverrides, setTopicOverrides] = useState<Record<string, string>>({});
+
+  // The actual current week, independent of whichever week is being displayed.
+  const currentWeekStart = normalizeWeekKey();
+  const weekOffsetInDays = getWeekOffsetInDays(weekStart, currentWeekStart);
+  const isShowingCurrentWeek = weekOffsetInDays === 0;
+  const isShowingFutureWeek = weekOffsetInDays > 0;
+  const isShowingPastWeek = weekOffsetInDays < 0;
+  const isAtLeastTwoWeeksFromCurrent = Math.abs(weekOffsetInDays) >= 14;
 
   useEffect(() => {
     clientIdRef.current = getClientId();
@@ -339,13 +355,33 @@ export default function PlanningPageClient({
     <div ref={planningRootRef} className="planning-root" aria-live="polite">
       <div className="planning-inner">
         <div className="controls" role="region" aria-label="Week controls">
-          <Link className="nav-btn" href={`/planning?week=${encodeURIComponent(prevWeek)}`}>
-            <ArrowLeft fill="currentColor" />
-          </Link>
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            {!isShowingCurrentWeek && isShowingFutureWeek && isAtLeastTwoWeeksFromCurrent ? (
+              <Link className="nav-btn nav-show-current-week"
+                href={`/planning?week=${encodeURIComponent(currentWeekStart)}`}
+              >
+                <DoubleArrowLeft fill="currentColor" />
+              </Link>
+            ) : null}
+
+            <Link className="nav-btn" href={`/planning?week=${encodeURIComponent(prevWeek)}`}>
+              <ArrowLeft fill="currentColor" />
+            </Link>
+          </div>
           <div className="week-title">Week starts {weekStart}</div>
-          <Link className="nav-btn" href={`/planning?week=${encodeURIComponent(nextWeek)}`}>
-            <ArrowRight fill="currentColor" />
-          </Link>
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <Link className="nav-btn" href={`/planning?week=${encodeURIComponent(nextWeek)}`}>
+              <ArrowRight fill="currentColor" />
+            </Link>
+
+            {!isShowingCurrentWeek && isShowingPastWeek && isAtLeastTwoWeeksFromCurrent ? (
+              <Link className="nav-btn nav-show-current-week"
+                href={`/planning?week=${encodeURIComponent(currentWeekStart)}`}
+              >
+                <DoubleArrowRight fill="currentColor" />
+              </Link>
+            ) : null}
+          </div>
         </div>
 
         <div className="planning-day-tabs" role="tablist" aria-label="Days">
@@ -380,30 +416,29 @@ export default function PlanningPageClient({
                 <div className="slots">
                   {day.slots.map((slot, slotIndex) => {
                     const isFixed = slot.fixed;
-                    const subjectObj =
+                    const selectedSubject =
                       !isFixed && currentSubjectValue(slot)
                         ? subjects.find((s) => s.id === currentSubjectValue(slot)) || null
                         : null;
-                    const bg = isFixed ? "#ff7fbf" : subjectObj?.color || "#f1f5f9";
-                    const textColor = contrastForHex(bg, "#000000");
-                    const title = isFixed ? slot.fixedLabel || "Activity" : subjectObj?.name || "-";
+                    const slotBackground = isFixed ? "#ff7fbf" : selectedSubject?.color || "#f1f5f9";
+                    const textColor = contrastForHex(slotBackground, "#000000");
+                    const slotTitle = isFixed ? slot.fixedLabel || "Activity" : selectedSubject?.name || "-";
                     const topicValue = currentTopicValue(slot);
-                    const fixedTopicValue =
+                    const isFixedTopicSameAsLabel =
                       isFixed &&
-                      topicValue &&
-                      slot.fixedLabel &&
-                      topicValue.trim().toLowerCase() === slot.fixedLabel.trim().toLowerCase()
-                        ? ""
-                        : topicValue;
+                      Boolean(topicValue) &&
+                      Boolean(slot.fixedLabel) &&
+                      topicValue.trim().toLowerCase() === slot.fixedLabel.trim().toLowerCase();
+                    const displayedFixedTopic = isFixedTopicSameAsLabel ? "" : topicValue;
 
                     return (
                       <div
                         key={slot.id}
                         className="slot-card"
-                        style={{ background: bg, color: textColor }}
+                        style={{ background: slotBackground, color: textColor }}
                       >
                         <div className="slot-top">
-                          <div className="slot-title">{title}</div>
+                          <div className="slot-title">{slotTitle}</div>
                           <div className="slot-time">{slot.time}</div>
                         </div>
 
@@ -453,7 +488,7 @@ export default function PlanningPageClient({
                             <input
                               className="slot-input"
                               type="text"
-                              value={fixedTopicValue}
+                              value={displayedFixedTopic}
                               onChange={(event) => updateTopicLocal(slot, event.target.value)}
                               onBlur={(event) =>
                                 commitTopic(dayIndex, slotIndex, slot, event.currentTarget.value)

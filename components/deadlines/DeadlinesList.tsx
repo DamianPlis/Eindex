@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react'
 import RemoveDeadline from "@/components/deadlines/RemoveDeadline"
 import StatusPill from "@/components/deadlines/StatusPill";
 import MarkDeadlineDone from "@/components/deadlines/MarkDeadlineDone";
@@ -8,32 +8,31 @@ import Link from "next/link";
 import type { DeadlineItem } from '@/lib/schedule/types';
 
 export function DeadlinesList({ deadlines }: { deadlines: DeadlineItem[] }) {
-
-
-  const defaultDeadlinesFilter = deadlines.filter((deadline) => deadline.status === "today" || deadline.status === "expired" || deadline.status === "upcoming")
-  const [filteredDeadlines, setFilteredDeadlines] = useState(defaultDeadlinesFilter);
   const [showDone, setShowDone] = useState(false);
+  const activeDeadlines = deadlines.filter(
+    (deadline) =>
+      deadline.status === "today" ||
+      deadline.status === "expired" ||
+      deadline.status === "upcoming",
+  );
   const doneDeadlines = deadlines.filter((deadline) => deadline.status === "done");
-
-  function handleClick() {
-    setShowDone(!showDone)
-    if (showDone) {
-      setFilteredDeadlines(defaultDeadlinesFilter);
-    } else {
-      setFilteredDeadlines([...defaultDeadlinesFilter, ...doneDeadlines]);
-    }
-  }
+  const visibleDeadlines = showDone ? [...activeDeadlines, ...doneDeadlines] : activeDeadlines;
 
   return (
     <>
         <div style={{display: "flex", justifyContent: "end"}}>
-          <button className="show-done-deadlines-button" style={{marginLeft: "auto"}} onClick={() => {handleClick()}}>
+          <button
+            className="show-done-deadlines-button"
+            style={{marginLeft: "auto"}}
+            type="button"
+            onClick={() => setShowDone((current) => !current)}
+          >
             {showDone ? "Hide" : "Show"} Done Deadlines
           </button>
         </div>
         <ul className="deadlines-list">
-            {filteredDeadlines.length === 0 ? <p>No deadlines yet</p> : null}
-            {filteredDeadlines.map((deadline) => {
+            {visibleDeadlines.length === 0 ? <p>No deadlines yet</p> : null}
+            {visibleDeadlines.map((deadline) => {
             return (
                 <li key={deadline.id} className={`deadline-item`}>
                 <span>

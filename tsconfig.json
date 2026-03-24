@@ -20,7 +20,18 @@
     ],
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    //"noUncheckedIndexedAccess": true,
+    //"noPropertyAccessFromIndexSignature": true,
+    //"noErrorTruncation": true,
+    //"exactOptionalPropertyTypes": true,
+
   },
   "include": [
     "next-env.d.ts",

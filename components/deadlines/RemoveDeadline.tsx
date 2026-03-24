@@ -1,8 +1,8 @@
 "use client"
 
-import React from 'react'
 import { useFormStatus } from "react-dom";
 import { removeDeadlineAction } from '@/app/(app)/actions'
+import RemoveIcon from '@/icons/close_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg'
 
 function RemoveButton() {
     const formStatus = useFormStatus();
@@ -10,8 +10,8 @@ function RemoveButton() {
 
 
     return (        
-      <button className="deadline-action-button remove-button" type="submit" disabled={pending} aria-busy={pending}>
-        {pending ? "Removing..." : "X"}
+      <button className={`deadline-action-button remove-button ${pending ? "pending" : ""}`} type="submit" disabled={pending} aria-busy={pending}>
+        <RemoveIcon alt="Remove deadline" fill="currentColor" width="1.25em" height="1.25em" />
       </button>
     )
 }

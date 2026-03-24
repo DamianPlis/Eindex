@@ -18,7 +18,8 @@
   --warning-bg: #fff3f3;
   --warning-border: #ffb3b3;
   --warning-text: #a00;
-  --success: #0f766e;
+  --success: hsl(175, 77%, 26%);
+  --done: hsl(120, 87%, 40%);
   --nav-bg: #ffffff;
   --nav-active-bg: rgba(37, 99, 235, 0.08);
   --pad: 16px;
@@ -51,10 +52,11 @@ a {
 }
 
 .app-shell {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   padding-bottom: 72px;
+  min-width: 100dvw;
 }
 
 .app-topbar {
@@ -258,6 +260,11 @@ a {
   font-weight: 700;
   cursor: pointer;
   box-shadow: var(--shadow-sm);
+}
+
+.nav-show-current-week {
+  padding: 1em;
+  width: auto;
 }
 
 .week-title {
@@ -508,6 +515,11 @@ a {
   color: var(--danger);
 }
 
+.status-pill.done {
+  background: color-mix(in srgb, var(--done) 20%, transparent);
+  color: var(--done);
+}
+
 .status-pill.is-neutral {
   background: color-mix(in srgb, var(--text-soft) 22%, transparent);
   color: var(--text-1);
@@ -517,10 +529,15 @@ a {
   margin-left: 10px;
   padding: 7px 12px;
   border-radius: var(--radius-sm);
-  width: 32px;
   color: var(--text-inverse);
   border: none;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.pending {
+  filter: brightness(1.35);
 }
 
 .remove-button {
@@ -529,6 +546,7 @@ a {
 
 .done-button {
   background: var(--success);
+  padding: inherit, ;
 }
 
 .stats-container {

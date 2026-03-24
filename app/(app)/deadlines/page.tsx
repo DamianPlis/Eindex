@@ -10,10 +10,8 @@ import DeadlinesList from "@/components/deadlines/DeadlinesList";
 function renderStats(
   title: string,
   stats: Record<string, number>,
-  subjectMap: Map<string, string>,
   state: ScheduleState,
 ) {
-  console.log(state.deadlines)
   return (
     <StatsCard title={title} stats={stats} subjects={state.subjects} />
   )
@@ -39,7 +37,7 @@ export default async function DeadlinesPage() {
   const weekStats = getWeekStats(state, isoDate(weekStart), isoDate(weekEnd));
   const monthStats = getWeekStats(state, isoDate(monthStart), isoDate(monthEnd));
   const yearStats = getWeekStats(state, isoDate(yearStart), isoDate(yearEnd));
-  const subjectMap = new Map(state.subjects.map((subject) => [subject.id, subject.name]));
+  //const subjectMap = new Map(state.subjects.map((subject) => [subject.id, subject.name]));
 
 
   return (
@@ -50,9 +48,9 @@ export default async function DeadlinesPage() {
 
       <h2 className="deadlines-title">Statistics</h2>
       <div className="stats-container">
-        {renderStats("This Week", weekStats, subjectMap, state)}
-        {renderStats("This Month", monthStats, subjectMap, state)}
-        {renderStats("This Year", yearStats, subjectMap, state)}
+        {renderStats("This Week", weekStats, state, )}
+        {renderStats("This Month", monthStats, state, )}
+        {renderStats("This Year", yearStats, state,)}
       </div>
     </div>
   );
