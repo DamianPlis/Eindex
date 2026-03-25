@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import PwaRegistrar from "@/components/pwa/PwaRegistrar";
-import "@/app/globals.css";
+import "./globals.css";
+
 
 export const metadata: Metadata = {
   title: "Eindx",
