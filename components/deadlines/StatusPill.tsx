@@ -1,4 +1,3 @@
-import React from 'react'
 import type { DeadlineItem } from '@/lib/schedule/types';
 
 type StatusPillProps = {
