@@ -1,4 +1,5 @@
 import type { ScheduleState, Slot, Subject, DeadlineItem } from "@/lib/schedule/types";
+import { DEFAULT_SETTINGS, normalizeSettings } from "@/lib/settings/defaults";
 
 type SlotTemplate = {
   time: string;
@@ -134,9 +135,7 @@ export function createDefaultState(): ScheduleState {
     },
     lunches: {},
     deadlines: [],
-    settings: {
-      theme: "light",
-    },
+    settings: { ...DEFAULT_SETTINGS },
   };
 }
 
@@ -208,7 +207,7 @@ export function migrateState(raw: unknown): ScheduleState {
 
 
   base.lunches = source.lunches && typeof source.lunches === "object" ? source.lunches : {};
-  base.settings = source.settings?.theme === "dark" ? { theme: "dark" } : { theme: "light" };
+  base.settings = normalizeSettings(source.settings);
 
   const weekMap = source.weeks && typeof source.weeks === "object" ? source.weeks : {};
   const weekKeys = Object.keys(weekMap);

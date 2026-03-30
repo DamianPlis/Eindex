@@ -1,12 +1,15 @@
 :root {
   --primary: #6b5cf6;
-  --bg: hsl(223, 47%, 96%);
+  --bg: hsl(222, 50%, 96%);
   --card: hsl(0, 0%, 100%);
   --muted: #6b7280;
-  --bubble: hsl(210, 40%, 97%);
+  --bubble: hsl(210, 37%, 97%);
   --fixed: #ff7fbf;
   --text-primary: #0f1724;
   --text-inverse: #ffffff;
+  --text-soft: var(--muted);
+  --text-1: var(--text-primary);
+  --accent-strong: var(--primary);
   --border-light: rgba(0, 0, 0, 0.06);
   --border-medium: rgba(0, 0, 0, 0.12);
   --shadow-sm: 0 6px 18px rgba(99, 102, 241, 0.12);
@@ -26,6 +29,31 @@
   --radius-sm: 12px;
   --radius-md: 18px;
   --nav-space: 88px;
+}
+
+[data-theme="dark"],
+.app-shell[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: hsl(224, 35%, 12%);
+  --card: hsl(224, 24%, 16%);
+  --muted: #94a3b8;
+  --bubble: hsl(224, 20%, 20%);
+  --text-primary: #f8fafc;
+  --text-soft: #94a3b8;
+  --text-1: #f8fafc;
+  --accent-strong: #c7d2fe;
+  --border-light: rgba(255, 255, 255, 0.06);
+  --border-medium: rgba(255, 255, 255, 0.12);
+  --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.28);
+  --shadow-md: 0 12px 28px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 30px 80px rgba(0, 0, 0, 0.46);
+  --danger-bg: rgba(239, 68, 68, 0.18);
+  --danger-text: #fecaca;
+  --warning-bg: rgba(255, 179, 179, 0.1);
+  --warning-border: rgba(255, 179, 179, 0.25);
+  --warning-text: #ffdede;
+  --nav-bg: hsl(224, 24%, 16%);
+  --nav-active-bg: rgba(107, 92, 246, 0.18);
 }
 
 * {
@@ -160,6 +188,8 @@ a {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  background: var(--bubble);
+  color: var(--text-primary);
 }
 
 .slot-bubble.active {
@@ -324,6 +354,8 @@ a {
   flex-direction: column;
   gap: 10px;
   box-shadow: var(--shadow-md);
+  background: var(--bubble);
+  color: var(--text-primary);
 }
 
 .slot-top {

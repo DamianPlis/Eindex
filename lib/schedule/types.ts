@@ -1,3 +1,5 @@
+import type { AppSettings } from "@/lib/settings/types";
+
 export type Subject = {
   id: string;
   name: string;
@@ -37,7 +39,5 @@ export type ScheduleState = {
   weeks: Record<string, WeekSchedule>;
   lunches: Record<string, string>;
   deadlines: DeadlineItem[];
-  settings: {
-    theme: "light" | "dark";
-  };
+  settings: AppSettings;
 };

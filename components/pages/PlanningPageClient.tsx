@@ -10,7 +10,6 @@ import {
 import type { DaySchedule, Slot, Subject } from "@/lib/schedule/types";
 import { getClientId } from "@/lib/sync/client-id";
 //import Image from "next/image";
-import { normalizeWeekKey } from "@/lib/schedule/defaults";
 // Icons as React components via SVGR
 import ArrowLeft from "@/icons/keyboard_arrow_left_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import ArrowRight from "@/icons/keyboard_arrow_right_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
@@ -19,6 +18,7 @@ import DoubleArrowRight from "@/icons/keyboard_double_arrow_right_24dp_000000_FI
 
 type PlanningPageClientProps = {
   weekStart: string;
+  currentWeekStart: string;
   prevWeek: string;
   nextWeek: string;
   days: DaySchedule[];
@@ -101,6 +101,7 @@ function getWeekOffsetInDays(displayedWeekStart: string, currentWeekStart: strin
 
 export default function PlanningPageClient({
   weekStart,
+  currentWeekStart,
   prevWeek,
   nextWeek,
   days,
@@ -124,8 +125,6 @@ export default function PlanningPageClient({
   const [subjectOverrides, setSubjectOverrides] = useState<Record<string, string | null>>({});
   const [topicOverrides, setTopicOverrides] = useState<Record<string, string>>({});
 
-  // The actual current week, independent of whichever week is being displayed.
-  const currentWeekStart = normalizeWeekKey();
   const weekOffsetInDays = getWeekOffsetInDays(weekStart, currentWeekStart);
   const isShowingCurrentWeek = weekOffsetInDays === 0;
   const isShowingFutureWeek = weekOffsetInDays > 0;
@@ -420,8 +419,10 @@ export default function PlanningPageClient({
                       !isFixed && currentSubjectValue(slot)
                         ? subjects.find((s) => s.id === currentSubjectValue(slot)) || null
                         : null;
-                    const slotBackground = isFixed ? "#ff7fbf" : selectedSubject?.color || "#f1f5f9";
-                    const textColor = contrastForHex(slotBackground, "#000000");
+                    const slotBackground = isFixed ? "#ff7fbf" : selectedSubject?.color || null;
+                    const slotStyle = slotBackground
+                      ? { background: slotBackground, color: contrastForHex(slotBackground, "#000000") }
+                      : undefined;
                     const slotTitle = isFixed ? slot.fixedLabel || "Activity" : selectedSubject?.name || "-";
                     const topicValue = currentTopicValue(slot);
                     const isFixedTopicSameAsLabel =
@@ -435,7 +436,7 @@ export default function PlanningPageClient({
                       <div
                         key={slot.id}
                         className="slot-card"
-                        style={{ background: slotBackground, color: textColor }}
+                        style={slotStyle}
                       >
                         <div className="slot-top">
                           <div className="slot-title">{slotTitle}</div>

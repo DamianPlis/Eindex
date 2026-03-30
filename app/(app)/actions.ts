@@ -1,7 +1,9 @@
 "use server";
 
 import { resolveDeadlineStatus } from "@/lib/schedule/defaults";
-import { ensureWeekExists, updateUserState } from "@/lib/schedule/store";
+import { ensureWeekExists, updateUserSettings, updateUserState } from "@/lib/schedule/store";
+import { normalizeTheme } from "@/lib/settings/defaults";
+import type { AppSettings } from "@/lib/settings/types";
 import { requireSession } from "@/lib/session";
 
 type SlotUpdateInput = {
@@ -82,6 +84,24 @@ export async function addCustomSubjectAction(input: {
     { writerId: input.writerId },
   );
   return createdId || null;
+}
+
+export async function updateSettingsAction(
+  input: Partial<AppSettings> & {
+    writerId?: string;
+  },
+) {
+  const session = await requireSession();
+
+  return updateUserSettings(
+    session.uid,
+    (settings) => {
+      if (input.theme !== undefined) {
+        settings.theme = normalizeTheme(input.theme);
+      }
+    },
+    { writerId: input.writerId },
+  );
 }
 
 export async function addDeadlineAction(formData: FormData) {

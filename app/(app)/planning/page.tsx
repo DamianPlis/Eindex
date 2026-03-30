@@ -26,6 +26,7 @@ export default async function PlanningPage({
   return (
     <PlanningPageClient
       weekStart={weekStart}
+      currentWeekStart={normalizeWeekKey()}
       prevWeek={shiftWeek(weekStart, -1)}
       nextWeek={shiftWeek(weekStart, 1)}
       days={week.days}

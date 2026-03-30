@@ -2,41 +2,9 @@ import { getLunchPerDay } from "@/lib/lunch/server";
 import { getTodayISO, pickTodaySchedule, splitDeadlines } from "@/lib/schedule/selectors";
 import { getUserState } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
-//import Image from "next/image";
 import StatusPill from "@/components/deadlines/StatusPill";
 import Link from "next/link";
-import LunchIcon from "@/icons/restaurant_24dp_999999_FILL0_wght400_GRAD0_opsz24.svg";
-
-function parseRange(timeStr: string) {
-  if (!timeStr || !timeStr.includes("-")) return null;
-  const [startRaw, endRaw] = timeStr.split("-").map((v) => v.trim());
-  const [sh, sm] = startRaw.split(":").map(Number);
-  const [eh, em] = endRaw.split(":").map(Number);
-  if ([sh, sm, eh, em].some(Number.isNaN)) return null;
-  return { start: sh * 60 + sm, end: eh * 60 + em };
-}
-
-function isCurrentSlot(timeStr: string) {
-  const range = parseRange(timeStr);
-  if (!range) return false;
-  const now = new Date();
-  const minutes = now.getHours() * 60 + now.getMinutes();
-  return minutes >= range.start && minutes <= range.end;
-}
-
-function contrastColor(hex: string) {
-  if (!hex || !hex.startsWith("#")) return "#000000";
-  const parsed = parseInt(
-    hex.slice(1).length === 3 ? hex.slice(1).split("").map((c) => c + c).join("") : hex.slice(1),
-    16,
-  );
-  if (Number.isNaN(parsed)) return "#000000";
-  const r = (parsed >> 16) & 255;
-  const g = (parsed >> 8) & 255;
-  const b = parsed & 255;
-  const lum = 0.2126 * (r / 255) + 0.7152 * (g / 255) + 0.0722 * (b / 255);
-  return lum > 0.6 ? "#000000" : "#ffffff";
-}
+import SlotBubble from "@/components/layout/SlotBubble";
 
 export default async function MainPage() {
   const session = await requireSession();
@@ -84,8 +52,6 @@ export default async function MainPage() {
               : null;
             const isLunch = slot.subjectId === "lunch" || /obed|lunch/i.test(slot.fixedLabel || "");
             const lunchText = isLunch ? lunchPerDay[todayISO] : "";
-            const bg = slot.fixed ? "#ff7fbf" : subject?.color || "#ffffff";
-            const color = contrastColor(bg);
             const title = slot.fixed ? slot.fixedLabel || "Activity" : subject?.name || slot.topic || "-";
 
             let subtitle = "";
@@ -94,23 +60,15 @@ export default async function MainPage() {
             else if (!slot.fixed && slot.topic) subtitle = slot.topic;
 
             return (
-              <div
+              <SlotBubble
                 key={slot.id}
-                className={`slot-bubble ${isCurrentSlot(slot.time) ? "active" : ""}`}
-                style={{ background: bg, color }}
-              >
-                <div className="slot-content">
-                  <div>
-                    <div className="slot-title-text">{title}</div>
-                    {subtitle ? <div className="slot-subtitle">
-                      {isLunch && lunchText ? 
-                      <LunchIcon fill="currentColor" alt="Lunch" height={16} width={16} />
-                      : null}
-                       {subtitle}</div> : null}
-                  </div>
-                  <div className="slot-time-text">{slot.time}</div>
-                </div>
-              </div>
+                slot={slot}
+                subject={subject}
+                isLunch={isLunch}
+                lunchText={lunchText}
+                title={title}
+                subtitle={subtitle}
+              />
             );
           })
         ) : (
