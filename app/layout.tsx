@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import PwaRegistrar from "@/components/pwa/PwaRegistrar";
 import "./globals.css";
+import NoScriptNotice from "@/components/layout/NoScriptNotice";
 
 
 export const metadata: Metadata = {
@@ -32,6 +33,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <noscript  >
+          <NoScriptNotice />
+        </noscript>
         <PwaRegistrar />
         {children}
       </body>
