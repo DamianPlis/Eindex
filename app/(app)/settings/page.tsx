@@ -1,4 +1,4 @@
-import SettingsPageClient from "@/components/settings/SettingsPageClient";
+import SettingsPageClient from "@/components/pages/SettingsPageClient";
 import { getUserSettings } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
 

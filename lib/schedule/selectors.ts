@@ -1,6 +1,47 @@
 import { isoDate, parseRangeMinutes } from "@/lib/schedule/defaults";
 import type { DeadlineItem, ScheduleState, Slot } from "@/lib/schedule/types";
 
+const deadlineRelativeTimeFormatter = new Intl.RelativeTimeFormat("en", {
+  numeric: "auto",
+});
+
+function startOfDay(date: Date): Date {
+  const normalized = new Date(date);
+  normalized.setHours(0, 0, 0, 0);
+  return normalized;
+}
+
+function parseISODate(dateISO: string): Date | null {
+  const [year, month, day] = dateISO.split("-").map(Number);
+  if (!year || !month || !day) return null;
+  return new Date(year, month - 1, day);
+}
+
+export function formatDeadlineRelativeLabel(dateISO: string, today: Date = new Date()): string {
+  const deadlineDate = parseISODate(dateISO);
+  if (!deadlineDate) return "";
+
+  const diffMs = startOfDay(deadlineDate).getTime() - startOfDay(today).getTime();
+  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+  const absDays = Math.abs(diffDays);
+
+  if (absDays >= 365) {
+    return deadlineRelativeTimeFormatter.format(Math.round(diffDays / 365), "year");
+  }
+  if (absDays >= 30) {
+    return deadlineRelativeTimeFormatter.format(Math.round(diffDays / 30), "month");
+  }
+  if (absDays >= 7) {
+    return deadlineRelativeTimeFormatter.format(Math.round(diffDays / 7), "week");
+  }
+  return deadlineRelativeTimeFormatter.format(diffDays, "day");
+}
+
+export function formatDeadlineDate(dateISO: string, today: Date = new Date()): string {
+  const relativeLabel = formatDeadlineRelativeLabel(dateISO, today);
+  return relativeLabel ? `${dateISO} (${relativeLabel})` : dateISO;
+}
+
 export function getCurrentWeekKey(offset = 0): string {
   const now = new Date();
   const shifted = new Date(now);

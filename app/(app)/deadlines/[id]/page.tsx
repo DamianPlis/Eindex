@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getUserState } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
 import StatusPill from "@/components/deadlines/StatusPill";
+import { formatDeadlineRelativeLabel } from "@/lib/schedule/selectors";
 
 export default async function DeadlineDetailPage({
   params,
@@ -29,7 +30,9 @@ export default async function DeadlineDetailPage({
     <div className="container" style={{ margin: "16px" }}>
       <StatusPill status={item.status} />
       <h2>{item.text}</h2>
-      <p>Due: {item.date}</p>
+      <p style={{marginBottom: 0}}>Due: {item.date}
+      </p>
+        <div style={{marginBottom: "1em"}} className="reminder-date reminder-relative-date">{formatDeadlineRelativeLabel(item.date)}</div>
       <Link href={backHref} className="inline-link">
         Back to {backLabel}
       </Link>

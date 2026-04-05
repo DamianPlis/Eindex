@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import Calendar from "@/icons/calendar_month_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import Home from "@/icons/home_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import Checklist from "@/icons/checklist_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 
 function isRouteActive(pathname: string, route: string) {
@@ -20,9 +21,11 @@ const routes = [
   ];
 
 
-function BottomNav() {
-  const pathname = usePathname() || "/";
+  
+  function BottomNav() {
+    const pathname = usePathname() || "/";
 
+    const isNarrowScreen = useMediaQuery("(max-width: 390px)");
 
   return (
     <nav className="nav-bar">
@@ -36,7 +39,7 @@ function BottomNav() {
               `}
           >
             {route.icon ? <span className="nav-icon">{route.icon}</span> : null}
-            {route.label}
+            { !isNarrowScreen && <span className="nav-label">{route.label}</span>}
           </Link>
         ))}
         </div>

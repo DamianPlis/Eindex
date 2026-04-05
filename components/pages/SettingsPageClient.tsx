@@ -73,7 +73,7 @@ export default function SettingsPageClient({ initialSettings }: SettingsPageClie
               : "Switch to dark mode"}
         </button>
         {saveState === "error" ? (
-          <p style={{ color: "var(--danger-text)", marginBottom: 0 }}>Could not save your theme.</p>
+          <p style={{ color: "var(--danger-text)", marginBottom: 0 }}>Could not save your theme. Try again later.</p>
         ) : null}
       </div>
     </div>

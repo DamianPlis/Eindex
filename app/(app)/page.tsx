@@ -1,5 +1,5 @@
 import { getLunchPerDay } from "@/lib/lunch/server";
-import { getTodayISO, pickTodaySchedule, splitDeadlines } from "@/lib/schedule/selectors";
+import { formatDeadlineRelativeLabel, getTodayISO, pickTodaySchedule, splitDeadlines } from "@/lib/schedule/selectors";
 import { getUserState } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
 import StatusPill from "@/components/deadlines/StatusPill";
@@ -33,6 +33,7 @@ export default async function MainPage() {
                           {item.text}
                       </Link>
                     <div className="reminder-date">{item.date}</div>
+                    <div className="reminder-date reminder-relative-date">{formatDeadlineRelativeLabel(item.date)}</div>
                     
                   </div>
                   <StatusPill status={item.status} />

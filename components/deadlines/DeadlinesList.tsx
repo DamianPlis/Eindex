@@ -6,6 +6,7 @@ import StatusPill from "@/components/deadlines/StatusPill";
 import MarkDeadlineDone from "@/components/deadlines/MarkDeadlineDone";
 import Link from "next/link";
 import type { DeadlineItem } from '@/lib/schedule/types';
+import { formatDeadlineRelativeLabel } from "@/lib/schedule/selectors";
 
 export function DeadlinesList({ deadlines }: { deadlines: DeadlineItem[] }) {
   const [showDone, setShowDone] = useState(false);
@@ -39,7 +40,8 @@ export function DeadlinesList({ deadlines }: { deadlines: DeadlineItem[] }) {
                     <Link className="inline-link" href={`/deadlines/${deadline.id}`}>
                     {deadline.text}
                     </Link>{" "}
-                    - {deadline.date}
+                    - {deadline.date}                     
+                    <div className="reminder-date reminder-relative-date">{formatDeadlineRelativeLabel(deadline.date)}</div>
                 </span>
                 <div className="deadline-actions">
                     <StatusPill status={deadline.status} />

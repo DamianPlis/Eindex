@@ -108,11 +108,12 @@ export async function addDeadlineAction(formData: FormData) {
   const session = await requireSession();
   const text = String(formData.get("text") || "").trim();
   const date = String(formData.get("date") || "").trim();
+  const id = crypto.randomUUID();
   if (!text || !date) return;
 
   await updateUserState(session.uid, (state) => {
     state.deadlines.push({
-      id: `dl_${Date.now()}`,
+      id: id,
       text,
       date,
       status: resolveDeadlineStatus({ date }),
