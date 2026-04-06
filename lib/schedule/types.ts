@@ -1,5 +1,13 @@
 import type { AppSettings } from "@/lib/settings/types";
 
+export type FixedSlotKey =
+  | "morningCircle"
+  | "currentEvents"
+  | "lunch"
+  | "tutor"
+  | "pe"
+  | "assembly";
+
 export type Subject = {
   id: string;
   name: string;
@@ -10,6 +18,7 @@ export type Slot = {
   id: string;
   time: string;
   fixed: boolean;
+  fixedKey: FixedSlotKey | null;
   fixedLabel: string;
   allowTopic: boolean;
   subjectId: string | null;

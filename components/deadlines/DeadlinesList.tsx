@@ -1,14 +1,18 @@
 "use client";
 
-import { useState } from 'react'
-import RemoveDeadline from "@/components/deadlines/RemoveDeadline"
+import { useState } from "react";
+import { useAppLocale, useMessages } from "@/components/i18n/LocaleProvider";
+import RemoveDeadline from "@/components/deadlines/RemoveDeadline";
 import StatusPill from "@/components/deadlines/StatusPill";
 import MarkDeadlineDone from "@/components/deadlines/MarkDeadlineDone";
 import Link from "next/link";
-import type { DeadlineItem } from '@/lib/schedule/types';
+import { localizePath } from "@/lib/i18n/routing";
+import type { DeadlineItem } from "@/lib/schedule/types";
 import { formatDeadlineRelativeLabel } from "@/lib/schedule/selectors";
 
 export function DeadlinesList({ deadlines }: { deadlines: DeadlineItem[] }) {
+  const locale = useAppLocale();
+  const messages = useMessages();
   const [showDone, setShowDone] = useState(false);
   const activeDeadlines = deadlines.filter(
     (deadline) =>
@@ -28,20 +32,22 @@ export function DeadlinesList({ deadlines }: { deadlines: DeadlineItem[] }) {
             type="button"
             onClick={() => setShowDone((current) => !current)}
           >
-            {showDone ? "Hide" : "Show"} Done Deadlines
+            {showDone ? messages.deadlines.hideDoneDeadlines : messages.deadlines.showDoneDeadlines}
           </button>
         </div>
         <ul className="deadlines-list">
-            {visibleDeadlines.length === 0 ? <p>No deadlines yet</p> : null}
+            {visibleDeadlines.length === 0 ? <p>{messages.deadlines.noDeadlinesYet}</p> : null}
             {visibleDeadlines.map((deadline) => {
             return (
                 <li key={deadline.id} className={`deadline-item`}>
                 <span>
-                    <Link className="inline-link" href={`/deadlines/${deadline.id}`}>
+                    <Link className="inline-link" href={localizePath(locale, `/deadlines/${deadline.id}`)}>
                     {deadline.text}
                     </Link>{" "}
                     - {deadline.date}                     
-                    <div className="reminder-date reminder-relative-date">{formatDeadlineRelativeLabel(deadline.date)}</div>
+                    <div className="reminder-date reminder-relative-date">
+                      {formatDeadlineRelativeLabel(deadline.date, locale)}
+                    </div>
                 </span>
                 <div className="deadline-actions">
                     <StatusPill status={deadline.status} />

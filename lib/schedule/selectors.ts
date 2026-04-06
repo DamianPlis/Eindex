@@ -1,9 +1,19 @@
+import type { AppLocale } from "@/lib/i18n/config";
 import { isoDate, parseRangeMinutes } from "@/lib/schedule/defaults";
 import type { DeadlineItem, ScheduleState, Slot } from "@/lib/schedule/types";
 
-const deadlineRelativeTimeFormatter = new Intl.RelativeTimeFormat("en", {
-  numeric: "auto",
-});
+const deadlineFormatters = new Map<string, Intl.RelativeTimeFormat>();
+
+function getRelativeTimeFormatter(locale: AppLocale) {
+  const cached = deadlineFormatters.get(locale);
+  if (cached) return cached;
+
+  const formatter = new Intl.RelativeTimeFormat(locale, {
+    numeric: "auto",
+  });
+  deadlineFormatters.set(locale, formatter);
+  return formatter;
+}
 
 function startOfDay(date: Date): Date {
   const normalized = new Date(date);
@@ -17,28 +27,37 @@ function parseISODate(dateISO: string): Date | null {
   return new Date(year, month - 1, day);
 }
 
-export function formatDeadlineRelativeLabel(dateISO: string, today: Date = new Date()): string {
+export function formatDeadlineRelativeLabel(
+  dateISO: string,
+  locale: AppLocale,
+  today: Date = new Date(),
+): string {
   const deadlineDate = parseISODate(dateISO);
   if (!deadlineDate) return "";
 
   const diffMs = startOfDay(deadlineDate).getTime() - startOfDay(today).getTime();
   const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
   const absDays = Math.abs(diffDays);
+  const formatter = getRelativeTimeFormatter(locale);
 
   if (absDays >= 365) {
-    return deadlineRelativeTimeFormatter.format(Math.round(diffDays / 365), "year");
+    return formatter.format(Math.round(diffDays / 365), "year");
   }
   if (absDays >= 30) {
-    return deadlineRelativeTimeFormatter.format(Math.round(diffDays / 30), "month");
+    return formatter.format(Math.round(diffDays / 30), "month");
   }
   if (absDays >= 7) {
-    return deadlineRelativeTimeFormatter.format(Math.round(diffDays / 7), "week");
+    return formatter.format(Math.round(diffDays / 7), "week");
   }
-  return deadlineRelativeTimeFormatter.format(diffDays, "day");
+  return formatter.format(diffDays, "day");
 }
 
-export function formatDeadlineDate(dateISO: string, today: Date = new Date()): string {
-  const relativeLabel = formatDeadlineRelativeLabel(dateISO, today);
+export function formatDeadlineDate(
+  dateISO: string,
+  locale: AppLocale,
+  today: Date = new Date(),
+): string {
+  const relativeLabel = formatDeadlineRelativeLabel(dateISO, locale, today);
   return relativeLabel ? `${dateISO} (${relativeLabel})` : dateISO;
 }
 

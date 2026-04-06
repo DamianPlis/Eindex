@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useMessages } from "@/components/i18n/LocaleProvider";
 import {
   getRedirectResult,
   signInWithPopup,
@@ -31,6 +32,7 @@ async function establishSession(user: User) {
 
 export default function LoginPanel() {
   const router = useRouter();
+  const messages = useMessages();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -47,7 +49,7 @@ export default function LoginPanel() {
           return;
         }
       } catch (err) {
-        if (active) setError(err instanceof Error ? err.message : "Authentication failed.");
+        if (active) setError(err instanceof Error ? err.message : messages.auth.authenticationFailed);
       } finally {
         if (active) setLoading(false);
       }
@@ -55,7 +57,7 @@ export default function LoginPanel() {
     return () => {
       active = false;
     };
-  }, [router]);
+  }, [messages.auth.authenticationFailed, router]);
 
   async function signInWithGoogle() {
     setError("");
@@ -71,7 +73,7 @@ export default function LoginPanel() {
         await signInWithRedirect(auth, googleProvider);
         return;
       } catch {
-        setError(err instanceof Error ? err.message : "Sign in failed.");
+        setError(err instanceof Error ? err.message : messages.auth.signInFailed);
       }
     } finally {
       setLoading(false);
@@ -82,12 +84,12 @@ export default function LoginPanel() {
     <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 20 }}>
       <div className="container" style={{ maxWidth: 520, width: "100%", textAlign: "center" }}>
         <h1 style={{ marginTop: 0 }}>Eindx</h1>
-        <p>Sign in with your Google account.</p>
+        <p>{messages.auth.signInPrompt}</p>
         {error ? (
           <p style={{ color: "var(--danger-text)", fontSize: 13, marginTop: 8 }}>{error}</p>
         ) : null}
         <button className="add-button" onClick={signInWithGoogle} disabled={loading}>
-          {loading ? "Checking..." : "Sign in with Google"}
+          {loading ? messages.auth.checking : messages.auth.signInWithGoogle}
         </button>
       </div>
     </div>

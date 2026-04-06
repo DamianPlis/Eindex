@@ -1,8 +1,9 @@
-import type { ScheduleState, Slot, Subject, DeadlineItem } from "@/lib/schedule/types";
+import type { DeadlineItem, FixedSlotKey, ScheduleState, Slot, Subject } from "@/lib/schedule/types";
 import { DEFAULT_SETTINGS, normalizeSettings } from "@/lib/settings/defaults";
 
 type SlotTemplate = {
   time: string;
+  fixedKey?: FixedSlotKey;
   fixedLabel?: string;
   allowTopic?: boolean;
 };
@@ -35,44 +36,44 @@ export const defaultSubjects: Subject[] = [
 export const dayTemplates: DayTemplate[] = [
   {
     slots: [
-      { time: "08:00-08:15", fixedLabel: "Ranni kruh" },
+      { time: "08:00-08:15", fixedKey: "morningCircle", fixedLabel: "Ranni kruh" },
       { time: "08:20-10:20" },
       { time: "10:30-11:30" },
-      { time: "11:40-12:40", fixedLabel: "Aktuality", allowTopic: true },
-      { time: "12:40-13:15", fixedLabel: "Obed" },
+      { time: "11:40-12:40", fixedKey: "currentEvents", fixedLabel: "Aktuality", allowTopic: true },
+      { time: "12:40-13:15", fixedKey: "lunch", fixedLabel: "Obed" },
       { time: "13:15-14:00" },
       { time: "14:05-15:00" },
     ],
   },
   {
     slots: [
-      { time: "08:00-08:15", fixedLabel: "Ranni kruh" },
+      { time: "08:00-08:15", fixedKey: "morningCircle", fixedLabel: "Ranni kruh" },
       { time: "08:20-10:20" },
       { time: "10:30-11:40" },
-      { time: "11:40-12:15", fixedLabel: "Obed" },
-      { time: "12:15-13:00", fixedLabel: "Tutor" },
-      { time: "13:10-15:00", fixedLabel: "Telocvik", allowTopic: true },
+      { time: "11:40-12:15", fixedKey: "lunch", fixedLabel: "Obed" },
+      { time: "12:15-13:00", fixedKey: "tutor", fixedLabel: "Tutor" },
+      { time: "13:10-15:00", fixedKey: "pe", fixedLabel: "Telocvik", allowTopic: true },
     ],
   },
   {
     slots: [
-      { time: "08:00-08:15", fixedLabel: "Ranni kruh" },
+      { time: "08:00-08:15", fixedKey: "morningCircle", fixedLabel: "Ranni kruh" },
       { time: "08:20-10:20" },
       { time: "10:30-12:15" },
-      { time: "12:15-13:15", fixedLabel: "Obed" },
+      { time: "12:15-13:15", fixedKey: "lunch", fixedLabel: "Obed" },
       { time: "13:15-14:00"},
       { time: "14:05-15:00" },
     ],
   },
   {
     slots: [
-      { time: "08:00-08:15", fixedLabel: "Ranni kruh" },
+      { time: "08:00-08:15", fixedKey: "morningCircle", fixedLabel: "Ranni kruh" },
       { time: "08:20-09:20" },
       { time: "09:25-10:25" },
       { time: "10:30-11:30" },
       { time: "11:40-12:40" },
-      { time: "12:40-13:15", fixedLabel: "Obed" },
-      { time: "13:15-14:00", fixedLabel: "Shromazdeni" },
+      { time: "12:40-13:15", fixedKey: "lunch", fixedLabel: "Obed" },
+      { time: "13:15-14:00", fixedKey: "assembly", fixedLabel: "Shromazdeni" },
       { time: "14:05-15:00" },
     ],
   },
@@ -113,9 +114,10 @@ export function buildDaysForWeek(weekStartISO: string) {
       id: `${weekStartISO}:${dayIdx}:${slotIdx}`,
       time: slotTpl.time,
       fixed: Boolean(slotTpl.fixedLabel),
+      fixedKey: slotTpl.fixedKey || null,
       fixedLabel: slotTpl.fixedLabel || "",
       allowTopic: Boolean(slotTpl.allowTopic),
-      subjectId: slotTpl.fixedLabel === "Obed" ? "lunch" : null,
+      subjectId: slotTpl.fixedKey === "lunch" ? "lunch" : null,
       topic: "",
       updatedAt: 0,
     }));
@@ -141,6 +143,41 @@ export function createDefaultState(): ScheduleState {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object";
+}
+
+function normalizeFixedLabel(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z]+/g, "");
+}
+
+export function inferFixedSlotKey(rawKey: unknown, rawLabel: unknown): FixedSlotKey | null {
+  if (typeof rawKey === "string") {
+    const normalizedKey = rawKey.trim();
+    if (
+      normalizedKey === "morningCircle" ||
+      normalizedKey === "currentEvents" ||
+      normalizedKey === "lunch" ||
+      normalizedKey === "tutor" ||
+      normalizedKey === "pe" ||
+      normalizedKey === "assembly"
+    ) {
+      return normalizedKey;
+    }
+  }
+
+  if (typeof rawLabel !== "string") return null;
+
+  const normalizedLabel = normalizeFixedLabel(rawLabel);
+  if (normalizedLabel === "rannikruh" || normalizedLabel === "morningcircle") return "morningCircle";
+  if (normalizedLabel === "aktuality" || normalizedLabel === "currentevents") return "currentEvents";
+  if (normalizedLabel === "obed" || normalizedLabel === "lunch") return "lunch";
+  if (normalizedLabel === "tutor") return "tutor";
+  if (normalizedLabel === "telocvik" || normalizedLabel === "pe") return "pe";
+  if (normalizedLabel === "shromazdeni" || normalizedLabel === "assembly") return "assembly";
+  return null;
 }
 
 export function resolveDeadlineStatus(
@@ -227,11 +264,14 @@ export function migrateState(raw: unknown): ScheduleState {
       for (let slotIdx = 0; slotIdx < builtDays[dayIdx].slots.length; slotIdx++) {
         const srcSlot = srcDay.slots?.[slotIdx];
         if (!srcSlot) continue;
-        builtDays[dayIdx].slots[slotIdx] = {
+        const mergedSlot = {
           ...builtDays[dayIdx].slots[slotIdx],
           ...srcSlot,
           updatedAt: srcSlot.updatedAt || 0,
         };
+        mergedSlot.fixedKey =
+          inferFixedSlotKey(srcSlot.fixedKey, srcSlot.fixedLabel) || mergedSlot.fixedKey;
+        builtDays[dayIdx].slots[slotIdx] = mergedSlot;
       }
     }
 

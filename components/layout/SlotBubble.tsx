@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { useMessages } from "@/components/i18n/LocaleProvider";
 import type { Slot, Subject } from "@/lib/schedule/types";
 import LunchIcon from "@/icons/restaurant_24dp_999999_FILL0_wght400_GRAD0_opsz24.svg";
 
@@ -52,6 +53,7 @@ export default function SlotBubble({
   title,
   subtitle,
 }: SlotBubbleProps) {
+  const messages = useMessages();
   const isHydrated = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -73,7 +75,12 @@ export default function SlotBubble({
           {subtitle ? (
             <div className="slot-subtitle">
               {isLunch && lunchText ? (
-                <LunchIcon fill="currentColor" alt="Lunch" height={16} width={16} />
+                <LunchIcon
+                  fill="currentColor"
+                  alt={messages.planning.fixedSlots.lunch}
+                  height={16}
+                  width={16}
+                />
               ) : null}
               {subtitle}
             </div>

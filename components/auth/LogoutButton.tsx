@@ -2,9 +2,11 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useAppLocale, useMessages } from "@/components/i18n/LocaleProvider";
 import { signOut } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase/client";
+import { localizePath } from "@/lib/i18n/routing";
 import { getClientId } from "@/lib/sync/client-id";
 import LogoutIcon from "@/icons/logout_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 
@@ -39,6 +41,8 @@ function isStandaloneMode(): boolean {
 
 export default function LogoutButton({ uid }: LogoutButtonProps) {
   const router = useRouter();
+  const locale = useAppLocale();
+  const messages = useMessages();
   const clientIdRef = useRef("");
   const initializedRef = useRef(false);
   const lastRemoteTsRef = useRef(0);
@@ -157,14 +161,14 @@ export default function LogoutButton({ uid }: LogoutButtonProps) {
       // noop
     }
     await fetch("/api/session", { method: "DELETE" });
-    router.replace("/login");
+    router.replace(localizePath(locale, "/login"));
     router.refresh();
   }
 
   return (
     <button className="logout-button" onClick={handleLogout}>
-      <span>Logout</span>
-      <LogoutIcon fill="currentColor" alt="Logout" height={16} width={16} />
+      <span>{messages.nav.logout}</span>
+      <LogoutIcon fill="currentColor" alt={messages.nav.logout} height={16} width={16} />
     </button>
   );
 }

@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { useAppLocale, useMessages } from "@/components/i18n/LocaleProvider";
+import { getSubjectDisplayName } from "@/lib/schedule/labels";
 import type { ScheduleState } from "@/lib/schedule/types";
 import SortIcon from "@/icons/sort_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import FilterIcon from "@/icons/filter_list_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
@@ -14,9 +16,14 @@ interface StatsCardProps {
 type SortOption = "count-desc" | "count-asc" | "name-asc" | "name-desc";
 
 export default function StatsCard({ title, stats, subjects }: StatsCardProps) {
+  const locale = useAppLocale();
+  const messages = useMessages();
   const [sortBy, setSortBy] = useState<SortOption>("count-desc");
 
-  const subjectMap = React.useMemo(() => new Map(subjects.map((s) => [s.id, s.name])), [subjects]);
+  const subjectMap = React.useMemo(
+    () => new Map(subjects.map((subject) => [subject.id, getSubjectDisplayName(subject, messages)])),
+    [messages, subjects],
+  );
 
   const sortedStats = Object.entries(stats)
     .map(([subjectId, count]) => ({ subjectId, count }))
@@ -27,8 +34,8 @@ export default function StatsCard({ title, stats, subjects }: StatsCardProps) {
       const nameA = subjectMap.get(a.subjectId) || a.subjectId;
       const nameB = subjectMap.get(b.subjectId) || b.subjectId;
       
-      if (sortBy === "name-asc") return nameA.localeCompare(nameB);
-      if (sortBy === "name-desc") return nameB.localeCompare(nameA);
+      if (sortBy === "name-asc") return nameA.localeCompare(nameB, locale);
+      if (sortBy === "name-desc") return nameB.localeCompare(nameA, locale);
       
       return 0;
     });
@@ -54,17 +61,17 @@ export default function StatsCard({ title, stats, subjects }: StatsCardProps) {
               }}
               aria-label="Sort options"
             >
-              <option value="count-desc">Most frequent</option>
-              <option value="count-asc">Least frequent</option>
-              <option value="name-asc">Name (A-Z)</option>
-              <option value="name-desc">Name (Z-A)</option>
+              <option value="count-desc">{messages.deadlines.sortOptions.mostFrequent}</option>
+              <option value="count-asc">{messages.deadlines.sortOptions.leastFrequent}</option>
+              <option value="name-asc">{messages.deadlines.sortOptions.nameAsc}</option>
+              <option value="name-desc">{messages.deadlines.sortOptions.nameDesc}</option>
             </select>
           </div>
           <FilterIcon alt="Filter stats" fill="currentColor" className="stats-card-header-icon" />
         </div>
       </div>
       {Object.keys(stats).length === 0 ? (
-        <p>No data</p>
+        <p>{messages.deadlines.noData}</p>
       ) : (
         <ul>
           {sortedStats.map(({ subjectId, count }) => (
@@ -75,7 +82,7 @@ export default function StatsCard({ title, stats, subjects }: StatsCardProps) {
                 backgroundColor: `${subjects.find((s) => s.id === subjectId)?.color || "#000000"}55`,
               }}
             >
-              {subjectMap.get(subjectId) || subjectId}: {count} times
+              {subjectMap.get(subjectId) || subjectId}: {count} {messages.deadlines.times}
             </li>
           ))}
         </ul>

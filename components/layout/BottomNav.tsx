@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-//import { requireSession } from "@/lib/session";
 import { usePathname } from "next/navigation";
+import { useAppLocale, useMessages } from "@/components/i18n/LocaleProvider";
 import Calendar from "@/icons/calendar_month_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import Home from "@/icons/home_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import Checklist from "@/icons/checklist_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { localizePath, stripLocaleFromPath } from "@/lib/i18n/routing";
 
 
 function isRouteActive(pathname: string, route: string) {
@@ -14,28 +15,41 @@ function isRouteActive(pathname: string, route: string) {
   return pathname === route || pathname.startsWith(`${route}/`);
 }
 
-const routes = [
-    { to: "/", label: "Home", icon: <Home fill="currentColor" alt="Home" /> },
-    { to: "/planning", label: "Planning", icon: <Calendar fill="currentColor" alt="Planning" /> },
-    { to: "/deadlines", label: "Deadlines", icon: <Checklist fill="currentColor" alt="Deadlines" /> },
+function BottomNav() {
+  const locale = useAppLocale();
+  const messages = useMessages();
+  const pathname = stripLocaleFromPath(usePathname() || "/");
+  const isNarrowScreen = useMediaQuery("(max-width: 390px)");
+  const routes = [
+    {
+      to: localizePath(locale, "/"),
+      route: "/",
+      label: messages.nav.home,
+      icon: <Home fill="currentColor" alt={messages.nav.home} />,
+    },
+    {
+      to: localizePath(locale, "/planning"),
+      route: "/planning",
+      label: messages.nav.planning,
+      icon: <Calendar fill="currentColor" alt={messages.nav.planning} />,
+    },
+    {
+      to: localizePath(locale, "/deadlines"),
+      route: "/deadlines",
+      label: messages.nav.deadlines,
+      icon: <Checklist fill="currentColor" alt={messages.nav.deadlines} />,
+    },
   ];
-
-
-  
-  function BottomNav() {
-    const pathname = usePathname() || "/";
-
-    const isNarrowScreen = useMediaQuery("(max-width: 390px)");
 
   return (
     <nav className="nav-bar">
       <div className="nav-track">
         {routes.map((route) => (
           <Link
-            key={route.to}
+            key={route.route}
             href={route.to}
             className={`nav-link 
-              ${isRouteActive(pathname, route.to) ? "active" : ""}
+              ${isRouteActive(pathname, route.route) ? "active" : ""}
               `}
           >
             {route.icon ? <span className="nav-icon">{route.icon}</span> : null}

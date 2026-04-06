@@ -1,26 +1,30 @@
-import type { DeadlineItem } from '@/lib/schedule/types';
+"use client";
+
+import { useMessages } from "@/components/i18n/LocaleProvider";
+import type { DeadlineItem } from "@/lib/schedule/types";
 
 type StatusPillProps = {
   status: DeadlineItem["status"];
 }
 
 function StatusPill(props: StatusPillProps) {
+    const messages = useMessages();
     const { status } = props;
     let statusClass;
     let statusLabel;
     if (status === "today") {
         statusClass = "today"
-        statusLabel = "Due Today"
+        statusLabel = messages.deadlines.status.today
     } else if (status === "expired") {
         statusClass = "expired"
-        statusLabel = "Expired"
+        statusLabel = messages.deadlines.status.expired
     } else if (status === "done") {
         statusClass = "done"
-        statusLabel = "Done"
+        statusLabel = messages.deadlines.status.done
     }
      else {
         statusClass = "upcoming"
-        statusLabel = "Upcoming"
+        statusLabel = messages.deadlines.status.upcoming
     }
 
 

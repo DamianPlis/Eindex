@@ -1,5 +1,7 @@
 "use server";
 
+import { cookies } from "next/headers";
+import { LOCALE_COOKIE, normalizeAppLocale } from "@/lib/i18n/config";
 import { resolveDeadlineStatus } from "@/lib/schedule/defaults";
 import { ensureWeekExists, updateUserSettings, updateUserState } from "@/lib/schedule/store";
 import { normalizeTheme } from "@/lib/settings/defaults";
@@ -93,15 +95,29 @@ export async function updateSettingsAction(
 ) {
   const session = await requireSession();
 
-  return updateUserSettings(
+  const nextSettings = await updateUserSettings(
     session.uid,
     (settings) => {
       if (input.theme !== undefined) {
         settings.theme = normalizeTheme(input.theme);
       }
+      if (input.locale !== undefined) {
+        settings.locale = normalizeAppLocale(input.locale);
+      }
     },
     { writerId: input.writerId },
   );
+
+  if (input.locale !== undefined) {
+    const cookieStore = await cookies();
+    cookieStore.set(LOCALE_COOKIE, nextSettings.locale, {
+      httpOnly: false,
+      sameSite: "lax",
+      path: "/",
+    });
+  }
+
+  return nextSettings;
 }
 
 export async function addDeadlineAction(formData: FormData) {

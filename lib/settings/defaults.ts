@@ -1,7 +1,9 @@
+import { DEFAULT_LOCALE, normalizeAppLocale } from "@/lib/i18n/config";
 import type { AppSettings, AppTheme } from "@/lib/settings/types";
 
 export const DEFAULT_SETTINGS: AppSettings = {
   theme: "light",
+  locale: DEFAULT_LOCALE,
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -17,6 +19,7 @@ export function normalizeSettings(raw: unknown): AppSettings {
 
   return {
     theme: normalizeTheme(raw.theme),
+    locale: normalizeAppLocale(raw.locale),
   };
 }
 
@@ -27,6 +30,9 @@ export function mergeSettings(...candidates: unknown[]): AppSettings {
     if (!isRecord(candidate)) continue;
     if ("theme" in candidate) {
       next.theme = normalizeTheme(candidate.theme);
+    }
+    if ("locale" in candidate) {
+      next.locale = normalizeAppLocale(candidate.locale);
     }
   }
 

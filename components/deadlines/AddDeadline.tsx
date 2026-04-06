@@ -3,19 +3,22 @@
 import { useRef } from "react";
 import { useFormStatus } from "react-dom";
 import { addDeadlineAction } from "@/app/(app)/actions";
+import { useMessages } from "@/components/i18n/LocaleProvider";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
+  const messages = useMessages();
 
   return (
     <button type="submit" className={`add-button ${pending ? "pending" : ""}`} disabled={pending} aria-busy={pending}>
-      Add
+      {messages.deadlines.add}
     </button>
   );
 }
 
 export default function AddDeadlinePending() {
   const formRef = useRef<HTMLFormElement | null>(null);
+  const messages = useMessages();
 
   return (
     <form
@@ -29,7 +32,7 @@ export default function AddDeadlinePending() {
       <input
         type="text"
         name="text"
-        placeholder="Homework description"
+        placeholder={messages.deadlines.homeworkDescription}
         className="add-input add-input-text"
         required
       />
