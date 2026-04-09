@@ -84,6 +84,8 @@ a {
   display: flex;
   flex-direction: column;
   padding-bottom: 72px;
+  background: var(--bg);
+  color: var(--text-primary);
 }
 
 .app-topbar {
