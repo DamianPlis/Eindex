@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="cs">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#ff7fbf" />
+  <title>Eindx | Offline</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f7f8fc;
+      --card: rgba(255, 255, 255, 0.9);
+      --text: #142033;
+      --muted: #5e6b81;
+      --border: rgba(20, 32, 51, 0.1);
+      --shadow: 0 28px 70px rgba(20, 32, 51, 0.16);
+      --accent: #ff7fbf;
+      --accent-strong: #ef4d93;
+      --badge: rgba(239, 77, 147, 0.12);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111827;
+        --card: rgba(17, 24, 39, 0.88);
+        --text: #f8fafc;
+        --muted: #cbd5e1;
+        --border: rgba(255, 255, 255, 0.08);
+        --shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+        --badge: rgba(255, 127, 191, 0.18);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(255, 127, 191, 0.26), transparent 32%),
+        linear-gradient(180deg, var(--bg), color-mix(in srgb, var(--bg) 82%, #ffffff 18%));
+    }
+
+    .card {
+      width: min(100%, 560px);
+      padding: 28px;
+      border-radius: 28px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--badge);
+      color: var(--accent-strong);
+      font-size: 0.84rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: currentColor;
+      box-shadow: 0 0 0 5px rgba(239, 77, 147, 0.14);
+    }
+
+    h1 {
+      margin: 18px 0 12px;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1.02;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    button,
+    a {
+      min-height: 48px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 140ms ease, background-color 140ms ease, border-color 140ms ease;
+    }
+
+    button:hover,
+    a:hover {
+      transform: translateY(-1px);
+    }
+
+    .primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      color: white;
+    }
+
+    .secondary {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .tip {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <div class="badge"><span class="dot" aria-hidden="true"></span>Offline</div>
+    <h1>Jste offline.</h1>
+    <p>Tuhle stránku se nepodařilo otevřít, protože vypadlo připojení. Jakmile budete znovu online, načtěte tuto stránku
+      znovu.</p>
+
+    <div class="actions">
+      <button class="primary" type="button" onclick="window.location.reload()">Zkusit znovu</button>
+      <button class="secondary" type="button" onclick="window.history.back()">Zpět</button>
+    </div>
+
+    <p class="tip">Tip: stránky, které už jste jednou navštívili, můžou offline fungovat líp než úplně nové trasy.</p>
+  </main>
+</body>
+
+</html>

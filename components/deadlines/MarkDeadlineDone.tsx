@@ -12,7 +12,7 @@ function DoneButton() {
 
 
     return (        
-      <button className={`deadline-action-button done-button ${pending ? "pending" : ""}`} type="submit" disabled={pending} aria-busy={pending}>
+      <button className={`deadline-action-button done-button ${pending ? "pending" : ""}`} title={messages.deadlines.actions.markDone} type="submit" disabled={pending} aria-busy={pending}>
         <Check alt={messages.deadlines.actions.markDone} fill="currentColor" width="1.25em" height="1.25em" />
       </button>
     )

@@ -12,7 +12,7 @@ function RemoveButton() {
 
 
     return (        
-      <button className={`deadline-action-button remove-button ${pending ? "pending" : ""}`} type="submit" disabled={pending} aria-busy={pending}>
+      <button className={`deadline-action-button remove-button ${pending ? "pending" : ""}`} title={messages.deadlines.actions.remove} type="submit" disabled={pending} aria-busy={pending}>
         <RemoveIcon alt={messages.deadlines.actions.remove} fill="currentColor" width="1.25em" height="1.25em" />
       </button>
     )

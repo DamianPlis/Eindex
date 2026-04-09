@@ -8,6 +8,7 @@ export type UserSession = {
   uid: string;
   name: string;
   email: string;
+  photoUrl?: string;
 };
 
 const SESSION_COOKIE = "eindx_session";
@@ -23,6 +24,7 @@ export async function getSession(): Promise<UserSession | null> {
       uid: decoded.uid,
       name: (decoded.name as string) || (decoded.email as string) || "User",
       email: (decoded.email as string) || "",
+      photoUrl: (decoded.picture as string) || "",
     };
   } catch {
     return null;

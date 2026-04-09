@@ -8,6 +8,7 @@ import {
   setSlotTopicAction,
 } from "@/app/(app)/actions";
 import { useAppLocale, useMessages } from "@/components/i18n/LocaleProvider";
+import CustomSubjectModal from "@/components/planning/CustomSubjectModal";
 import ArrowLeft from "@/icons/keyboard_arrow_left_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import ArrowRight from "@/icons/keyboard_arrow_right_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import DoubleArrowLeft from "@/icons/keyboard_double_arrow_left_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
@@ -118,8 +119,6 @@ export default function PlanningPageClient({
 
   const [activeDayIndex, setActiveDayIndex] = useState(0);
   const [customModalOpen, setCustomModalOpen] = useState(false);
-  const [customName, setCustomName] = useState("");
-  const [customColor, setCustomColor] = useState("#64748b");
 
   const [subjectOverrides, setSubjectOverrides] = useState<Record<string, string | null>>({});
   const [topicOverrides, setTopicOverrides] = useState<Record<string, string>>({});
@@ -306,21 +305,22 @@ export default function PlanningPageClient({
 
   function openAddCustomForSlot(dayIndex: number, slotIndex: number, slotId: string) {
     customTargetRef.current = { dayIndex, slotIndex, slotId };
-    setCustomName("");
-    setCustomColor("#64748b");
     setCustomModalOpen(true);
   }
 
-  function handleSaveCustomSubject() {
-    const name = customName.trim();
-    if (!name) return;
+  function closeCustomSubjectModal() {
+    setCustomModalOpen(false);
+    customTargetRef.current = null;
+  }
+
+  function handleSaveCustomSubject(name: string, color: string) {
     const target = customTargetRef.current;
     if (!target) return;
 
     startTransition(async () => {
       const newId = await addCustomSubjectAction({
         name,
-        color: customColor,
+        color,
         writerId: clientIdRef.current,
       });
       if (newId) {
@@ -336,8 +336,7 @@ export default function PlanningPageClient({
           [target.slotId]: newId,
         }));
       }
-      setCustomModalOpen(false);
-      customTargetRef.current = null;
+      closeCustomSubjectModal();
     });
   }
 
@@ -504,56 +503,13 @@ export default function PlanningPageClient({
         </div>
       </div>
 
-      {customModalOpen ? (
-        <div className="modal-overlay" role="dialog" aria-modal="true">
-          <div className="modal">
-            <div className="modal-header">
-              <div style={{ fontWeight: 800 }}>{messages.planning.addCustomSubjectTitle}</div>
-              <button className="modal-save" onClick={handleSaveCustomSubject} disabled={isPending}>
-                {messages.common.save}
-              </button>
-            </div>
-
-            <div className="modal-body">
-              <label style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>
-                {messages.planning.name}
-              </label>
-              <input
-                className="slot-input"
-                style={{ marginBottom: 12, fontSize: 16 }}
-                value={customName}
-                onChange={(event) => setCustomName(event.target.value)}
-                placeholder={messages.planning.exampleSubject}
-              />
-
-              <label style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>
-                {messages.planning.color}
-              </label>
-              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                <input
-                  type="color"
-                  value={customColor}
-                  onChange={(event) => setCustomColor(event.target.value)}
-                />
-                <div style={{ fontSize: 13 }}>{customColor}</div>
-              </div>
-            </div>
-
-            <div className="modal-footer">
-              <button
-                className="modal-cancel"
-                onClick={() => {
-                  setCustomModalOpen(false);
-                  customTargetRef.current = null;
-                }}
-                disabled={isPending}
-              >
-                {messages.common.cancel}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <CustomSubjectModal
+        isOpen={customModalOpen}
+        isPending={isPending}
+        messages={messages}
+        onClose={closeCustomSubjectModal}
+        onSave={handleSaveCustomSubject}
+      />
     </div>
   );
 }

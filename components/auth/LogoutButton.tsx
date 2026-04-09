@@ -12,6 +12,7 @@ import LogoutIcon from "@/icons/logout_24dp_000000_FILL0_wght400_GRAD0_opsz24.sv
 
 type LogoutButtonProps = {
   uid: string;
+  className?: string;
 };
 
 type StateVersionResponse = {
@@ -39,7 +40,7 @@ function isStandaloneMode(): boolean {
   return iosStandalone || window.matchMedia("(display-mode: standalone)").matches;
 }
 
-export default function LogoutButton({ uid }: LogoutButtonProps) {
+export default function LogoutButton({ uid, className }: LogoutButtonProps) {
   const router = useRouter();
   const locale = useAppLocale();
   const messages = useMessages();
@@ -166,7 +167,7 @@ export default function LogoutButton({ uid }: LogoutButtonProps) {
   }
 
   return (
-    <button className="logout-button" onClick={handleLogout}>
+    <button className={className ? `logout-button ${className}` : "logout-button"} onClick={handleLogout}>
       <span>{messages.nav.logout}</span>
       <LogoutIcon fill="currentColor" alt={messages.nav.logout} height={16} width={16} />
     </button>

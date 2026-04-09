@@ -39,6 +39,9 @@ export const enMessages = {
     noDeadlinesForToday: "No deadlines for today",
     noScheduleForToday: "No schedule for today.",
   },
+  network: {
+    offline: "You're offline.",
+  },
   planning: {
     weekControls: "Week controls",
     weekStarts: "Week starts",
@@ -48,8 +51,8 @@ export const enMessages = {
     addCustomSubjectTitle: "Add custom subject",
     name: "Name",
     color: "Color",
-    exampleSubject: "Example: Theater",
-    topicOptional: "Topic (optional)",
+    exampleSubject: "Example: Community work",
+    topicOptional: "Topic",
     topicFor: "Topic for",
     fixedSlots: {
       morningCircle: "Morning circle",
@@ -154,7 +157,7 @@ export const enMessages = {
   subjects: {
     builtin: {
       math: "Math",
-      theater: "Improv",
+      theater: "Impro",
       conversation: "Conversation",
       physics: "Physics",
       bio: "Biology",
@@ -162,9 +165,9 @@ export const enMessages = {
       czech: "Czech",
       spanish: "Spanish",
       music: "Music",
-      obcanka: "Civics",
+      obcanka: "Citizenship education",
       english: "English",
-      farm: "Chynice",
+      farm: "Farm",
       it: "IT",
       history: "History",
       geo: "Geography",
