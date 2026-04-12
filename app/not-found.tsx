@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { localizePath } from "@/lib/i18n/routing";
-import { getRequestLocale, getRequestMessages } from "@/lib/i18n/server";
+import { getPreferredLocale } from "@/lib/i18n/preference";
+import { getRequestMessages } from "@/lib/i18n/server";
 
 export default async function NotFoundPage() {
-  const [locale, messages] = await Promise.all([getRequestLocale(), getRequestMessages()]);
+  const [locale, messages] = await Promise.all([getPreferredLocale(null), getRequestMessages()]);
 
   return (
     <main className="container" style={{ margin: "16px", textAlign: "center" }}>

@@ -5,12 +5,10 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import LogoutButton from "@/components/auth/LogoutButton";
-import { useMessages } from "@/components/i18n/LocaleProvider";
+import { useAppLocale, useMessages } from "@/components/i18n/LocaleProvider";
 import { localizePath, stripLocaleFromPath } from "@/lib/i18n/routing";
-import type { AppLocale } from "@/lib/i18n/config";
 
 type TopbarProfileMenuProps = {
-  locale: AppLocale;
   uid: string;
   userLabel: string;
   photoUrl?: string;
@@ -27,11 +25,11 @@ function getInitials(label: string) {
 }
 
 export default function TopbarProfileMenu({
-  locale,
   uid,
   userLabel,
   photoUrl,
 }: TopbarProfileMenuProps) {
+  const locale = useAppLocale();
   const messages = useMessages();
   const pathname = stripLocaleFromPath(usePathname() || "/");
   const [isOpen, setIsOpen] = useState(false);
@@ -44,7 +42,6 @@ export default function TopbarProfileMenu({
     function handlePointerDown(event: MouseEvent) {
       if (!rootRef.current?.contains(event.target as Node)) {
         setIsOpen(false);
-        console.log("Pointer down outside of profile menu, closing menu");
       }
     }
 
@@ -62,10 +59,6 @@ export default function TopbarProfileMenu({
       document.removeEventListener("keydown", handleEscape);
     };
   }, []);
-
-  useEffect(() => {
-    console.log("Profile menu open state changed:", isOpen);
-  }, [isOpen]);
 
   return (
     <div

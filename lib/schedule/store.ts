@@ -100,6 +100,11 @@ export async function getUserState(uid: string): Promise<ScheduleState> {
   return cloneState(state);
 }
 
+export async function getUserStateMaybe(uid: string | null): Promise<ScheduleState | null> {
+  if (!uid) return null;
+  return await getUserState(uid);
+}
+
 export async function saveUserState(uid: string, state: ScheduleState) {
   const normalizedState = migrateState(state);
   const ref = userDocRef(uid);
@@ -158,6 +163,11 @@ export async function getUserSettings(uid: string): Promise<AppSettings> {
   if (!snap.exists) return { ...DEFAULT_SETTINGS };
 
   return cloneSettings(resolveStoredSettings(snap.data() || {}));
+}
+
+export async function getUserSettingsMaybe(uid: string | null): Promise<AppSettings | null> {
+  if (!uid) return null;
+  return await getUserSettings(uid);
 }
 
 export async function updateUserSettings(

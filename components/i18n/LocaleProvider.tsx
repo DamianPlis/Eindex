@@ -1,8 +1,12 @@
 "use client";
 
-import { createContext, useContext } from "react";
-import type { AppLocale } from "@/lib/i18n/config";
-import type { AppMessages } from "@/lib/i18n/messages";
+import { createContext, useContext, useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase/client";
+import { getMessages, type AppMessages } from "@/lib/i18n/messages";
+import { getLocaleFromPathname, localizePath } from "@/lib/i18n/routing";
+import { normalizeAppLocale, type AppLocale } from "@/lib/i18n/config";
 
 type LocaleContextValue = {
   locale: AppLocale;
@@ -13,10 +17,81 @@ const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 type LocaleProviderProps = LocaleContextValue & {
   children: React.ReactNode;
+  uid?: string | null;
 };
 
-export function LocaleProvider({ locale, messages, children }: LocaleProviderProps) {
-  return <LocaleContext.Provider value={{ locale, messages }}>{children}</LocaleContext.Provider>;
+function resolveSnapshotLocale(data: unknown): AppLocale | null {
+  if (!data || typeof data !== "object") return null;
+
+  const source = data as {
+    settings?: {
+      locale?: unknown;
+    };
+    state?: {
+      settings?: {
+        locale?: unknown;
+      };
+    };
+  };
+
+  const rawLocale = source.settings?.locale ?? source.state?.settings?.locale;
+  if (rawLocale === undefined) return null;
+  return normalizeAppLocale(rawLocale);
+}
+
+export function LocaleProvider({ locale, messages, uid, children }: LocaleProviderProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [livePreference, setLivePreference] = useState<{ uid: string | null; locale: AppLocale | null }>({
+    uid: uid || null,
+    locale: null,
+  });
+  const activeLocale =
+    uid && livePreference.uid === uid && livePreference.locale ? livePreference.locale : locale;
+  const activeMessages = activeLocale === locale ? messages : getMessages(activeLocale);
+
+  useEffect(() => {
+    if (!uid) return;
+
+    const unsubscribe = onSnapshot(
+      doc(db, "users", uid),
+      (snapshot) => {
+        if (!snapshot.exists()) return;
+        const nextLocale = resolveSnapshotLocale(snapshot.data());
+        if (!nextLocale) return;
+        setLivePreference((current) =>
+          current.uid === uid && current.locale === nextLocale ? current : { uid, locale: nextLocale },
+        );
+      },
+      () => {
+        // noop
+      },
+    );
+
+    return unsubscribe;
+  }, [uid]);
+
+  useEffect(() => {
+    document.documentElement.lang = activeLocale;
+  }, [activeLocale]);
+
+  useEffect(() => {
+    if (!pathname) return;
+
+    const query = searchParams.toString();
+    const currentPath = `${pathname}${query ? `?${query}` : ""}`;
+    const currentPathLocale = getLocaleFromPathname(pathname);
+    if (currentPathLocale === activeLocale) return;
+
+    const nextPath = localizePath(activeLocale, currentPath);
+    if (nextPath === currentPath) return;
+    router.replace(nextPath);
+  }, [activeLocale, pathname, router, searchParams]);
+
+  return (
+    <LocaleContext.Provider value={{ locale: activeLocale, messages: activeMessages }}>{children}</LocaleContext.Provider>
+  );
 }
 
 function useLocaleContext() {

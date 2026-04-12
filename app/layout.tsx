@@ -2,9 +2,11 @@ import type { Metadata, Viewport } from "next";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import PwaRegistrar from "@/components/pwa/PwaRegistrar";
 import { getMessages } from "@/lib/i18n/messages";
-import { getRequestLocale } from "@/lib/i18n/server";
+import { getPreferredLocale } from "@/lib/i18n/preference";
+import { getSession } from "@/lib/session";
 import "./globals.css";
 import NoScriptNotice from "@/components/layout/NoScriptNotice";
+import { getUserSettingsMaybe } from "@/lib/schedule/store";
 
 
 export const metadata: Metadata = {
@@ -33,16 +35,17 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const locale = await getRequestLocale();
+  const session = await getSession();
+  const [locale, settings] = await Promise.all([getPreferredLocale(session), getUserSettingsMaybe(session?.uid ?? null)]);
   const messages = getMessages(locale);
 
   return (
-    <html lang={locale}>
+    <html lang={locale} data-theme={settings?.theme}>
       <body>
-        <noscript  >
+        <noscript>
           <NoScriptNotice messages={messages.noscript} />
         </noscript>
-        <LocaleProvider locale={locale} messages={messages}>
+        <LocaleProvider locale={locale} messages={messages} uid={session?.uid}>
           <PwaRegistrar />
           {children}
         </LocaleProvider>

@@ -15,7 +15,7 @@ export default async function ProtectedLocaleLayout({
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
-  const locale = assertLocale((await params).locale);
+  assertLocale((await params).locale);
   const session = await requireSession();
   const settings = await getUserSettings(session.uid);
   const userLabel = session.name || session.email || session.uid;
@@ -28,14 +28,13 @@ export default async function ProtectedLocaleLayout({
         <div className="topbar-actions">
           <OnlineStatusBanner />
           <div className="topbar-account-desktop">
-            <SettingsLink locale={locale} />
+            <SettingsLink />
             <span className="topbar-user-label" title={userLabel}>
               {userLabel}
             </span>
             <LogoutButton uid={session.uid} />
           </div>
           <TopbarProfileMenu
-            locale={locale}
             uid={session.uid}
             userLabel={userLabel}
             photoUrl={session.photoUrl}
