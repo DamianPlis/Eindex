@@ -1,7 +1,6 @@
 "use client";
 
 import type { AppTheme } from "@/lib/settings/types";
-import { getCSSVariable } from "@/lib/utils/css";
 
 function resolveThemeRoot() {
   if (typeof document === "undefined") return null;
