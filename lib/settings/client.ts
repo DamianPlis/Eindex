@@ -1,6 +1,7 @@
 "use client";
 
 import type { AppTheme } from "@/lib/settings/types";
+import { getCSSVariable } from "@/lib/utils/css";
 
 function resolveThemeRoot() {
   if (typeof document === "undefined") return null;
@@ -14,8 +15,8 @@ export function applyTheme(theme: AppTheme) {
   themeRoot.dataset.theme = theme;
   document.documentElement.dataset.theme = theme;
 
-  const metaTheme = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-  if (metaTheme) {
-    metaTheme.content = theme === "dark" ? "#07111f" : "#eef3ff";
-  }
+  // const metaTheme = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+  // if (metaTheme) {
+  //   metaTheme.content = theme === "dark" ? getCSSVariable("--bg-dark") : getCSSVariable("--bg");
+  // }
 }

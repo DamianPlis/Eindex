@@ -72,18 +72,18 @@ export default function SlotBubble({
       <div className="slot-content">
         <div>
           <div className="slot-title-text">{title}</div>
-          {subtitle ? (
-            <div className="slot-subtitle">
-              {isLunch && lunchText ? (
-                <LunchIcon
-                  fill="currentColor"
-                  alt={messages.planning.fixedSlots.lunch}
-                  height={16}
-                  width={16}
-                />
-              ) : null}
-              {subtitle}
+          {subtitle && isLunch && lunchText ? (
+            <div className="slot-subtitle" style={{display:"flex", }}>
+              <LunchIcon
+                fill="currentColor"
+                alt={messages.planning.fixedSlots.lunch}
+                height={16}
+                width={16}
+              />
+              <div style={{flex:1}}>{subtitle}</div>
             </div>
+          ) : subtitle ? (
+            <div className="slot-subtitle">{subtitle}</div>
           ) : null}
         </div>
         <div className="slot-time-text">{slot.time}</div>

@@ -8,6 +8,8 @@ import { localizePath, stripLocaleFromPath } from "@/lib/i18n/routing";
 import { applyTheme } from "@/lib/settings/client";
 import type { AppSettings, AppTheme } from "@/lib/settings/types";
 import { getClientId } from "@/lib/sync/client-id";
+import DarkModeIcon from "@/icons/dark_mode_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import LightModeIcon from "@/icons/light_mode_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 
 type SettingsPageClientProps = {
   initialSettings: AppSettings;
@@ -39,9 +41,9 @@ export default function SettingsPageClient({ initialSettings }: SettingsPageClie
     applyTheme(settings.theme);
   }, [settings.theme]);
 
-  function handleThemeToggle() {
-    const nextTheme: AppTheme = settings.theme === "dark" ? "light" : "dark";
-
+  function handleThemeSelect(nextTheme: AppTheme) {
+    if (nextTheme === settings.theme) return;
+    
     const previousSettings = settings;
     const optimisticSettings = {
       ...settings,
@@ -107,13 +109,20 @@ export default function SettingsPageClient({ initialSettings }: SettingsPageClie
       <div className="container">
         <h2>{messages.settings.title}</h2>
         <p>{messages.settings.currentTheme}: {currentThemeLabel}</p>
-        <button className="add-button" type="button" onClick={handleThemeToggle} disabled={isPending}>
-          {isPending && pendingAction === "theme"
-            ? messages.common.saving
-            : settings.theme === "dark"
-              ? messages.settings.switchToLightMode
-              : messages.settings.switchToDarkMode}
-        </button>
+          <div style={{display:"flex", gap: 4}}>
+            <button onClick={() => handleThemeSelect("dark")}
+              className={`ghost-button dark-mode-btn ${isPending && pendingAction === "theme" ? "pending" : ""} ${settings.theme === "dark" ? "active" : ""}`}
+              disabled={isPending && pendingAction === "theme"}
+            >
+              <DarkModeIcon fill="currentColor" />
+            </button>
+            <button onClick={() => handleThemeSelect("light")}
+              className={`ghost-button light-mode-btn ${isPending && pendingAction === "theme" ? "pending" : ""} ${settings.theme === "light" ? "active" : ""}`}
+              disabled={isPending && pendingAction === "theme"}
+            >
+              <LightModeIcon fill="currentColor" />
+            </button>
+          </div>
         <p>{messages.settings.currentLanguage}: {currentLanguageLabel}</p>
         <button className="add-button" type="button" onClick={handleLocaleToggle} disabled={isPending}>
           {isPending && pendingAction === "locale"

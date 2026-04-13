@@ -168,8 +168,8 @@ export default function LogoutButton({ uid, className }: LogoutButtonProps) {
 
   return (
     <button className={className ? `logout-button ${className}` : "logout-button"} onClick={handleLogout}>
-      <span>{messages.nav.logout}</span>
-      <LogoutIcon fill="currentColor" alt={messages.nav.logout} height={16} width={16} />
+      {/* <span>{messages.nav.logout}</span> */}
+      <LogoutIcon fill="currentColor" alt={messages.nav.logout} height={24} width={24} />
     </button>
   );
 }

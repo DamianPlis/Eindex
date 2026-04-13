@@ -94,11 +94,14 @@ function extractPerDay(html: string): Record<string, string> {
     const items: Array<{ type: string; text: string }> = [];
     $(chosenPart)
       .find(".menuJidla")
-      .each((_, itemEl) => {
-        const type = normalizeText($(itemEl).find(".popiskaJidla").first().text());
-        const text = normalizeText($(itemEl).find(".textJidla").first().text());
-        if (!text) return;
-        items.push({ type, text });
+      .each((_, menuEl) => {
+        $(menuEl).find(".row")
+        .each((_, itemEl) => {
+          const type = normalizeText($(itemEl).find(".popiskaJidla").first().text());
+          const text = normalizeText($(itemEl).find(".textJidla").first().text());
+          if (!text) return;
+          items.push({ type, text });
+        });
       });
 
     const pickedMeal = pickMeal(items);
