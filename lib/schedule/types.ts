@@ -50,3 +50,7 @@ export type ScheduleState = {
   deadlines: DeadlineItem[];
   settings: AppSettings;
 };
+
+export type SortOption = "count-desc" | "count-asc" | "name-asc" | "name-desc";
+
+export type StatsOptions = "week" | "month" | "year";

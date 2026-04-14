@@ -1,5 +1,6 @@
 import type { DeadlineItem, FixedSlotKey, ScheduleState, Slot, Subject } from "@/lib/schedule/types";
 import { DEFAULT_SETTINGS, normalizeSettings } from "@/lib/settings/defaults";
+import { getCurrentWeekStats, sortStats } from "./selectors";
 
 type SlotTemplate = {
   time: string;
@@ -236,8 +237,33 @@ export function migrateState(raw: unknown): ScheduleState {
 
   const source = raw as Partial<ScheduleState>;
   const base = createDefaultState();
-  
-  base.subjects = Array.isArray(source.subjects) && source.subjects.length ? source.subjects : defaultSubjects;
+
+  const basicSubjects =
+    Array.isArray(source.subjects) && source.subjects.length ? source.subjects : defaultSubjects;
+
+  if (!isScheduleState(source)) {
+    console.log("Source state is already valid ScheduleState, applying basic migration");
+    base.subjects = basicSubjects;
+  } else {
+    const subjectMap = new Map(basicSubjects.map((subject) => [subject.id, subject]));
+    const subjectNameMap = new Map(basicSubjects.map((subject) => [subject.id, subject.name]));
+    const sortedStats = sortStats(
+      getCurrentWeekStats("year", source as ScheduleState),
+      subjectNameMap,
+      "en",
+      "count-desc",
+    );
+
+    const sortedSubjects = sortedStats
+      .map(({ subjectId }) => subjectMap.get(subjectId))
+      .filter((subject): subject is Subject => Boolean(subject));
+
+    const remainingSubjects = basicSubjects.filter(
+      (subject) => !sortedSubjects.some((sortedSubject) => sortedSubject.id === subject.id),
+    );
+
+    base.subjects = [...sortedSubjects, ...remainingSubjects];
+  }
 
   const todayISO = isoDate(new Date());
   base.deadlines = normalizeDeadlines(source.deadlines, todayISO);
@@ -288,7 +314,7 @@ export function migrateState(raw: unknown): ScheduleState {
       days: buildDaysForWeek(currentWeek),
     };
   }
-
+  console.log("Migrated state:", base);
   return base;
 }
 
@@ -299,4 +325,30 @@ export function parseRangeMinutes(timeStr: string): number | null {
   const [eh, em] = endRaw.split(":").map(Number);
   if ([sh, sm, eh, em].some(Number.isNaN)) return null;
   return Math.max(0, eh * 60 + em - (sh * 60 + sm));
+}
+/* eslint-disable @typescript-eslint/no-explicit-any */
+  function isScheduleState(obj: any): obj is ScheduleState {
+  return (
+    typeof obj === "object" &&
+    obj !== null &&
+
+    // subjects
+    Array.isArray(obj.subjects) &&
+
+    // weeks (basic check)
+    typeof obj.weeks === "object" &&
+    obj.weeks !== null &&
+
+    // lunches
+    typeof obj.lunches === "object" &&
+    obj.lunches !== null &&
+    Object.values(obj.lunches).every(v => typeof v === "string") &&
+
+    // deadlines
+    Array.isArray(obj.deadlines) &&
+
+    // settings
+    typeof obj.settings === "object" &&
+    obj.settings !== null
+  );
 }

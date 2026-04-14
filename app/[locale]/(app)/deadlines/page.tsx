@@ -3,8 +3,7 @@ import DeadlinesList from "@/components/deadlines/DeadlinesList";
 import StatsCard from "@/components/deadlines/StatsCard";
 import { getMessages } from "@/lib/i18n/messages";
 import { assertLocale } from "@/lib/i18n/server";
-import { isoDate } from "@/lib/schedule/defaults";
-import { getWeekStats } from "@/lib/schedule/selectors";
+import { getCurrentWeekStats } from "@/lib/schedule/selectors";
 import { getUserState } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
 
@@ -18,22 +17,9 @@ export default async function LocaleDeadlinesPage({
   const session = await requireSession();
   const state = await getUserState(session.uid);
 
-  const now = new Date();
-
-  const weekStart = new Date(now);
-  weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1);
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekStart.getDate() + 6);
-
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-  const yearStart = new Date(now.getFullYear(), 0, 1);
-  const yearEnd = new Date(now.getFullYear(), 11, 31);
-
-  const weekStats = getWeekStats(state, isoDate(weekStart), isoDate(weekEnd));
-  const monthStats = getWeekStats(state, isoDate(monthStart), isoDate(monthEnd));
-  const yearStats = getWeekStats(state, isoDate(yearStart), isoDate(yearEnd));
+  const weekStats = getCurrentWeekStats("week", state);
+  const monthStats = getCurrentWeekStats("month", state);
+  const yearStats = getCurrentWeekStats("year", state);
 
   return (
     <div className="deadlines-container">

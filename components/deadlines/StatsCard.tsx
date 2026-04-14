@@ -6,14 +6,14 @@ import { getSubjectDisplayName } from "@/lib/schedule/labels";
 import type { ScheduleState } from "@/lib/schedule/types";
 import SortIcon from "@/icons/sort_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import FilterIcon from "@/icons/filter_list_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import type { SortOption } from "@/lib/schedule/types";
+import { sortStats } from "@/lib/schedule/selectors";
 
 interface StatsCardProps {
   title: string;
   stats: Record<string, number>;
   subjects: ScheduleState["subjects"];
 }
-
-type SortOption = "count-desc" | "count-asc" | "name-asc" | "name-desc";
 
 export default function StatsCard({ title, stats, subjects }: StatsCardProps) {
   const locale = useAppLocale();
@@ -24,21 +24,7 @@ export default function StatsCard({ title, stats, subjects }: StatsCardProps) {
     () => new Map(subjects.map((subject) => [subject.id, getSubjectDisplayName(subject, messages)])),
     [messages, subjects],
   );
-
-  const sortedStats = Object.entries(stats)
-    .map(([subjectId, count]) => ({ subjectId, count }))
-    .sort((a, b) => {
-      if (sortBy === "count-desc") return b.count - a.count;
-      if (sortBy === "count-asc") return a.count - b.count;
-      
-      const nameA = subjectMap.get(a.subjectId) || a.subjectId;
-      const nameB = subjectMap.get(b.subjectId) || b.subjectId;
-      
-      if (sortBy === "name-asc") return nameA.localeCompare(nameB, locale);
-      if (sortBy === "name-desc") return nameB.localeCompare(nameA, locale);
-      
-      return 0;
-    });
+  const sortedStats = React.useMemo(() => sortStats(stats, subjectMap, locale, sortBy), [stats, subjectMap, locale, sortBy]);
 
   return (
     <div className="stats-card">
