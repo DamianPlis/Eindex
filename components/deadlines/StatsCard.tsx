@@ -68,7 +68,7 @@ export default function StatsCard({ title, stats, subjects }: StatsCardProps) {
                 backgroundColor: `${subjects.find((s) => s.id === subjectId)?.color || "#000000"}55`,
               }}
             >
-              {subjectMap.get(subjectId) || subjectId}: {count} {messages.deadlines.times}
+              {subjectMap.get(subjectId) || subjectId}: {count} {messages.deadlines.statistics.times}
             </li>
           ))}
         </ul>

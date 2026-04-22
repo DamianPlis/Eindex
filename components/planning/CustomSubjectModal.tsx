@@ -22,8 +22,9 @@ export default function CustomSubjectModal({
 }: CustomSubjectModalProps) {
   const [customName, setCustomName] = useState("");
   const [customColor, setCustomColor] = useState(DEFAULT_COLOR);
-
+  
   if (!isOpen) return null;
+
 
   function handleClose() {
     setCustomName("");

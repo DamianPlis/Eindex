@@ -105,6 +105,10 @@ export async function getUserStateMaybe(uid: string | null): Promise<ScheduleSta
   return await getUserState(uid);
 }
 
+export const getCachedUserState = cache(async (uid: string) => {
+  return await getUserState(uid); 
+});
+
 export async function saveUserState(uid: string, state: ScheduleState) {
   const normalizedState = migrateState(state);
   const ref = userDocRef(uid);

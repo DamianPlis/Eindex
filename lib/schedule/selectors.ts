@@ -1,6 +1,7 @@
 import type { AppLocale } from "@/lib/i18n/config";
-import { isoDate, parseRangeMinutes } from "@/lib/schedule/defaults";
-import type { DeadlineItem, ScheduleState, Slot, SortOption, StatsOptions } from "@/lib/schedule/types";
+import { isoDate } from "@/lib/schedule/defaults";
+import type { DeadlineItem, ScheduleState, Slot, StatsOptions } from "@/lib/schedule/types";
+import { getCurrentPeriodStats, getWeekStats, sortStats } from "@/lib/schedule/stats";
 
 const deadlineFormatters = new Map<string, Intl.RelativeTimeFormat>();
 
@@ -75,65 +76,10 @@ export function getTodayISO(): string {
   return isoDate(new Date());
 }
 
-export function getWeekStats(state: ScheduleState, startISO: string, endISO: string) {
-  const counts: Record<string, number> = {};
-  Object.values(state.weeks || {}).forEach((week) => {
-    week.days.forEach((day) => {
-      if (day.date < startISO || day.date > endISO) return;
-      day.slots.forEach((slot) => {
-        if (!slot.subjectId || slot.subjectId === "lunch") return;
-        const mins = parseRangeMinutes(slot.time);
-        const weight = mins ? Math.max(1, Math.round(mins / 60)) : 1;
-        counts[slot.subjectId] = (counts[slot.subjectId] || 0) + weight;
-      });
-    });
-  });
-  return counts;
-}
+export { getWeekStats, sortStats };
 
-export function getCurrentWeekStats(statsOption:StatsOptions, state: ScheduleState) {
-  const now = new Date();
-
-  const weekStart = new Date(now);
-  weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1);
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekStart.getDate() + 6);
-
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-  const yearStart = new Date(now.getFullYear(), 0, 1);
-  const yearEnd = new Date(now.getFullYear(), 11, 31);
-
-  const weekStats = getWeekStats(state, isoDate(weekStart), isoDate(weekEnd));
-  const monthStats = getWeekStats(state, isoDate(monthStart), isoDate(monthEnd));
-  const yearStats = getWeekStats(state, isoDate(yearStart), isoDate(yearEnd));
-
-  if (statsOption === "week") return weekStats;
-  if (statsOption === "month") return monthStats;
-  if (statsOption === "year") return yearStats;
-
-  return weekStats;
-}
-
-export function sortStats(stats: Record<string, number>, subjectMap: Map<string, string>, locale: AppLocale, sortBy: SortOption) {
-  
-  const sortedStats = Object.entries(stats)
-    .map(([subjectId, count]) => ({ subjectId, count }))
-    .sort((a, b) => {
-      if (sortBy === "count-desc") return b.count - a.count;
-      if (sortBy === "count-asc") return a.count - b.count;
-      
-      const nameA = subjectMap.get(a.subjectId) || a.subjectId;
-      const nameB = subjectMap.get(b.subjectId) || b.subjectId;
-      
-      if (sortBy === "name-asc") return nameA.localeCompare(nameB, locale);
-      if (sortBy === "name-desc") return nameB.localeCompare(nameA, locale);
-      
-      return 0;
-    });
-
-    return sortedStats;
+export function getCurrentWeekStats(statsOption: StatsOptions, state: ScheduleState) {
+  return getCurrentPeriodStats(statsOption, state);
 }
 
 export function pickTodaySchedule(state: ScheduleState, todayISO: string): Slot[] {

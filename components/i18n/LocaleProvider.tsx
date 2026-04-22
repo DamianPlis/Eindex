@@ -43,6 +43,7 @@ export function LocaleProvider({ locale, messages, uid, children }: LocaleProvid
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const query = searchParams.toString();
   const [livePreference, setLivePreference] = useState<{ uid: string | null; locale: AppLocale | null }>({
     uid: uid || null,
     locale: null,
@@ -79,15 +80,21 @@ export function LocaleProvider({ locale, messages, uid, children }: LocaleProvid
   useEffect(() => {
     if (!pathname) return;
 
-    const query = searchParams.toString();
     const currentPath = `${pathname}${query ? `?${query}` : ""}`;
     const currentPathLocale = getLocaleFromPathname(pathname);
     if (currentPathLocale === activeLocale) return;
 
     const nextPath = localizePath(activeLocale, currentPath);
     if (nextPath === currentPath) return;
-    router.replace(nextPath);
-  }, [activeLocale, pathname, router, searchParams]);
+
+    const timeout = window.setTimeout(() => {
+      router.replace(nextPath);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [activeLocale, pathname, router, query]);
 
   return (
     <LocaleContext.Provider value={{ locale: activeLocale, messages: activeMessages }}>{children}</LocaleContext.Provider>

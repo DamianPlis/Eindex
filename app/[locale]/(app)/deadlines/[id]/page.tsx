@@ -31,7 +31,9 @@ export default async function LocaleDeadlineDetailPage({
   const backHref = redirectParam === "main" ? localizePath(locale, "/") : localizePath(locale, "/deadlines");
   const backLabel =
     redirectParam === "main" ? messages.deadlines.homePage : messages.deadlines.deadlinesPage;
-
+  
+//   const delay = new Promise((resolve) => setTimeout(resolve, 5000)); // Simulate a delay for loading state
+// await delay;
   return (
     <div className="container" style={{ margin: "16px" }}>
       <StatusPill status={item.status} />
