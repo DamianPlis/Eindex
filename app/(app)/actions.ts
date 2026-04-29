@@ -123,6 +123,7 @@ export async function updateSettingsAction(
 export async function addDeadlineAction(formData: FormData) {
   const session = await requireSession();
   const text = String(formData.get("text") || "").trim();
+  const description = String(formData.get("description") || "").trim();
   const date = String(formData.get("date") || "").trim();
   const id = crypto.randomUUID();
   if (!text || !date) return;
@@ -131,6 +132,7 @@ export async function addDeadlineAction(formData: FormData) {
     state.deadlines.push({
       id: id,
       text,
+      description,
       date,
       status: resolveDeadlineStatus({ date }),
     });

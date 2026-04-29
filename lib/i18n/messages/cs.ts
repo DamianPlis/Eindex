@@ -76,7 +76,12 @@ export const csMessages = {
       thisYear: "Tento rok",
     },
     add: "Přidat",
-    homeworkDescription: "Popis úkolu",
+    dueDate: "Due date",
+    openCreateModal: "Vytvořit úkol",
+    createTitle: "Vytvořit úkol",
+    homeworkTitle: "Název úkolu",
+    description: "Popis:",
+    descriptionPlaceholder: "Popis úkolu",
     showDoneDeadlines: "Zobrazit hotové úkoly",
     hideDoneDeadlines: "Skrýt hotové úkoly",
     noDeadlinesYet: "Zatím žádné úkoly",
@@ -110,7 +115,8 @@ export const csMessages = {
     appNotFoundMessage: "Tuto stránku v aplikaci jsme nenašli.",
     backToDashboard: "Zpět domů",
     somethingWentWrong: "500 - Něco se pokazilo",
-    renderFailed: "Stránku se nepodařilo zobrazit. Zkuste to znovu nebo se vraťte domů.",
+    renderFailed:
+      "Stránku se nepodařilo zobrazit. Zkuste to znovu nebo se vraťte domů.",
     tryAgain: "Zkusit znovu",
     unexpectedError: "500 - Neočekávaná chyba",
     criticalError: "Při zobrazování aplikace došlo ke kritické chybě.",
@@ -119,10 +125,8 @@ export const csMessages = {
   noscript: {
     eyebrow: "Je vyžadován JavaScript",
     title: "Tato aplikace potřebuje zapnutý JavaScript.",
-    copy:
-      "Eindx používá JavaScript pro přihlášení, navigaci, lokální úložiště a živé aktualizace rozvrhu. Zapněte JavaScript v nastavení prohlížeče a potom tuto stránku obnovte.",
-    note:
-      "Pokud už je JavaScript zapnutý, může skripty pro tento web blokovat rozšíření pro soukromí nebo zásada prohlížeče.",
+    copy: "Eindx používá JavaScript pro přihlášení, navigaci, lokální úložiště a živé aktualizace rozvrhu. Zapněte JavaScript v nastavení prohlížeče a potom tuto stránku obnovte.",
+    note: "Pokud už je JavaScript zapnutý, může skripty pro tento web blokovat rozšíření pro soukromí nebo zásada prohlížeče.",
     linksTitle: "Volitelné odkazy na pomoc",
     linksCopy:
       "Tyto stránky nejsou vždy spolehlivé. Podpůrné články se přesouvají, některé návody zastarávají a některé weby nemusí bez JavaScriptu fungovat správně.",

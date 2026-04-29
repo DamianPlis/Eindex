@@ -28,22 +28,40 @@ export default async function LocaleDeadlineDetailPage({
 
   if (!item) notFound();
 
-  const backHref = redirectParam === "main" ? localizePath(locale, "/") : localizePath(locale, "/deadlines");
+  const backHref =
+    redirectParam === "main"
+      ? localizePath(locale, "/")
+      : localizePath(locale, "/deadlines");
   const backLabel =
-    redirectParam === "main" ? messages.deadlines.homePage : messages.deadlines.deadlinesPage;
-  
-//   const delay = new Promise((resolve) => setTimeout(resolve, 5000)); // Simulate a delay for loading state
-// await delay;
+    redirectParam === "main"
+      ? messages.deadlines.homePage
+      : messages.deadlines.deadlinesPage;
+
+  const delay = new Promise((resolve) => setTimeout(resolve, 50000)); // Simulate a delay for loading state
+  await delay;
   return (
     <div className="container" style={{ margin: "16px" }}>
       <StatusPill status={item.status} />
-      <h2>{item.text}</h2>
+      <h2 className="mb-2 text-2xl font-bold">{item.text}</h2>
       <p style={{ marginBottom: 0 }}>
         {messages.deadlines.due}: {item.date}
       </p>
-      <div style={{ marginBottom: "1em" }} className="reminder-date reminder-relative-date">
+      <div
+        style={{ marginBottom: "1em" }}
+        className="reminder-date reminder-relative-date"
+      >
         {formatDeadlineRelativeLabel(item.date, locale)}
       </div>
+      {item.description ? (
+        <div style={{ marginBottom: "1em" }}>
+          <p style={{ marginBottom: "6px" }}>
+            {messages.deadlines.description}
+          </p>
+          <p style={{ margin: 0, whiteSpace: "pre-wrap" }}>
+            {item.description}
+          </p>
+        </div>
+      ) : null}
       <Link href={backHref} className="inline-link">
         {messages.deadlines.backTo} {backLabel}
       </Link>

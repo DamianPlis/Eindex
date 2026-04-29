@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --primary: #6b5cf6;
   --bg: hsl(222, 50%, 96%);
@@ -128,6 +132,8 @@ a {
   border-radius: 20px;
   padding: 18px;
   box-shadow: 0 10px 30px rgba(2, 6, 23, 0.06);
+  width: auto;
+  max-width: none;
 }
 
 .ghost-button {
@@ -298,12 +304,46 @@ a {
   margin-bottom: 20px;
 }
 
+.add-form-modal {
+  margin-bottom: 0;
+  display: block;
+}
+
+.deadlines-add-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 14px;
+}
+
+.deadline-plus-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: none;
+  background: var(--primary);
+  color: var(--text-inverse);
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.deadline-plus-button:hover {
+  filter: brightness(1.05);
+}
+
 .add-input-text {
   flex: 2;
 }
 
 .add-input-date {
   flex: 1;
+}
+
+.add-input-description {
+  resize: vertical;
+  min-height: 96px;
 }
 
 .deadlines-list {
@@ -505,6 +545,12 @@ a {
 .nav-icon {
   display: flex;
   align-items: center;
+}
+
+.settings-title {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: 1em;
 }
 
 @media (max-width: 480px) {

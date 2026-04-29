@@ -17,7 +17,9 @@ type SettingsPageClientProps = {
 
 type PendingAction = "theme" | "locale" | null;
 
-export default function SettingsPageClient({ initialSettings }: SettingsPageClientProps) {
+export default function SettingsPageClient({
+  initialSettings,
+}: SettingsPageClientProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -43,7 +45,7 @@ export default function SettingsPageClient({ initialSettings }: SettingsPageClie
 
   function handleThemeSelect(nextTheme: AppTheme) {
     if (nextTheme === settings.theme) return;
-    
+
     const previousSettings = settings;
     const optimisticSettings = {
       ...settings,
@@ -101,30 +103,43 @@ export default function SettingsPageClient({ initialSettings }: SettingsPageClie
     });
   }
 
-  const currentThemeLabel = settings.theme === "dark" ? messages.common.dark : messages.common.light;
-  const currentLanguageLabel = locale === "cs" ? messages.common.czech : messages.common.english;
+  const currentThemeLabel =
+    settings.theme === "dark" ? messages.common.dark : messages.common.light;
+  const currentLanguageLabel =
+    locale === "cs" ? messages.common.czech : messages.common.english;
 
   return (
     <div className="main-container">
       <div className="container">
-        <h2>{messages.settings.title}</h2>
-        <p>{messages.settings.currentTheme}: {currentThemeLabel}</p>
-          <div style={{display:"flex", gap: 4}}>
-            <button onClick={() => handleThemeSelect("dark")}
-              className={`ghost-button dark-mode-btn ${isPending && pendingAction === "theme" ? "pending" : ""} ${settings.theme === "dark" ? "active" : ""}`}
-              disabled={isPending && pendingAction === "theme"}
-            >
-              <DarkModeIcon fill="currentColor" />
-            </button>
-            <button onClick={() => handleThemeSelect("light")}
-              className={`ghost-button light-mode-btn ${isPending && pendingAction === "theme" ? "pending" : ""} ${settings.theme === "light" ? "active" : ""}`}
-              disabled={isPending && pendingAction === "theme"}
-            >
-              <LightModeIcon fill="currentColor" />
-            </button>
-          </div>
-        <p>{messages.settings.currentLanguage}: {currentLanguageLabel}</p>
-        <button className="add-button" type="button" onClick={handleLocaleToggle} disabled={isPending}>
+        <h2 className="settings-title">{messages.settings.title}</h2>
+        <p>
+          {messages.settings.currentTheme}: {currentThemeLabel}
+        </p>
+        <div className="flex gap-1 mt-2">
+          <button
+            onClick={() => handleThemeSelect("dark")}
+            className={`ghost-button dark-mode-btn ${isPending && pendingAction === "theme" ? "pending" : ""} ${settings.theme === "dark" ? "active" : ""}`}
+            disabled={isPending && pendingAction === "theme"}
+          >
+            <DarkModeIcon fill="currentColor" />
+          </button>
+          <button
+            onClick={() => handleThemeSelect("light")}
+            className={`ghost-button light-mode-btn ${isPending && pendingAction === "theme" ? "pending" : ""} ${settings.theme === "light" ? "active" : ""}`}
+            disabled={isPending && pendingAction === "theme"}
+          >
+            <LightModeIcon fill="currentColor" />
+          </button>
+        </div>
+        <p className="mt-6">
+          {messages.settings.currentLanguage}: {currentLanguageLabel}
+        </p>
+        <button
+          className="mt-2 add-button"
+          type="button"
+          onClick={handleLocaleToggle}
+          disabled={isPending}
+        >
           {isPending && pendingAction === "locale"
             ? messages.common.saving
             : locale === "en"
@@ -132,7 +147,9 @@ export default function SettingsPageClient({ initialSettings }: SettingsPageClie
               : messages.settings.switchToEnglish}
         </button>
         {errorMessage ? (
-          <p style={{ color: "var(--danger-text)", marginBottom: 0 }}>{errorMessage}</p>
+          <p style={{ color: "var(--danger-text)", marginBottom: 0 }}>
+            {errorMessage}
+          </p>
         ) : null}
       </div>
     </div>

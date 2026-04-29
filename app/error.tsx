@@ -15,16 +15,16 @@ export default function RootErrorPage({
   }, [error]);
 
   return (
-    <main className="container" style={{ margin: "16px", textAlign: "center" }}>
-      <h1 style={{ marginBottom: 8 }}>500 - Something went wrong</h1>
-      <p style={{ marginTop: 0 }}>
+    <main className="container m-4 text-center">
+      <h1 className="mb-2">500 - Something went wrong</h1>
+      <p className="mt-0">
         The page failed to render. Try again or return home.
       </p>
-      <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 12 }}>
+      <div className="flex gap-2.5 justify-center mt-3">
         <button className="add-button" onClick={reset}>
           Try Again
         </button>
-        <Link href="/" className="add-button" style={{ textDecoration: "none" }}>
+        <Link href="/" className="add-button no-underline">
           Home
         </Link>
       </div>

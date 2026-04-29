@@ -1,19 +1,18 @@
 import Link from "next/link";
 import { getPreferredLocale } from "@/lib/i18n/preference";
-import { getRequestMessages } from "@/lib/i18n/server"; 
+import { getRequestMessages } from "@/lib/i18n/server";
 
 export default async function LocaleNotFoundPage() {
-  const [, messages] = await Promise.all([getPreferredLocale(null), getRequestMessages()]);
+  const [, messages] = await Promise.all([
+    getPreferredLocale(null),
+    getRequestMessages(),
+  ]);
 
   return (
-    <main className="container" style={{ margin: "16px", textAlign: "center" }}>
-      <h1 style={{ marginBottom: 8 }}>{messages.errors.notFoundTitle}</h1>
-      <p style={{ marginTop: 0 }}>{messages.errors.notFoundMessage}</p>
-      <Link
-        href={"/"}
-        className="add-button"
-        style={{ display: "inline-block", marginTop: 12, textDecoration: "none" }}
-      >
+    <main className="container m-4 text-center">
+      <h1 className="mb-2">{messages.errors.notFoundTitle}</h1>
+      <p className="mt-0">{messages.errors.notFoundMessage}</p>
+      <Link href={"/"} className="add-button inline-block mt-3 no-underline">
         {messages.errors.goHome}
       </Link>
     </main>

@@ -31,14 +31,15 @@ export type DaySchedule = {
   slots: Slot[];
 };
 
-export type WeekSchedule = {
-  weekStart: string;
-  days: DaySchedule[];
-};
+// export type WeekSchedule = {
+//   weekStart: string;
+//   days: DaySchedule[];
+// };
 
 export type DeadlineItem = {
   id: string;
   text: string;
+  description: string;
   date: string;
   status: "upcoming" | "today" | "expired" | "done";
 };

@@ -10,17 +10,17 @@ export default function ErrorPage({
   reset: () => void;
 }) {
   return (
-    <div className="container" style={{ margin: "16px", textAlign: "center" }}>
-      <h2 style={{ marginBottom: 8 }}>500 - App Error</h2>
-      <p style={{ marginTop: 0 }}>Something went wrong while rendering this page.</p>
+    <div className="container m-4 text-center">
+      <h2 className="mb-2">500 - App Error</h2>
+      <p className="mt-0">Something went wrong while rendering this page.</p>
       {process.env.NODE_ENV === "development" ? (
-        <pre style={{ whiteSpace: "pre-wrap", textAlign: "left" }}>{error.message}</pre>
+        <pre className="whitespace-pre-wrap text-left">{error.message}</pre>
       ) : null}
-      <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 12 }}>
+      <div className="flex gap-2.5 justify-center mt-3">
         <button className="add-button" onClick={reset}>
           Try Again
         </button>
-        <Link href="/" className="add-button" style={{ textDecoration: "none" }}>
+        <Link href="/" className="add-button no-underline">
           Home
         </Link>
       </div>

@@ -74,7 +74,12 @@ export const enMessages = {
       times: "times",
     },
     add: "Add",
-    homeworkDescription: "Homework description",
+    dueDate: "Due date",
+    openCreateModal: "Create deadline",
+    createTitle: "Create Deadline",
+    homeworkTitle: "Deadline Title",
+    description: "Description:",
+    descriptionPlaceholder: "Add description",
     showDoneDeadlines: "Show Done Deadlines",
     hideDoneDeadlines: "Hide Done Deadlines",
     noDeadlinesYet: "No deadlines yet",
@@ -117,10 +122,8 @@ export const enMessages = {
   noscript: {
     eyebrow: "JavaScript Required",
     title: "This app needs JavaScript turned on.",
-    copy:
-      "Eindx uses JavaScript for login, navigation, local storage, and live schedule updates. Turn JavaScript back on in your browser settings, then reload this page.",
-    note:
-      "If JavaScript is already enabled, a privacy extension or browser policy may be blocking scripts for this site.",
+    copy: "Eindx uses JavaScript for login, navigation, local storage, and live schedule updates. Turn JavaScript back on in your browser settings, then reload this page.",
+    note: "If JavaScript is already enabled, a privacy extension or browser policy may be blocking scripts for this site.",
     linksTitle: "Optional help links",
     linksCopy:
       "These pages are not always reliable. Support articles move, some instructions get outdated, and some sites may not load properly without JavaScript.",

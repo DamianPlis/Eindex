@@ -211,6 +211,8 @@ export function normalizeDeadlines(
 
     const id = typeof rawDeadline.id === "string" ? rawDeadline.id.trim() : "";
     const text = typeof rawDeadline.text === "string" ? rawDeadline.text.trim() : "";
+    const description =
+      typeof rawDeadline.description === "string" ? rawDeadline.description.trim() : "";
     const date = typeof rawDeadline.date === "string" ? rawDeadline.date : "";
 
     if (!id || !text || !date) continue;
@@ -218,6 +220,7 @@ export function normalizeDeadlines(
     validDeadlines.push({
       id,
       text,
+      description,
       date,
       status: resolveDeadlineStatus(
         {

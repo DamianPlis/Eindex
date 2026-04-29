@@ -12,7 +12,7 @@ import {
 import { auth, googleProvider } from "@/lib/firebase/client";
 
 async function establishSession(user: User) {
-  console.log(user)
+  console.log(user);
   const idToken = await user.getIdToken(true);
   const response = await fetch("/api/session", {
     method: "POST",
@@ -25,7 +25,9 @@ async function establishSession(user: User) {
   });
 
   if (!response.ok) {
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+    };
     throw new Error(payload.error || "Failed to establish server session.");
   }
 }
@@ -49,7 +51,12 @@ export default function LoginPanel() {
           return;
         }
       } catch (err) {
-        if (active) setError(err instanceof Error ? err.message : messages.auth.authenticationFailed);
+        if (active)
+          setError(
+            err instanceof Error
+              ? err.message
+              : messages.auth.authenticationFailed,
+          );
       } finally {
         if (active) setLoading(false);
       }
@@ -73,7 +80,9 @@ export default function LoginPanel() {
         await signInWithRedirect(auth, googleProvider);
         return;
       } catch {
-        setError(err instanceof Error ? err.message : messages.auth.signInFailed);
+        setError(
+          err instanceof Error ? err.message : messages.auth.signInFailed,
+        );
       }
     } finally {
       setLoading(false);
@@ -81,14 +90,16 @@ export default function LoginPanel() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 20 }}>
-      <div className="container" style={{ maxWidth: 520, width: "100%", textAlign: "center" }}>
-        <h1 style={{ marginTop: 0 }}>Eindx</h1>
+    <div className="grid min-h-screen p-5 place-items-center">
+      <div className="container max-w-[520px] w-full text-center">
+        <h1 className="mt-0">Eindx</h1>
         <p>{messages.auth.signInPrompt}</p>
-        {error ? (
-          <p style={{ color: "var(--danger-text)", fontSize: 13, marginTop: 8 }}>{error}</p>
-        ) : null}
-        <button className="add-button" onClick={signInWithGoogle} disabled={loading}>
+        {error ? <p className="mt-2 text-sm text-red-800">{error}</p> : null}
+        <button
+          className="add-button"
+          onClick={signInWithGoogle}
+          disabled={loading}
+        >
           {loading ? messages.auth.checking : messages.auth.signInWithGoogle}
         </button>
       </div>

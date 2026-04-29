@@ -21,8 +21,10 @@ export default async function LocaleDeadlinesPage({
 
   return (
     <div className="deadlines-container">
-      <h2 className="deadlines-title">{messages.deadlines.title}</h2>
-      <AddDeadline />
+      <div className="flex justify-between">
+        <h2 className="deadlines-title">{messages.deadlines.title}</h2>
+        <AddDeadline />
+      </div>
 
       {/* Stream the deadlines list */}
       <Suspense fallback={<DeadlinesListSkeleton />}>

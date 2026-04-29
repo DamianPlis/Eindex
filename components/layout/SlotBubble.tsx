@@ -4,6 +4,7 @@ import { useSyncExternalStore } from "react";
 import { useMessages } from "@/components/i18n/LocaleProvider";
 import type { Slot, Subject } from "@/lib/schedule/types";
 import LunchIcon from "@/icons/restaurant_24dp_999999_FILL0_wght400_GRAD0_opsz24.svg";
+import { parseRangeMinutes } from "@/lib/schedule/defaults";
 
 function parseRange(timeStr: string) {
   if (!timeStr || !timeStr.includes("-")) return null;
@@ -25,7 +26,13 @@ function isCurrentSlot(timeStr: string) {
 function contrastColor(hex: string) {
   if (!hex || !hex.startsWith("#")) return "#000000";
   const parsed = parseInt(
-    hex.slice(1).length === 3 ? hex.slice(1).split("").map((c) => c + c).join("") : hex.slice(1),
+    hex.slice(1).length === 3
+      ? hex
+          .slice(1)
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : hex.slice(1),
     16,
   );
   if (Number.isNaN(parsed)) return "#000000";
@@ -73,14 +80,14 @@ export default function SlotBubble({
         <div>
           <div className="slot-title-text">{title}</div>
           {subtitle && isLunch && lunchText ? (
-            <div className="slot-subtitle" style={{display:"flex", }}>
+            <div className="slot-subtitle" style={{ display: "flex" }}>
               <LunchIcon
                 fill="currentColor"
                 alt={messages.planning.fixedSlots.lunch}
                 height={16}
                 width={16}
               />
-              <div style={{flex:1}}>{subtitle}</div>
+              <div style={{ flex: 1 }}>{subtitle}</div>
             </div>
           ) : subtitle ? (
             <div className="slot-subtitle">{subtitle}</div>
