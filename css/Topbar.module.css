@@ -1,0 +1,177 @@
+.onlineStatusBanner {
+  width: auto;
+  max-width: calc(100% - 32px);
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--danger) 28%, transparent);
+  background: color-mix(in srgb, var(--danger) 14%, var(--card));
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  animation: offline-banner-enter 180ms ease-out;
+}
+
+.onlineStatusDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  flex: 0 0 auto;
+  background: var(--danger);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--danger) 18%, transparent);
+}
+
+@keyframes offline-banner-enter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.appTopbar {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: var(--card);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  font-size: 14px !important;
+}
+
+.topbarActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbarAccountDesktop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbarUserLabel {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settingsLink {
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.settingsLink.active {
+  color: color-mix(in srgb, var(--text-primary) 20%, var(--primary) 80%);
+}
+
+.topbarProfileMenu {
+  position: relative;
+  display: none;
+}
+
+.topbarProfileTrigger {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border-medium);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 14%, var(--card));
+  color: var(--text-primary);
+  font-weight: 800;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.topbarProfileImage {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.topbarProfileDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 180px;
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  background: var(--card);
+  box-shadow: var(--shadow-md);
+  z-index: 30;
+}
+
+.topbarProfileMenu.open .topbarProfileDropdown {
+  display: flex;
+}
+
+.topbarProfileLabel {
+  padding: 8px 10px;
+  font-size: 0.85rem;
+  color: var(--text-soft);
+  word-break: break-word;
+}
+
+.topbarProfileItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.topbarProfileItem:hover {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.topbarProfileItem.active {
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.logoutButton {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 6px;
+  border-radius: 10px;
+  border: 1px solid var(--border-light);
+  background: var(--card);
+  cursor: pointer;
+}
+
+.topbarProfileLogout {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  justify-content: space-between;
+  color: var(--text-primary);
+  padding: 10px 12px;
+}
+
+.topbarProfileLogout:hover {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+}

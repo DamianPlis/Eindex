@@ -7,6 +7,8 @@ import { assertLocale } from "@/lib/i18n/server";
 import { formatDeadlineRelativeLabel } from "@/lib/schedule/selectors";
 import { getUserState } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
+import appShellStyles from "@/css/AppShell.module.css";
+import reminderStyles from "@/css/Reminders.module.css";
 
 export default async function LocaleDeadlineDetailPage({
   params,
@@ -40,7 +42,7 @@ export default async function LocaleDeadlineDetailPage({
   const delay = new Promise((resolve) => setTimeout(resolve, 50000)); // Simulate a delay for loading state
   await delay;
   return (
-    <div className="container" style={{ margin: "16px" }}>
+    <div className={appShellStyles.container} style={{ margin: "16px" }}>
       <StatusPill status={item.status} />
       <h2 className="mb-2 text-2xl font-bold">{item.text}</h2>
       <p style={{ marginBottom: 0 }}>
@@ -48,7 +50,7 @@ export default async function LocaleDeadlineDetailPage({
       </p>
       <div
         style={{ marginBottom: "1em" }}
-        className="reminder-date reminder-relative-date"
+        className={`${reminderStyles.reminderDate} ${reminderStyles.reminderRelativeDate}`}
       >
         {formatDeadlineRelativeLabel(item.date, locale)}
       </div>

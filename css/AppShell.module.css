@@ -1,0 +1,47 @@
+.appShell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 72px;
+  background: var(--bg);
+  color: var(--text-primary);
+}
+
+.container {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 18px;
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.06);
+  width: auto;
+  max-width: none;
+}
+
+.mainContainer {
+  padding: 16px;
+  padding-bottom: 96px;
+}
+
+.ghostButton {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-medium);
+  background: var(--card);
+  cursor: pointer;
+}
+
+.darkModeBtn, .lightModeBtn {
+  color: var(--muted);
+  border: 1px solid var(--muted);
+}
+
+.lightModeBtn.active {
+  color: #3b82f6;
+  border: 1px solid #3b82f6;
+  background-color: color-mix(in srgb, var(--card) 90%, var(--primary) 10%);
+}
+
+.darkModeBtn.active {
+  color: var(--primary);
+  background-color: color-mix(in srgb, var(--card) 90%, var(--primary) 10%);
+  border: 1px solid var(--primary);
+}

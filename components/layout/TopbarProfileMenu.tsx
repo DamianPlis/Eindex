@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import LogoutButton from "@/components/auth/LogoutButton";
 import { useAppLocale, useMessages } from "@/components/i18n/LocaleProvider";
 import { localizePath, stripLocaleFromPath } from "@/lib/i18n/routing";
+import topbarStyles from "@/css/Topbar.module.css";
 
 type TopbarProfileMenuProps = {
   uid: string;
@@ -35,7 +36,8 @@ export default function TopbarProfileMenu({
   const [isOpen, setIsOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
   const btnRef = useRef<HTMLButtonElement | null>(null);
-  const isSettingsActive = pathname === "/settings" || pathname.startsWith("/settings/");
+  const isSettingsActive =
+    pathname === "/settings" || pathname.startsWith("/settings/");
   const initials = getInitials(userLabel);
 
   useEffect(() => {
@@ -63,7 +65,7 @@ export default function TopbarProfileMenu({
   return (
     <div
       ref={rootRef}
-      className={`topbar-profile-menu ${isOpen ? "open" : ""}`}
+      className={`${topbarStyles.topbarProfileMenu} ${isOpen ? topbarStyles.open : ""}`}
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
       onClick={() => setIsOpen((current) => !current)}
@@ -71,13 +73,13 @@ export default function TopbarProfileMenu({
       <button
         ref={btnRef}
         type="button"
-        className="topbar-profile-trigger"
+        className={topbarStyles.topbarProfileTrigger}
         aria-expanded={isOpen}
         aria-label={userLabel}
       >
         {photoUrl ? (
           <Image
-            className="topbar-profile-image"
+            className={topbarStyles.topbarProfileImage}
             src={photoUrl}
             alt={userLabel}
             referrerPolicy="no-referrer"
@@ -89,18 +91,21 @@ export default function TopbarProfileMenu({
         )}
       </button>
 
-      <div className="topbar-profile-dropdown">
-        <div className="topbar-profile-label" title={userLabel}>
+      <div className={topbarStyles.topbarProfileDropdown}>
+        <div className={topbarStyles.topbarProfileLabel} title={userLabel}>
           {userLabel}
         </div>
         <Link
-          className={`topbar-profile-item ${isSettingsActive ? "active" : ""}`}
+          className={`${topbarStyles.topbarProfileItem} ${isSettingsActive ? topbarStyles.active : ""}`}
           href={localizePath(locale, "/settings")}
           onClick={() => setIsOpen(false)}
         >
           {messages.settings.title}
         </Link>
-        <LogoutButton uid={uid} className="topbar-profile-item topbar-profile-logout" />
+        <LogoutButton
+          uid={uid}
+          className={`${topbarStyles.topbarProfileItem} ${topbarStyles.topbarProfileLogout}`}
+        />
       </div>
     </div>
   );

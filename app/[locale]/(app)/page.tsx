@@ -21,6 +21,9 @@ import { AppLocale } from "@/lib/i18n/config";
 import { Suspense } from "react";
 import RemidersListSkeleton from "@/components/skeletons/RemidersListSkeleton";
 import ScheduleListSkeleton from "@/components/skeletons/ScheduleListSkeleton";
+import appShellStyles from "@/css/AppShell.module.css";
+import reminderStyles from "@/css/Reminders.module.css";
+import scheduleStyles from "@/css/Schedule.module.css";
 
 export default async function LocaleMainPage({
   params,
@@ -36,8 +39,8 @@ export default async function LocaleMainPage({
   const todayISO = getSelectedDateISO(query.date);
 
   return (
-    <div className="main-container">
-      <h2 className="main-title">
+    <div className={appShellStyles.mainContainer}>
+      <h2 className="mb-3">
         {messages.home.today} - {todayISO}
       </h2>
       <Suspense fallback={<RemidersListSkeleton />}>
@@ -82,11 +85,11 @@ async function RemindersContainer({
 
   return (
     <>
-      <div className="reminders-section">
+      <div className={reminderStyles.remindersSection}>
         {deadlines.length > 0 ? (
           deadlines.map((item) => (
-            <div key={item.id} className="reminder-card">
-              <div className="reminder-content">
+            <div key={item.id} className={reminderStyles.reminderCard}>
+              <div className={reminderStyles.reminderContent}>
                 <div>
                   <Link
                     className="inline-link"
@@ -97,8 +100,8 @@ async function RemindersContainer({
                   >
                     {item.text}
                   </Link>
-                  <div className="reminder-date">{item.date}</div>
-                  <div className="reminder-date reminder-relative-date">
+                  <div className={reminderStyles.reminderDate}>{item.date}</div>
+                  <div className={`${reminderStyles.reminderDate} ${reminderStyles.reminderRelativeDate}`}>
                     {formatDeadlineRelativeLabel(item.date, locale)}
                   </div>
                 </div>
@@ -107,7 +110,7 @@ async function RemindersContainer({
             </div>
           ))
         ) : (
-          <div className="empty-reminders">
+          <div className={reminderStyles.emptyReminders}>
             {messages.home.noDeadlinesForToday}
           </div>
         )}
@@ -134,7 +137,7 @@ async function ScheduleListContainer({
   const slots = pickTodaySchedule(state, selectedDateISO);
 
   return (
-    <div className="schedule-list">
+    <div className={scheduleStyles.scheduleList}>
       {slots.length > 0 ? (
         slots.map((slot) => {
           const subject = slot.subjectId
@@ -170,7 +173,7 @@ async function ScheduleListContainer({
           );
         })
       ) : (
-        <div className="empty-schedule">{messages.home.noScheduleForToday}</div>
+        <div className={reminderStyles.emptySchedule}>{messages.home.noScheduleForToday}</div>
       )}
     </div>
   );

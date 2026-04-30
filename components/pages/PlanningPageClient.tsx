@@ -17,6 +17,7 @@ import { localizePath } from "@/lib/i18n/routing";
 import { getFixedSlotDisplayName, getSubjectDisplayName } from "@/lib/schedule/labels";
 import type { DaySchedule, Slot, Subject } from "@/lib/schedule/types";
 import { getClientId } from "@/lib/sync/client-id";
+import styles from "@/css/planning.module.css";
 
 type PlanningPageClientProps = {
   weekStart: string;
@@ -341,32 +342,32 @@ export default function PlanningPageClient({
   }
 
   return (
-    <div ref={planningRootRef} className="planning-root" aria-live="polite">
-      <div className="planning-inner">
-        <div className="controls" role="region" aria-label={messages.planning.weekControls}>
+    <div ref={planningRootRef} className={styles.planningRoot} aria-live="polite">
+      <div className={styles.planningInner}>
+        <div className={styles.controls} role="region" aria-label={messages.planning.weekControls}>
           <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
             {!isShowingCurrentWeek && isShowingFutureWeek && isAtLeastTwoWeeksFromCurrent ? (
               <Link
-                className="nav-btn nav-show-current-week"
+                className={`${styles.navBtn} ${styles.navShowCurrentWeek}`}
                 href={localizePath(locale, `/planning?week=${encodeURIComponent(currentWeekStart)}`)}
               >
                 <DoubleArrowLeft fill="currentColor" />
               </Link>
             ) : null}
 
-            <Link className="nav-btn" href={localizePath(locale, `/planning?week=${encodeURIComponent(prevWeek)}`)}>
+            <Link className={styles.navBtn} href={localizePath(locale, `/planning?week=${encodeURIComponent(prevWeek)}`)}>
               <ArrowLeft fill="currentColor" />
             </Link>
           </div>
-          <div className="week-title">{messages.planning.weekStarts} {weekStart}</div>
+          <div className={styles.weekTitle}>{messages.planning.weekStarts} {weekStart}</div>
           <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            <Link className="nav-btn" href={localizePath(locale, `/planning?week=${encodeURIComponent(nextWeek)}`)}>
+            <Link className={styles.navBtn} href={localizePath(locale, `/planning?week=${encodeURIComponent(nextWeek)}`)}>
               <ArrowRight fill="currentColor" />
             </Link>
 
             {!isShowingCurrentWeek && isShowingPastWeek && isAtLeastTwoWeeksFromCurrent ? (
               <Link
-                className="nav-btn nav-show-current-week"
+                className={`${styles.navBtn} ${styles.navShowCurrentWeek}`}
                 href={localizePath(locale, `/planning?week=${encodeURIComponent(currentWeekStart)}`)}
               >
                 <DoubleArrowRight fill="currentColor" />
@@ -375,7 +376,7 @@ export default function PlanningPageClient({
           </div>
         </div>
 
-        <div className="planning-day-tabs" role="tablist" aria-label={messages.planning.days}>
+        <div className={styles.planningDayTabs} role="tablist" aria-label={messages.planning.days}>
           {days.map((day, dayIndex) => {
             const labels = getDayLabels(day.date, locale);
             const isActive = dayIndex === activeDayIndex;
@@ -385,26 +386,26 @@ export default function PlanningPageClient({
                 type="button"
                 role="tab"
                 aria-selected={isActive}
-                className={`planning-day-tab ${isActive ? "is-active" : ""}`}
+                className={`${styles.planningDayTab} ${isActive ? styles.isActive : ""}`}
                 onClick={() => setActiveDayIndex(dayIndex)}
               >
-                <span className="planning-day-tab-name">{labels.shortName}</span>
-                <span className="planning-day-tab-date">{labels.shortDate}</span>
+                <span className={styles.planningDayTabName}>{labels.shortName}</span>
+                <span className={styles.planningDayTabDate}>{labels.shortDate}</span>
               </button>
             );
           })}
         </div>
 
-        <div ref={containerRef} className="days-scroll" role="list" aria-label={messages.planning.days}>
+        <div ref={containerRef} className={styles.daysScroll} role="list" aria-label={messages.planning.days}>
           {days.map((day, dayIndex) => (
-            <article key={day.date} className="day-card" role="listitem">
-              <div className="day-inner">
-                <header className="day-header">
-                  <div className="day-name">{formatDayLabel(day.date, locale)}</div>
-                  <div className="day-date">{day.date}</div>
+            <article key={day.date} className={styles.dayCard} role="listitem">
+              <div className={styles.dayInner}>
+                <header className={styles.dayHeader}>
+                  <div className={styles.dayName}>{formatDayLabel(day.date, locale)}</div>
+                  <div className={styles.dayDate}>{day.date}</div>
                 </header>
 
-                <div className="slots">
+                <div className={styles.slots}>
                   {day.slots.map((slot, slotIndex) => {
                     const isFixed = slot.fixed;
                     const selectedSubject =
@@ -427,17 +428,17 @@ export default function PlanningPageClient({
                     const displayedFixedTopic = isFixedTopicSameAsLabel ? "" : topicValue;
 
                     return (
-                      <div key={slot.id} className="slot-card" style={slotStyle}>
-                        <div className="slot-top">
-                          <div className="slot-title">{slotTitle}</div>
-                          <div className="slot-time">{slot.time}</div>
+                      <div key={slot.id} className={styles.slotCard} style={slotStyle}>
+                        <div className={styles.slotTop}>
+                          <div className={styles.slotTitle}>{slotTitle}</div>
+                          <div className={styles.slotTime}>{slot.time}</div>
                         </div>
 
-                        <div className="slot-body">
+                        <div className={styles.slotBody}>
                           {!isFixed ? (
                             <>
                               <select
-                                className="slot-select"
+                                className={styles.slotSelect}
                                 value={currentSubjectValue(slot)}
                                 onChange={(event) => {
                                   const value = event.target.value;
@@ -458,7 +459,7 @@ export default function PlanningPageClient({
                               </select>
 
                               <input
-                                className="slot-input"
+                                className={styles.slotInput}
                                 type="text"
                                 value={topicValue}
                                 onChange={(event) => updateTopicLocal(slot, event.target.value)}
@@ -477,7 +478,7 @@ export default function PlanningPageClient({
 
                           {isFixed && slot.allowTopic ? (
                             <input
-                              className="slot-input"
+                              className={styles.slotInput}
                               type="text"
                               value={displayedFixedTopic}
                               onChange={(event) => updateTopicLocal(slot, event.target.value)}

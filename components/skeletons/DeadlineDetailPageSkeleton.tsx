@@ -1,4 +1,5 @@
 import SkeletonLine from "@/components/skeletons/SkeletonLine";
+import planningStyles from "@/css/planning.module.css";
 
 export default function DeadlineDetailPageSkeleton({}) {
   return (
@@ -9,8 +10,8 @@ export default function DeadlineDetailPageSkeleton({}) {
           <br />
           <div className="deadlines-skeleton-text">
             <SkeletonLine className="skeleton-text-line-lg" />
-            <SkeletonLine className="mb-1 planning-skeleton-day-name" />
-            <SkeletonLine className="mb-4 planning-skeleton-day-date" />
+            <SkeletonLine className={`mb-1 ${planningStyles.planningSkeletonDayName}`} />
+            <SkeletonLine className={`mb-4 ${planningStyles.planningSkeletonDayDate}`} />
 
             <SkeletonLine className="skeleton-text-line-lg" />
             <SkeletonLine className="mb-2 skeleton-text-line-md" />

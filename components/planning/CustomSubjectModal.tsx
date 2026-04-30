@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { AppMessages } from "@/lib/i18n/messages";
+import styles from "@/css/planning.module.css";
 
 type CustomSubjectModalProps = {
   isOpen: boolean;
@@ -40,14 +41,14 @@ export default function CustomSubjectModal({
   }
 
   return (
-    <div className="modal-overlay" role="dialog" aria-modal="true">
-      <div className="modal">
-        <div className="modal-header">
+    <div className={styles.modalOverlay} role="dialog" aria-modal="true">
+      <div className={styles.modal}>
+        <div className={styles.modalHeader}>
           <div className="font-bold">
             {messages.planning.addCustomSubjectTitle}
           </div>
           <button
-            className="modal-save"
+            className={styles.modalSave}
             onClick={handleSave}
             disabled={isPending}
           >
@@ -55,12 +56,12 @@ export default function CustomSubjectModal({
           </button>
         </div>
 
-        <div className="modal-body">
+        <div className={styles.modalBody}>
           <label className="text-sm font-bold mb-1.5">
             {messages.planning.name}
           </label>
           <input
-            className="slot-input mb-3 text-base"
+            className={`${styles.slotInput} mb-3 text-base`}
             value={customName}
             onChange={(event) => setCustomName(event.target.value)}
             placeholder={messages.planning.exampleSubject}
@@ -79,9 +80,9 @@ export default function CustomSubjectModal({
           </div>
         </div>
 
-        <div className="modal-footer">
+        <div className={styles.modalFooter}>
           <button
-            className="modal-cancel"
+            className={styles.modalCancel}
             onClick={handleClose}
             disabled={isPending}
           >

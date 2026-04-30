@@ -1,0 +1,41 @@
+.remindersSection {
+  margin-bottom: 14px;
+}
+
+.reminderCard {
+  margin-bottom: 8px;
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  background: var(--card);
+  border: 1px solid var(--border-medium);
+}
+
+.reminderContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.reminderTitle {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.reminderDate {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.reminderRelativeDate {
+  color: var(--muted);
+}
+
+.emptyReminders,
+.emptySchedule,
+.emptyDay {
+  padding: 12px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--muted) 8%, transparent);
+  color: var(--muted);
+}

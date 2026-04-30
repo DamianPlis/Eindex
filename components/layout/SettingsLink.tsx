@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useAppLocale } from "@/components/i18n/LocaleProvider";
 import SettingsIcon from "@/icons/settings_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import { localizePath, stripLocaleFromPath } from "@/lib/i18n/routing";
+import styles from "@/css/layout.module.css";
 
 export default function SettingsLink() {
   const locale = useAppLocale();

@@ -1,0 +1,50 @@
+.statsContainer {
+  display: grid;
+  gap: 15px;
+}
+
+@media (min-width: 900px) {
+  .statsContainer {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.statsCard {
+  padding: 15px;
+  border-radius: 16px;
+  background: var(--bubble);
+}
+
+.statsCardHeader {
+  display: flex;
+  fill: var(--muted);
+  align-items: center;
+  margin-bottom: 1em;
+  gap: 2em;
+}
+
+.statsCardHeaderIcons {
+  display: flex;
+  gap: 10px;
+}
+
+.statsCardHeaderIcon {
+  --pad: 4px;
+  --size: calc(1em + (var(--pad) * 2));
+  width: var(--size) !important;
+  height: var(--size) !important;
+  cursor: pointer;
+  padding: var(--pad);
+  border-radius: var(--pad);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.statsCardHeaderIcon:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.statsEntry {
+  margin-bottom: 5px;
+  border-radius: 7px;
+  padding: 4px 8px;
+}

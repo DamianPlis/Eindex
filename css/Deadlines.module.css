@@ -1,0 +1,151 @@
+.deadlinesContainer {
+  padding: 20px;
+}
+
+.deadlinesTitle {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.addForm {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.addFormModal {
+  margin-bottom: 0;
+  display: block;
+}
+
+.deadlinesAddRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 14px;
+}
+
+.deadlinePlusButton {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: none;
+  background: var(--primary);
+  color: var(--text-inverse);
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.deadlinePlusButton:hover {
+  filter: brightness(1.05);
+}
+
+.addInputText {
+  flex: 2;
+}
+
+.addInputDate {
+  flex: 1;
+}
+
+.addInputDescription {
+  resize: vertical;
+  min-height: 96px;
+}
+
+.deadlinesList {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 30px;
+}
+
+.deadlineItem {
+  margin-bottom: 10px;
+  padding: 12px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--bubble);
+}
+
+.deadlineItem.today {
+  background: var(--danger-bg);
+  border: 1px solid var(--danger);
+  color: var(--danger-text);
+}
+
+.deadlineItem.expired {
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  color: var(--warning-text);
+}
+
+.deadlineItem.upcoming {
+  background: var(--bubble);
+}
+
+.deadlineActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 0.75rem;
+  font-weight: 680;
+  white-space: nowrap;
+}
+
+.statusPill.today {
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
+  color: var(--accent-strong);
+}
+
+.statusPill.upcoming {
+  background: color-mix(in srgb, var(--success) 21%, transparent);
+  color: var(--success);
+}
+
+.statusPill.expired {
+  background: color-mix(in srgb, var(--danger) 20%, transparent);
+  color: var(--danger);
+}
+
+.statusPill.done {
+  background: color-mix(in srgb, var(--done) 20%, transparent);
+  color: var(--done);
+}
+
+.statusPill.isNeutral {
+  background: color-mix(in srgb, var(--text-soft) 22%, transparent);
+  color: var(--text-1);
+}
+
+.deadlineActionButton {
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-inverse);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.pending {
+  filter: opacity(0.75);
+}
+
+.removeButton {
+  background: var(--danger);
+}
+
+.doneButton {
+  background: var(--success);
+}

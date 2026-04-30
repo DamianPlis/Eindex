@@ -2,6 +2,7 @@
 
 import { useMessages } from "@/components/i18n/LocaleProvider";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import styles from "@/css/Topbar.module.css";
 
 export default function OnlineStatusBanner() {
   const isOnline = useOnlineStatus();
@@ -13,8 +14,8 @@ export default function OnlineStatusBanner() {
 
 
   return (
-    <div className="online-status-banner" role="status" aria-live="polite">
-      <span className="online-status-dot" aria-hidden="true" />
+    <div className={styles.onlineStatusBanner} role="status" aria-live="polite">
+      <span className={styles.onlineStatusDot} aria-hidden="true" />
       <span>{messages.network.offline}</span>
     </div>
   );

@@ -8,6 +8,7 @@ import SortIcon from "@/icons/sort_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import FilterIcon from "@/icons/filter_list_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import type { SortOption } from "@/lib/schedule/types";
 import { sortStats } from "@/lib/schedule/selectors";
+import styles from "@/css/Stats.module.css";
 
 interface StatsCardProps {
   title: string;
@@ -27,12 +28,12 @@ export default function StatsCard({ title, stats, subjects }: StatsCardProps) {
   const sortedStats = React.useMemo(() => sortStats(stats, subjectMap, locale, sortBy), [stats, subjectMap, locale, sortBy]);
 
   return (
-    <div className="stats-card">
-      <div className="stats-card-header">
+    <div className={styles.statsCard}>
+      <div className={styles.statsCardHeader}>
         <h3 style={{ margin: 0 }}>{title}</h3>
-        <div className="stats-card-header-icons">
+        <div className={styles.statsCardHeaderIcons}>
           <div className="sort-icon-wrapper" style={{ position: "relative" }}>
-            <SortIcon alt="Sort stats" fill="currentColor" className="stats-card-header-icon" />
+            <SortIcon alt="Sort stats" fill="currentColor" className={styles.statsCardHeaderIcon} />
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
@@ -53,7 +54,7 @@ export default function StatsCard({ title, stats, subjects }: StatsCardProps) {
               <option value="name-desc">{messages.deadlines.sortOptions.nameDesc}</option>
             </select>
           </div>
-          <FilterIcon alt="Filter stats" fill="currentColor" className="stats-card-header-icon" />
+          <FilterIcon alt="Filter stats" fill="currentColor" className={styles.statsCardHeaderIcon} />
         </div>
       </div>
       {Object.keys(stats).length === 0 ? (
@@ -63,7 +64,7 @@ export default function StatsCard({ title, stats, subjects }: StatsCardProps) {
           {sortedStats.map(({ subjectId, count }) => (
             <li
               key={subjectId}
-              className="stats-entry"
+              className={styles.statsEntry}
               style={{
                 backgroundColor: `${subjects.find((s) => s.id === subjectId)?.color || "#000000"}55`,
               }}

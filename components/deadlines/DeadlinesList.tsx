@@ -9,6 +9,8 @@ import Link from "next/link";
 import { localizePath } from "@/lib/i18n/routing";
 import type { DeadlineItem } from "@/lib/schedule/types";
 import { formatDeadlineRelativeLabel } from "@/lib/schedule/selectors";
+import styles from "@/css/Deadlines.module.css";
+import reminderStyles from "@/css/Reminders.module.css";
 
 export function DeadlinesList({ deadlines }: { deadlines: DeadlineItem[] }) {
   const locale = useAppLocale();
@@ -31,7 +33,7 @@ export function DeadlinesList({ deadlines }: { deadlines: DeadlineItem[] }) {
     <>
       <div className="flex justify-end">
         <button
-          className="mb-4 ml-auto show-done-deadlines-button"
+          className="mb-4 ml-auto primary-button"
           type="button"
           onClick={() => setShowDone((current) => !current)}
         >
@@ -40,13 +42,13 @@ export function DeadlinesList({ deadlines }: { deadlines: DeadlineItem[] }) {
             : messages.deadlines.showDoneDeadlines}
         </button>
       </div>
-      <ul className="deadlines-list">
+      <ul className={styles.deadlinesList}>
         {visibleDeadlines.length === 0 ? (
           <p>{messages.deadlines.noDeadlinesYet}</p>
         ) : null}
         {visibleDeadlines.map((deadline) => {
           return (
-            <li key={deadline.id} className={`deadline-item`}>
+            <li key={deadline.id} className={styles.deadlineItem}>
               <span>
                 <Link
                   className="inline-link"
@@ -55,11 +57,13 @@ export function DeadlinesList({ deadlines }: { deadlines: DeadlineItem[] }) {
                   {deadline.text}
                 </Link>{" "}
                 - {deadline.date}
-                <div className="reminder-date reminder-relative-date">
+                <div
+                  className={`${reminderStyles.reminderDate} ${reminderStyles.reminderRelativeDate}`}
+                >
                   {formatDeadlineRelativeLabel(deadline.date, locale)}
                 </div>
               </span>
-              <div className="deadline-actions">
+              <div className={styles.deadlineActions}>
                 <StatusPill status={deadline.status} />
                 <MarkDeadlineDone deadline={deadline} />
                 <RemoveDeadline deadline={deadline} />

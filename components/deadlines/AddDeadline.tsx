@@ -7,6 +7,8 @@ import { useMessages } from "@/components/i18n/LocaleProvider";
 import CloseIcon from "@/icons/close_24dp_000000_FILL0_wght400_GRAD0_opsz24 (1).svg";
 import DeadlineIcon from "@/icons/checklist_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import AddIcon from "@/icons/add_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import styles from "@/css/Deadlines.module.css";
+import planningStyles from "@/css/planning.module.css";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -15,7 +17,7 @@ function SubmitButton() {
   return (
     <button
       type="submit"
-      className={`add-button ${pending ? "pending" : ""}`}
+      className={`${planningStyles.addButton} ${pending ? styles.pending : ""}`}
       disabled={pending}
       aria-busy={pending}
     >
@@ -39,10 +41,10 @@ export default function AddDeadlinePending() {
 
   return (
     <>
-      <div className="deadlines-add-row">
+      <div className={styles.deadlinesAddRow}>
         <button
           type="button"
-          className="flex items-center justify-center deadline-plus-button"
+          className={`flex items-center justify-center ${styles.deadlinePlusButton}`}
           onClick={openModal}
           aria-label={messages.deadlines.openCreateModal}
           title={messages.deadlines.openCreateModal}
@@ -53,13 +55,13 @@ export default function AddDeadlinePending() {
 
       {isOpen ? (
         <div
-          className="modal-overlay"
+          className={planningStyles.modalOverlay}
           role="dialog"
           aria-modal="true"
           aria-label={messages.deadlines.createTitle}
         >
-          <div className="modal">
-            <div className="modal-header">
+          <div className={planningStyles.modal}>
+            <div className={planningStyles.modalHeader}>
               <div className="flex items-center gap-2 font-bold">
                 {messages.deadlines.createTitle}
                 <DeadlineIcon fill="currentColor" />
@@ -80,34 +82,34 @@ export default function AddDeadlinePending() {
                 formRef.current?.reset();
                 closeModal();
               }}
-              className="add-form add-form-modal"
+              className={`${styles.addForm} ${styles.addFormModal}`}
             >
-              <div className="modal-body">
+              <div className={planningStyles.modalBody}>
                 <input
                   type="text"
                   name="text"
                   placeholder={messages.deadlines.homeworkTitle}
-                  className="add-input add-input-text"
+                  className={`${planningStyles.addInput} ${styles.addInputText}`}
                   required
                 />
                 <textarea
                   name="description"
                   placeholder={messages.deadlines.descriptionPlaceholder}
-                  className="add-input add-input-description"
+                  className={`${planningStyles.addInput} ${styles.addInputDescription}`}
                   rows={4}
                 />
                 <input
                   type="date"
                   name="date"
-                  className="add-input add-input-date"
+                  className={`${planningStyles.addInput} ${styles.addInputDate}`}
                   required
                   placeholder={messages.deadlines.dueDate}
                 />
               </div>
-              <div className="modal-footer">
+              <div className={planningStyles.modalFooter}>
                 <button
                   type="button"
-                  className="modal-cancel"
+                  className={planningStyles.modalCancel}
                   onClick={closeModal}
                 >
                   {messages.common.cancel}
