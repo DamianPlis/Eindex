@@ -1,6 +1,6 @@
 import type { AppLocale } from "@/lib/i18n/config";
 import { isoDate } from "@/lib/schedule/defaults";
-import type { DeadlineItem, ScheduleState, Slot, StatsOptions } from "@/lib/schedule/types";
+import type { DeadlineItem,DaySchedule, ScheduleState, Slot, StatsOptions } from "@/lib/schedule/types";
 import { getCurrentPeriodStats, getWeekStats, sortStats } from "@/lib/schedule/stats";
 
 const deadlineFormatters = new Map<string, Intl.RelativeTimeFormat>();
@@ -84,7 +84,7 @@ export function getCurrentWeekStats(statsOption: StatsOptions, state: ScheduleSt
 
 export function pickTodaySchedule(state: ScheduleState, todayISO: string): Slot[] {
   for (const week of Object.values(state.weeks)) {
-    const day = week.days.find((d) => d.date === todayISO);
+    const day = week.days.find((d:DaySchedule) => d.date === todayISO);
     if (day) return day.slots;
   }
   return [];
