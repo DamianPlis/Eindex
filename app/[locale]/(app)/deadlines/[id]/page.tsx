@@ -37,8 +37,8 @@ export default async function LocaleDeadlineDetailPage({
       ? messages.deadlines.homePage
       : messages.deadlines.deadlinesPage;
 
-  const delay = new Promise((resolve) => setTimeout(resolve, 50000)); // Simulate a delay for loading state
-  await delay;
+  //const delay = new Promise((resolve) => setTimeout(resolve, 50000)); // Simulate a delay for loading state
+  //await delay;
   return (
     <div className="container" style={{ margin: "16px" }}>
       <StatusPill status={item.status} />
