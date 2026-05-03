@@ -1,8 +1,12 @@
 import type { AppLocale } from "@/lib/i18n/config";
-import type { ScheduleState, SortOption, StatsOptions, Subject } from "@/lib/schedule/types";
+import type {
+  DaySchedule,
+  ScheduleState,
+  SortOption,
+  StatsOptions,
+  Subject,
+} from "@/lib/schedule/types";
 import { isoDate, parseRangeMinutes } from "@/lib/schedule/defaults";
-
-
 
 function getDateRange(option: StatsOptions, now: Date = new Date()) {
   if (option === "year") {
@@ -30,11 +34,15 @@ function getDateRange(option: StatsOptions, now: Date = new Date()) {
   };
 }
 
-export function getWeekStats(state: ScheduleState, startISO: string, endISO: string) {
+export function getWeekStats(
+  state: ScheduleState,
+  startISO: string,
+  endISO: string,
+) {
   const counts: Record<string, number> = {};
 
   Object.values(state.weeks || {}).forEach((week) => {
-    week.days.forEach((day) => {
+    week.days.forEach((day: DaySchedule) => {
       if (day.date < startISO || day.date > endISO) return;
 
       day.slots.forEach((slot) => {
@@ -49,7 +57,11 @@ export function getWeekStats(state: ScheduleState, startISO: string, endISO: str
   return counts;
 }
 
-export function getCurrentPeriodStats(option: StatsOptions, state: ScheduleState, now: Date = new Date()) {
+export function getCurrentPeriodStats(
+  option: StatsOptions,
+  state: ScheduleState,
+  now: Date = new Date(),
+) {
   const { startISO, endISO } = getDateRange(option, now);
   return getWeekStats(state, startISO, endISO);
 }
@@ -83,9 +95,15 @@ export function autoSortSubjectsByUsage(
   option: StatsOptions = "year",
 ) {
   const stats = getCurrentPeriodStats(option, state);
-  const subjectNameMap = new Map(subjects.map((subject) => [subject.id, subject.name]));
-  const sortedIds = sortStats(stats, subjectNameMap, locale, "count-desc").map((entry) => entry.subjectId);
-  const positionById = new Map(subjects.map((subject, index) => [subject.id, index]));
+  const subjectNameMap = new Map(
+    subjects.map((subject) => [subject.id, subject.name]),
+  );
+  const sortedIds = sortStats(stats, subjectNameMap, locale, "count-desc").map(
+    (entry) => entry.subjectId,
+  );
+  const positionById = new Map(
+    subjects.map((subject, index) => [subject.id, index]),
+  );
   const subjectById = new Map(subjects.map((subject) => [subject.id, subject]));
 
   const usedSubjects = sortedIds
