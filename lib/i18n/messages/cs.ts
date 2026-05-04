@@ -11,6 +11,7 @@ export const csMessages = {
     czech: "Čeština",
     light: "světlý",
     dark: "tmavý",
+    today: "Dnes",
   },
   nav: {
     home: "Domů",
@@ -38,6 +39,7 @@ export const csMessages = {
   },
   home: {
     today: "Dnes",
+    tomorrow: "Zitra",
     noDeadlinesForToday: "Na dnešek nejsou žádné úkoly",
     noScheduleForToday: "Na dnešek není žádný rozvrh.",
   },

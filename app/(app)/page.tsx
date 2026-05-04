@@ -16,8 +16,9 @@ export default async function MainPage({
     redirect(localizePath(locale, "/login"));
   }
 
-  const mainPath = params.date
-    ? localizePath(locale, `/?date=${encodeURIComponent(params.date)}`)
+  const dateParam = params.date;
+  const mainPath = dateParam
+    ? localizePath(locale, `/?date=${encodeURIComponent(dateParam)}`)
     : localizePath(locale, "/");
 
   redirect(mainPath);

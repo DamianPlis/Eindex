@@ -1,7 +1,17 @@
 import type { AppLocale } from "@/lib/i18n/config";
 import { isoDate } from "@/lib/schedule/defaults";
-import type { DeadlineItem,DaySchedule, ScheduleState, Slot, StatsOptions } from "@/lib/schedule/types";
-import { getCurrentPeriodStats, getWeekStats, sortStats } from "@/lib/schedule/stats";
+import type {
+  DeadlineItem,
+  DaySchedule,
+  ScheduleState,
+  Slot,
+  StatsOptions,
+} from "@/lib/schedule/types";
+import {
+  getCurrentPeriodStats,
+  getWeekStats,
+  sortStats,
+} from "@/lib/schedule/stats";
 
 const deadlineFormatters = new Map<string, Intl.RelativeTimeFormat>();
 
@@ -36,7 +46,8 @@ export function formatDeadlineRelativeLabel(
   const deadlineDate = parseISODate(dateISO);
   if (!deadlineDate) return "";
 
-  const diffMs = startOfDay(deadlineDate).getTime() - startOfDay(today).getTime();
+  const diffMs =
+    startOfDay(deadlineDate).getTime() - startOfDay(today).getTime();
   const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
   const absDays = Math.abs(diffDays);
   const formatter = getRelativeTimeFormatter(locale);
@@ -76,21 +87,49 @@ export function getTodayISO(): string {
   return isoDate(new Date());
 }
 
+export function getTomorrowISO(): string {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return isoDate(tomorrow);
+}
+
 export { getWeekStats, sortStats };
 
-export function getCurrentWeekStats(statsOption: StatsOptions, state: ScheduleState) {
+export function getCurrentWeekStats(
+  statsOption: StatsOptions,
+  state: ScheduleState,
+) {
   return getCurrentPeriodStats(statsOption, state);
 }
 
-export function pickTodaySchedule(state: ScheduleState, todayISO: string): Slot[] {
+export function pickTodaySchedule(
+  state: ScheduleState,
+  todayISO: string,
+): Slot[] {
   for (const week of Object.values(state.weeks)) {
-    const day = week.days.find((d:DaySchedule) => d.date === todayISO);
+    const day = week.days.find((d: DaySchedule) => d.date === todayISO);
     if (day) return day.slots;
   }
   return [];
 }
 
-export function splitDeadlines(deadlines: DeadlineItem[]) {
+export function splitDeadlines(
+  deadlines: DeadlineItem[],
+  referenceDate?: string,
+) {
+  if (referenceDate) {
+    const today = deadlines.filter(
+      (deadline) =>
+        deadline.date === referenceDate && deadline.status !== "done",
+    );
+    const expired = deadlines
+      .filter(
+        (deadline) =>
+          deadline.date < referenceDate && deadline.status !== "done",
+      )
+      .sort((a, b) => a.date.localeCompare(b.date));
+    return [...today, ...expired];
+  }
   const today = deadlines.filter((deadline) => deadline.status === "today");
   const expired = deadlines
     .filter((deadline) => deadline.status === "expired")

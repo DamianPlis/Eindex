@@ -195,8 +195,21 @@ a {
   padding-bottom: 96px;
 }
 
+.main-header {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
 .main-title {
-  margin: 0 0 12px;
+  margin: 0;
+}
+
+.main-date-button {
+  flex: 0 0 auto;
+  text-decoration: none;
 }
 
 .reminders-section {

@@ -11,6 +11,7 @@ import {
 import {
   formatDeadlineRelativeLabel,
   getTodayISO,
+  getTomorrowISO,
   pickTodaySchedule,
   splitDeadlines,
 } from "@/lib/schedule/selectors";
@@ -27,24 +28,44 @@ export default async function LocaleMainPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ date?: string }>;
+  searchParams: Promise<{ date?: string; iso?: string }>;
 }) {
   const locale = assertLocale((await params).locale);
   const query = await searchParams;
   const messages = getMessages(locale);
   const session = await requireSession();
-  const todayISO = getSelectedDateISO(query.date);
+  const selectedISO = getSelectedDateISO(query.date);
+  const todayISO = getTodayISO();
+  const tomorrowISO = getTomorrowISO();
 
   return (
     <div className="main-container">
-      <h2 className="main-title">
-        {messages.home.today} - {todayISO}
-      </h2>
+      <div className="main-header">
+        <h2 className="main-title">
+          {messages.home.today} - {selectedISO}
+        </h2>
+        {todayISO === selectedISO ? (
+          <Link
+            className="add-button main-date-button"
+            href={localizePath(locale, `/?date=${tomorrowISO}`)}
+          >
+            {messages.home.tomorrow}
+          </Link>
+        ) : (
+          <Link
+            className="add-button main-date-button"
+            href={localizePath(locale, `/`)}
+          >
+            {messages.common.today}
+          </Link>
+        )}
+      </div>
       <Suspense fallback={<RemidersListSkeleton />}>
         <RemindersContainer
           uid={session.uid}
           locale={locale}
           messages={messages}
+          selectedISO={selectedISO}
         />
       </Suspense>
 
@@ -52,7 +73,7 @@ export default async function LocaleMainPage({
         <ScheduleListContainer
           uid={session.uid}
           messages={messages}
-          selectedDateISO={todayISO}
+          selectedDateISO={selectedISO}
         />
       </Suspense>
     </div>
@@ -70,13 +91,15 @@ async function RemindersContainer({
   uid,
   locale,
   messages,
+  selectedISO,
 }: {
   uid: string;
   locale: AppLocale;
   messages: ReturnType<typeof getMessages>;
+  selectedISO: string;
 }) {
   const state = await getUserState(uid);
-  const deadlines = splitDeadlines(state.deadlines);
+  const deadlines = splitDeadlines(state.deadlines, selectedISO);
   //const delay = new Promise(resolve => setTimeout(resolve, 70000));
   //await delay; // Simulate loading delay for demonstration purposes
 

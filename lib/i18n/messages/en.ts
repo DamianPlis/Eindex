@@ -9,6 +9,7 @@ export const enMessages = {
     czech: "Czech",
     light: "light",
     dark: "dark",
+    today: "Dnes",
   },
   nav: {
     home: "Home",
@@ -36,6 +37,7 @@ export const enMessages = {
   },
   home: {
     today: "Today",
+    tomorrow: "Tomorrow",
     noDeadlinesForToday: "No deadlines for today",
     noScheduleForToday: "No schedule for today.",
   },
