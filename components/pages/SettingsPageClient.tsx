@@ -10,7 +10,7 @@ import type { AppSettings, AppTheme } from "@/lib/settings/types";
 import { getClientId } from "@/lib/sync/client-id";
 import DarkModeIcon from "@/icons/dark_mode_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import LightModeIcon from "@/icons/light_mode_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import appShellStyles from "@/css/AppShell.module.css";
+import "@/css/appshell.css";
 import deadlineStyles from "@/css/Deadlines.module.css";
 
 type SettingsPageClientProps = {
@@ -111,23 +111,23 @@ export default function SettingsPageClient({
     locale === "cs" ? messages.common.czech : messages.common.english;
 
   return (
-    <div className={appShellStyles.mainContainer}>
-      <div className={appShellStyles.container}>
-        <h2 className="text-2xl font-bold mb-4">{messages.settings.title}</h2>
+    <div className="main-container">
+      <div className="container">
+        <h2 className="mb-4 text-2xl font-bold">{messages.settings.title}</h2>
         <p>
           {messages.settings.currentTheme}: {currentThemeLabel}
         </p>
         <div className="flex gap-1 mt-2">
           <button
             onClick={() => handleThemeSelect("dark")}
-            className={`${appShellStyles.ghostButton} ${appShellStyles.darkModeBtn} ${isPending && pendingAction === "theme" ? deadlineStyles.pending : ""} ${settings.theme === "dark" ? "active" : ""}`}
+            className={`ghost-button dark-mode-btn ${isPending && pendingAction === "theme" ? deadlineStyles.pending : ""} ${settings.theme === "dark" ? "active" : ""}`}
             disabled={isPending && pendingAction === "theme"}
           >
             <DarkModeIcon fill="currentColor" />
           </button>
           <button
             onClick={() => handleThemeSelect("light")}
-            className={`${appShellStyles.ghostButton} ${appShellStyles.lightModeBtn} ${isPending && pendingAction === "theme" ? deadlineStyles.pending : ""} ${settings.theme === "light" ? "active" : ""}`}
+            className={`ghost-button light-mode-btn ${isPending && pendingAction === "theme" ? deadlineStyles.pending : ""} ${settings.theme === "light" ? "active" : ""}`}
             disabled={isPending && pendingAction === "theme"}
           >
             <LightModeIcon fill="currentColor" />

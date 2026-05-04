@@ -7,7 +7,7 @@ import { assertLocale } from "@/lib/i18n/server";
 import { formatDeadlineRelativeLabel } from "@/lib/schedule/selectors";
 import { getUserState } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
-import appShellStyles from "@/css/AppShell.module.css";
+import "@/css/appshell.css";
 import reminderStyles from "@/css/Reminders.module.css";
 
 export default async function LocaleDeadlineDetailPage({
@@ -42,7 +42,7 @@ export default async function LocaleDeadlineDetailPage({
   const delay = new Promise((resolve) => setTimeout(resolve, 50000)); // Simulate a delay for loading state
   await delay;
   return (
-    <div className={appShellStyles.container} style={{ margin: "16px" }}>
+    <div className="container" style={{ margin: "16px" }}>
       <StatusPill status={item.status} />
       <h2 className="mb-2 text-2xl font-bold">{item.text}</h2>
       <p style={{ marginBottom: 0 }}>

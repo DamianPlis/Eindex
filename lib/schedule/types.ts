@@ -31,10 +31,10 @@ export type DaySchedule = {
   slots: Slot[];
 };
 
-// export type WeekSchedule = {
-//   weekStart: string;
-//   days: DaySchedule[];
-// };
+export type WeekSchedule = {
+  weekStart: string;
+  days: DaySchedule[];
+};
 
 export type DeadlineItem = {
   id: string;

@@ -1,4 +1,4 @@
-.appShell {
+.app-shell {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -16,12 +16,12 @@
   max-width: none;
 }
 
-.mainContainer {
+.main-container {
   padding: 16px;
   padding-bottom: 96px;
 }
 
-.ghostButton {
+.ghost-button {
   padding: 8px 12px;
   border-radius: 10px;
   border: 1px solid var(--border-medium);
@@ -29,18 +29,18 @@
   cursor: pointer;
 }
 
-.darkModeBtn, .lightModeBtn {
+.dark-mode-btn, .light-mode-btn {
   color: var(--muted);
   border: 1px solid var(--muted);
 }
 
-.lightModeBtn.active {
+.light-mode-btn.active {
   color: #3b82f6;
   border: 1px solid #3b82f6;
   background-color: color-mix(in srgb, var(--card) 90%, var(--primary) 10%);
 }
 
-.darkModeBtn.active {
+.dark-mode-btn.active {
   color: var(--primary);
   background-color: color-mix(in srgb, var(--card) 90%, var(--primary) 10%);
   border: 1px solid var(--primary);

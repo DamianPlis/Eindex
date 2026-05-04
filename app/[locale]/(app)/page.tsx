@@ -21,7 +21,7 @@ import { AppLocale } from "@/lib/i18n/config";
 import { Suspense } from "react";
 import RemidersListSkeleton from "@/components/skeletons/RemidersListSkeleton";
 import ScheduleListSkeleton from "@/components/skeletons/ScheduleListSkeleton";
-import appShellStyles from "@/css/AppShell.module.css";
+import "@/css/appshell.css";
 import reminderStyles from "@/css/Reminders.module.css";
 import scheduleStyles from "@/css/Schedule.module.css";
 
@@ -39,7 +39,7 @@ export default async function LocaleMainPage({
   const todayISO = getSelectedDateISO(query.date);
 
   return (
-    <div className={appShellStyles.mainContainer}>
+    <div className="main-container">
       <h2 className="mb-3">
         {messages.home.today} - {todayISO}
       </h2>

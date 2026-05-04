@@ -7,7 +7,7 @@ import TopbarProfileMenu from "@/components/layout/TopbarProfileMenu";
 import { getUserSettings } from "@/lib/schedule/store";
 import ThemeRootSync from "@/components/settings/ThemeRootSync";
 import { assertLocale } from "@/lib/i18n/server";
-import appShellStyles from "@/css/AppShell.module.css";
+import "@/css/appshell.css";
 import topbarStyles from "@/css/Topbar.module.css";
 
 export default async function ProtectedLocaleLayout({
@@ -23,7 +23,7 @@ export default async function ProtectedLocaleLayout({
   const userLabel = session.name || session.email || session.uid;
 
   return (
-    <div className={appShellStyles.appShell} data-theme={settings.theme}>
+    <div className="app-shell" data-theme={settings.theme}>
       <ThemeRootSync theme={settings.theme} />
       <header className={`${topbarStyles.appTopbar}`}>
         <strong>Eindx</strong>
