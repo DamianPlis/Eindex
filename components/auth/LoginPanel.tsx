@@ -96,7 +96,7 @@ export default function LoginPanel() {
         <p>{messages.auth.signInPrompt}</p>
         {error ? <p className="mt-2 text-sm text-red-800">{error}</p> : null}
         <button
-          className="add-button"
+          className="primary-button"
           onClick={signInWithGoogle}
           disabled={loading}
         >

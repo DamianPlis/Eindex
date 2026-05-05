@@ -4,7 +4,7 @@ import { useSyncExternalStore } from "react";
 import { useMessages } from "@/components/i18n/LocaleProvider";
 import type { Slot, Subject } from "@/lib/schedule/types";
 import LunchIcon from "@/icons/restaurant_24dp_999999_FILL0_wght400_GRAD0_opsz24.svg";
-import styles from "@/css/Schedule.module.css";
+import styles from "@/css/SlotBubble.module.css";
 
 function parseRange(timeStr: string) {
   if (!timeStr || !timeStr.includes("-")) return null;

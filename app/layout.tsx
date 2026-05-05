@@ -7,8 +7,11 @@ import { getSession } from "@/lib/session";
 import NoScriptNotice from "@/components/layout/NoScriptNotice";
 import { getUserSettingsMaybe } from "@/lib/schedule/store";
 import "../css/globals.css";
+import "../css/appshell.css";
 
-import "../css/skeletons.css";
+import "../css/skeletons/skeletons.css";
+import "../css/skeletons/planning-skeleton.css";
+import "../css/skeletons/deadlines-skeleton.css";
 
 export const metadata: Metadata = {
   title: "Eindx",

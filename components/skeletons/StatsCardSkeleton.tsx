@@ -20,7 +20,7 @@ export default function StatsCardSkeleton() {
             {Array.from({ length: 5 }).map((_, statIndex) => (
               <li
                 key={`stats-item-skeleton-${cardIndex}-${statIndex}`}
-                className="stats-entry"
+                className={styles.statsEntry}
               >
                 <SkeletonLine className="skeleton-text-line-md" />
               </li>

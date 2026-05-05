@@ -11,6 +11,7 @@ import { Suspense } from "react";
 import DeadlinesListSkeleton from "@/components/skeletons/DeadlinesListSkeleton";
 import deadlineStyles from "@/css/Deadlines.module.css";
 import statsStyles from "@/css/Stats.module.css";
+import StatsCardSkeleton from "@/components/skeletons/StatsCardSkeleton";
 
 export default async function LocaleDeadlinesPage({
   params,
@@ -24,7 +25,9 @@ export default async function LocaleDeadlinesPage({
   return (
     <div className={deadlineStyles.deadlinesContainer}>
       <div className="flex justify-between">
-        <h2 className={deadlineStyles.deadlinesTitle}>{messages.deadlines.title}</h2>
+        <h2 className={deadlineStyles.deadlinesTitle}>
+          {messages.deadlines.title}
+        </h2>
         <AddDeadline />
       </div>
 
@@ -38,7 +41,7 @@ export default async function LocaleDeadlinesPage({
       </h2>
       <div className={statsStyles.statsContainer}>
         {/* Stream the stats cards. You can wrap them individually or together */}
-        <Suspense fallback={<DeadlinesPageSkeleton showList={false} />}>
+        <Suspense fallback={<StatsCardSkeleton />}>
           <StatsCards
             messages={messages.deadlines.statistics}
             uid={session.uid}

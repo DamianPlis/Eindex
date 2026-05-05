@@ -1,11 +1,12 @@
 import SkeletonLine from "./SkeletonLine";
+import styles from "@/css/SlotBubble.module.css";
 
 export default function ScheduleListSkeleton() {
   return (
-    <div className="schedule-list">
+    <div className={styles.scheduleList}>
       {Array.from({ length: 5 }).map((_, index) => (
-        <div key={`schedule-skeleton-${index}`} className={`slot-bubble `}>
-          <div className="slot-content">
+        <div key={`schedule-skeleton-${index}`} className={styles.slotBubble}>
+          <div className={styles.slotContent}>
             <div className="schedule-skeleton-text-container">
               <SkeletonLine
                 style={{ marginBottom: 8 }}

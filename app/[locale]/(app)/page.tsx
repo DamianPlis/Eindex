@@ -23,7 +23,7 @@ import RemidersListSkeleton from "@/components/skeletons/RemidersListSkeleton";
 import ScheduleListSkeleton from "@/components/skeletons/ScheduleListSkeleton";
 import "@/css/appshell.css";
 import reminderStyles from "@/css/Reminders.module.css";
-import scheduleStyles from "@/css/Schedule.module.css";
+import scheduleStyles from "@/css/SlotBubble.module.css";
 
 export default async function LocaleMainPage({
   params,
@@ -48,6 +48,7 @@ export default async function LocaleMainPage({
           uid={session.uid}
           locale={locale}
           messages={messages}
+          todayISO={todayISO}
         />
       </Suspense>
 
@@ -73,13 +74,15 @@ async function RemindersContainer({
   uid,
   locale,
   messages,
+  todayISO,
 }: {
   uid: string;
   locale: AppLocale;
   messages: ReturnType<typeof getMessages>;
+  todayISO: string;
 }) {
   const state = await getUserState(uid);
-  const deadlines = splitDeadlines(state.deadlines);
+  const deadlines = splitDeadlines(state.deadlines, todayISO);
   //const delay = new Promise(resolve => setTimeout(resolve, 70000));
   //await delay; // Simulate loading delay for demonstration purposes
 
@@ -101,7 +104,9 @@ async function RemindersContainer({
                     {item.text}
                   </Link>
                   <div className={reminderStyles.reminderDate}>{item.date}</div>
-                  <div className={`${reminderStyles.reminderDate} ${reminderStyles.reminderRelativeDate}`}>
+                  <div
+                    className={`${reminderStyles.reminderDate} ${reminderStyles.reminderRelativeDate}`}
+                  >
                     {formatDeadlineRelativeLabel(item.date, locale)}
                   </div>
                 </div>
@@ -132,7 +137,7 @@ async function ScheduleListContainer({
     getCachedUserState(uid),
     getLunchPerDay(),
   ]);
-  //const delay = new Promise(resolve => setTimeout(resolve, 70000));
+  //const delay = new Promise((resolve) => setTimeout(resolve, 70000));
   //await delay; // Simulate loading delay for demonstration purposes
   const slots = pickTodaySchedule(state, selectedDateISO);
 
@@ -173,7 +178,9 @@ async function ScheduleListContainer({
           );
         })
       ) : (
-        <div className={reminderStyles.emptySchedule}>{messages.home.noScheduleForToday}</div>
+        <div className={reminderStyles.emptySchedule}>
+          {messages.home.noScheduleForToday}
+        </div>
       )}
     </div>
   );

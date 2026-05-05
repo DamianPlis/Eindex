@@ -1,0 +1,24 @@
+.deadlines-skeleton-item {
+    gap: 14px;
+}
+
+.deadlines-skeleton-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.deadlines-skeleton-toggle {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
+
+.deadlines-skeleton-stats-list {
+    padding-left: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.deadlines-skeleton-stats-card {
+    margin-bottom: 0;
+}

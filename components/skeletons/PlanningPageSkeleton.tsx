@@ -10,44 +10,53 @@ export default function PlanningPageSkeleton() {
     <div className={styles.planningRoot} aria-hidden="true">
       <div className={styles.planningInner}>
         <div className={styles.controls}>
-          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            <SkeletonLine className={styles.planningSkeletonNav} />
+          <div className="flex items-center gap-3">
+            <SkeletonLine className="planning-skeleton-nav" />
           </div>
-          <SkeletonLine className={styles.planningSkeletonWeekTitle} />
+          <SkeletonLine className="planning-skeleton-week-title" />
           <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            <SkeletonLine className={styles.planningSkeletonNav} />
+            <SkeletonLine className="planning-skeleton-nav" />
           </div>
         </div>
 
         <div className={styles.planningDayTabs}>
           {Array.from({ length: tabCount }).map((_, index) => (
-            <div key={`planning-tab-skeleton-${index}`} className={styles.planningDayTab}>
-              <SkeletonLine className={styles.planningSkeletonTabName} />
-              <SkeletonLine className={styles.planningSkeletonTabDate} />
+            <div
+              key={`planning-tab-skeleton-${index}`}
+              className={styles.planningDayTab}
+            >
+              <SkeletonLine className="planning-skeleton-tab-name" />
+              <SkeletonLine className="planning-skeleton-tab-date" />
             </div>
           ))}
         </div>
 
         <div className={styles.daysScroll}>
           {slotCount.map((slotCount, dayIndex) => (
-            <article key={`planning-day-skeleton-${dayIndex}`} className={styles.dayCard}>
+            <article
+              key={`planning-day-skeleton-${dayIndex}`}
+              className={styles.dayCard}
+            >
               <div className={styles.dayInner}>
                 <header className={styles.dayHeader}>
-                  <SkeletonLine className={styles.planningSkeletonDayName} />
-                  <SkeletonLine className={styles.planningSkeletonDayDate} />
+                  <SkeletonLine className="planning-skeleton-day-name" />
+                  <SkeletonLine className="planning-skeleton-day-date" />
                 </header>
 
                 <div className={styles.slots}>
                   {Array.from({ length: slotCount }).map((_, slotIndex) => (
-                    <div key={`planning-slot-skeleton-${dayIndex}-${slotIndex}`} className={styles.slotCard}>
+                    <div
+                      key={`planning-slot-skeleton-${dayIndex}-${slotIndex}`}
+                      className={styles.slotCard}
+                    >
                       <div className={styles.slotTop}>
-                        <SkeletonLine className={styles.planningSkeletonSlotTitle} />
-                        <SkeletonLine className={styles.planningSkeletonSlotTime} />
+                        <SkeletonLine className="planning-skeleton-slot-title" />
+                        <SkeletonLine className="planning-skeleton-slot-time" />
                       </div>
 
                       <div className={styles.slotBody}>
-                        <SkeletonLine className={styles.planningSkeletonInput} />
-                        <SkeletonLine className={styles.planningSkeletonInput} />
+                        <SkeletonLine className="planning-skeleton-input" />
+                        <SkeletonLine className="planning-skeleton-input" />
                       </div>
                     </div>
                   ))}
