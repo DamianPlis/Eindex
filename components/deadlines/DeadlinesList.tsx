@@ -9,11 +9,17 @@ import Link from "next/link";
 import { localizePath } from "@/lib/i18n/routing";
 import type { DeadlineItem } from "@/lib/schedule/types";
 import { formatDeadlineRelativeLabel } from "@/lib/schedule/selectors";
+import { useDeadlinesRefresh } from "@/components/deadlines/DeadlinesRefreshContext";
+import DeadlinesListSkeleton from "@/components/skeletons/DeadlinesListSkeleton";
 
 export function DeadlinesList({ deadlines }: { deadlines: DeadlineItem[] }) {
   const locale = useAppLocale();
   const messages = useMessages();
+  const { isRefreshing } = useDeadlinesRefresh();
   const [showDone, setShowDone] = useState(false);
+
+  if (isRefreshing) return <DeadlinesListSkeleton />;
+
   const activeDeadlines = deadlines.filter(
     (deadline) =>
       deadline.status === "today" ||

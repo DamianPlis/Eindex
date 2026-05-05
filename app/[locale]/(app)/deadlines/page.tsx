@@ -9,6 +9,7 @@ import { getCachedUserState } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
 import { Suspense } from "react";
 import DeadlinesListSkeleton from "@/components/skeletons/DeadlinesListSkeleton";
+import { DeadlinesRefreshProvider } from "@/components/deadlines/DeadlinesRefreshContext";
 
 export default async function LocaleDeadlinesPage({
   params,
@@ -17,19 +18,20 @@ export default async function LocaleDeadlinesPage({
 }) {
   const locale = assertLocale((await params).locale);
   const messages = getMessages(locale);
-  const session = await requireSession();
 
   return (
     <div className="deadlines-container">
-      <div className="flex justify-between">
-        <h2 className="deadlines-title">{messages.deadlines.title}</h2>
-        <AddDeadline />
-      </div>
+      <DeadlinesRefreshProvider>
+        <div className="flex justify-between">
+          <h2 className="deadlines-title">{messages.deadlines.title}</h2>
+          <AddDeadline />
+        </div>
 
-      {/* Stream the deadlines list */}
-      <Suspense fallback={<DeadlinesListSkeleton />}>
-        <DeadlinesListContainer uid={session.uid} />
-      </Suspense>
+        {/* Stream the deadlines list */}
+        <Suspense fallback={<DeadlinesListSkeleton />}>
+          <DeadlinesListContainer />
+        </Suspense>
+      </DeadlinesRefreshProvider>
 
       <h2 className="deadlines-title">
         {messages.deadlines.statistics.statistics}
@@ -39,7 +41,6 @@ export default async function LocaleDeadlinesPage({
         <Suspense fallback={<DeadlinesPageSkeleton showList={false} />}>
           <StatsCards
             messages={messages.deadlines.statistics}
-            uid={session.uid}
           />
         </Suspense>
       </div>
@@ -49,11 +50,11 @@ export default async function LocaleDeadlinesPage({
 
 async function StatsCards({
   messages,
-  uid,
 }: {
   messages: ReturnType<typeof getMessages>["deadlines"]["statistics"];
-  uid: string;
 }) {
+  const session = await requireSession();
+  const uid = session.uid;
   const state = await getCachedUserState(uid);
   //await new Promise(resolve => setTimeout(resolve, 3000));
 
@@ -82,7 +83,9 @@ async function StatsCards({
   );
 }
 
-async function DeadlinesListContainer({ uid }: { uid: string }) {
+async function DeadlinesListContainer() {
+  const session = await requireSession();
+  const uid = session.uid;
   const state = await getCachedUserState(uid);
   //await new Promise(resolve => setTimeout(resolve, 3000));
   return <DeadlinesList deadlines={state.deadlines} />;

@@ -7,6 +7,7 @@ import { useMessages } from "@/components/i18n/LocaleProvider";
 import CloseIcon from "@/icons/close_24dp_000000_FILL0_wght400_GRAD0_opsz24 (1).svg";
 import DeadlineIcon from "@/icons/checklist_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import AddIcon from "@/icons/add_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import { useDeadlinesRefresh } from "@/components/deadlines/DeadlinesRefreshContext";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -28,6 +29,7 @@ export default function AddDeadlinePending() {
   const formRef = useRef<HTMLFormElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const messages = useMessages();
+  const { refreshDeadlines } = useDeadlinesRefresh();
 
   function openModal() {
     setIsOpen(true);
@@ -79,6 +81,7 @@ export default function AddDeadlinePending() {
                 await addDeadlineAction(formData);
                 formRef.current?.reset();
                 closeModal();
+                refreshDeadlines();
               }}
               className="add-form add-form-modal"
             >

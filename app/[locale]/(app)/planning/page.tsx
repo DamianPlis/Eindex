@@ -3,6 +3,8 @@ import { buildDaysForWeek, normalizeWeekKey } from "@/lib/schedule/defaults";
 import { getUserState } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
 import { assertLocale } from "@/lib/i18n/server";
+import { Suspense } from "react";
+import PlanningPageSkeleton from "@/components/skeletons/PlanningPageSkeleton";
 
 function shiftWeek(weekISO: string, deltaWeeks: number) {
   const date = new Date(weekISO);
@@ -18,10 +20,19 @@ export default async function LocalePlanningPage({
   searchParams: Promise<{ week?: string }>;
 }) {
   assertLocale((await params).locale);
-  const session = await requireSession();
-  const state = await getUserState(session.uid);
   const query = await searchParams;
   const weekStart = normalizeWeekKey(query.week);
+
+  return (
+    <Suspense key={`planning-${weekStart}`} fallback={<PlanningPageSkeleton />}>
+      <PlanningPageContent weekStart={weekStart} />
+    </Suspense>
+  );
+}
+
+async function PlanningPageContent({ weekStart }: { weekStart: string }) {
+  const session = await requireSession();
+  const state = await getUserState(session.uid);
   const week = state.weeks[weekStart] || {
     weekStart,
     days: buildDaysForWeek(weekStart),

@@ -39,9 +39,11 @@ export const csMessages = {
   },
   home: {
     today: "Dnes",
-    tomorrow: "Zitra",
+    tomorrow: "Zítra",
     noDeadlinesForToday: "Na dnešek nejsou žádné úkoly",
     noScheduleForToday: "Na dnešek není žádný rozvrh.",
+    noDeadlinesForTomorrow: "Na zítřek nejsou žádné úkoly",
+    noScheduleForTomorrow: "Na zítřek není žádný rozvrh.",
   },
   network: {
     offline: "Jste offline.",

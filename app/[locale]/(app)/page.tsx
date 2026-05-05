@@ -37,12 +37,14 @@ export default async function LocaleMainPage({
   const selectedISO = getSelectedDateISO(query.date);
   const todayISO = getTodayISO();
   const tomorrowISO = getTomorrowISO();
+  const isToday = selectedISO === todayISO;
+  const currentDay = isToday ? messages.home.today : messages.home.tomorrow;
 
   return (
     <div className="main-container">
       <div className="main-header">
         <h2 className="main-title">
-          {messages.home.today} - {selectedISO}
+          {currentDay} - {selectedISO}
         </h2>
         {todayISO === selectedISO ? (
           <Link
@@ -56,24 +58,32 @@ export default async function LocaleMainPage({
             className="add-button main-date-button"
             href={localizePath(locale, `/`)}
           >
-            {messages.common.today}
+            {messages.home.today}
           </Link>
         )}
       </div>
-      <Suspense fallback={<RemidersListSkeleton />}>
+      <Suspense
+        key={`reminders-${selectedISO}`}
+        fallback={<RemidersListSkeleton />}
+      >
         <RemindersContainer
           uid={session.uid}
           locale={locale}
           messages={messages}
           selectedISO={selectedISO}
+          isToday={isToday}
         />
       </Suspense>
 
-      <Suspense fallback={<ScheduleListSkeleton />}>
+      <Suspense
+        key={`schedule-${selectedISO}`}
+        fallback={<ScheduleListSkeleton />}
+      >
         <ScheduleListContainer
           uid={session.uid}
           messages={messages}
           selectedDateISO={selectedISO}
+          isToday={isToday}
         />
       </Suspense>
     </div>
@@ -92,11 +102,13 @@ async function RemindersContainer({
   locale,
   messages,
   selectedISO,
+  isToday,
 }: {
   uid: string;
   locale: AppLocale;
   messages: ReturnType<typeof getMessages>;
   selectedISO: string;
+  isToday: boolean;
 }) {
   const state = await getUserState(uid);
   const deadlines = splitDeadlines(state.deadlines, selectedISO);
@@ -131,7 +143,9 @@ async function RemindersContainer({
           ))
         ) : (
           <div className="empty-reminders">
-            {messages.home.noDeadlinesForToday}
+            {isToday
+              ? messages.home.noDeadlinesForToday
+              : messages.home.noDeadlinesForTomorrow}
           </div>
         )}
       </div>
@@ -143,10 +157,12 @@ async function ScheduleListContainer({
   uid,
   messages,
   selectedDateISO,
+  isToday,
 }: {
   uid: string;
   messages: ReturnType<typeof getMessages>;
   selectedDateISO: string;
+  isToday: boolean;
 }) {
   const [state, lunchPerDay] = await Promise.all([
     getCachedUserState(uid),
@@ -193,7 +209,11 @@ async function ScheduleListContainer({
           );
         })
       ) : (
-        <div className="empty-schedule">{messages.home.noScheduleForToday}</div>
+        <div className="empty-schedule">
+          {isToday
+            ? messages.home.noScheduleForToday
+            : messages.home.noScheduleForTomorrow}
+        </div>
       )}
     </div>
   );

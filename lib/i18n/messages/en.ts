@@ -40,6 +40,8 @@ export const enMessages = {
     tomorrow: "Tomorrow",
     noDeadlinesForToday: "No deadlines for today",
     noScheduleForToday: "No schedule for today.",
+    noDeadlinesForTomorrow: "No deadlines for tomorrow",
+    noScheduleForTomorrow: "No schedule for tomorrow.",
   },
   network: {
     offline: "You're offline.",

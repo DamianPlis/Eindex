@@ -91,6 +91,7 @@ a {
   padding-bottom: 72px;
   background: var(--bg);
   color: var(--text-primary);
+  transition: background-color 100ms cubic-bezier(.67, .02, .34, .98);
 }
 
 .online-status-banner {
