@@ -10,6 +10,7 @@ import type { AppSettings, AppTheme } from "@/lib/settings/types";
 import { getClientId } from "@/lib/sync/client-id";
 import DarkModeIcon from "@/icons/dark_mode_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import LightModeIcon from "@/icons/light_mode_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import { AppLocale } from "@/lib/i18n/config";
 
 type SettingsPageClientProps = {
   initialSettings: AppSettings;
@@ -75,8 +76,8 @@ export default function SettingsPageClient({
     });
   }
 
-  function handleLocaleToggle() {
-    const nextLocale = locale === "en" ? "cs" : "en";
+  function handleLocaleToggle(locale?: AppLocale) {
+    const nextLocale = locale || (settings.locale === "en" ? "cs" : "en");
     const previousSettings = settings;
     const query = searchParams.toString();
     const nextPath = localizePath(
@@ -134,18 +135,54 @@ export default function SettingsPageClient({
         <p className="mt-6">
           {messages.settings.currentLanguage}: {currentLanguageLabel}
         </p>
-        <button
-          className="mt-2 add-button"
-          type="button"
-          onClick={handleLocaleToggle}
-          disabled={isPending}
-        >
-          {isPending && pendingAction === "locale"
-            ? messages.common.saving
-            : locale === "en"
-              ? messages.settings.switchToCzech
-              : messages.settings.switchToEnglish}
-        </button>
+        <div className="flex gap-1">
+          <button
+            className="mt-2 add-button"
+            type="button"
+            onClick={() => {
+              if (locale === "cs") {
+                alert(`${messages.settings.languageAlreadyActive}`);
+                return;
+              }
+              handleLocaleToggle("cs");
+            }}
+            disabled={isPending}
+          >
+            {isPending && pendingAction === "locale"
+              ? messages.common.saving
+              : messages.common.czech}
+          </button>
+          <button
+            className="mt-2 add-button"
+            type="button"
+            onClick={() => {
+              if (locale === "en") {
+                alert(`${messages.settings.languageAlreadyActive}`);
+                return;
+              }
+              handleLocaleToggle("en");
+            }}
+            disabled={isPending}
+          >
+            {isPending && pendingAction === "locale"
+              ? messages.common.saving
+              : messages.common.english}
+          </button>
+          <button
+            className="mt-2 add-button"
+            type="button"
+            onClick={() => {
+              if (locale === "pl") {
+                alert(`${messages.settings.languageAlreadyActive}`);
+                return;
+              }
+              handleLocaleToggle("pl");
+            }}
+            disabled={isPending}
+          >
+            {messages.common.polish}
+          </button>
+        </div>
         {errorMessage ? (
           <p style={{ color: "var(--danger-text)", marginBottom: 0 }}>
             {errorMessage}

@@ -3,6 +3,7 @@ import type {
   DaySchedule,
   ScheduleState,
   SortOption,
+  FilterOption,
   StatsOptions,
   Subject,
 } from "@/lib/schedule/types";
@@ -119,4 +120,17 @@ export function autoSortSubjectsByUsage(
     });
 
   return [...usedSubjects, ...unusedSubjects];
+}
+
+export function filterStats(
+  stats: { subjectId: string; count: number }[],
+  filterBy: FilterOption,
+) {
+  if (filterBy === "frequent") {
+    return stats.filter((s) => s.count > 1);
+  }
+  if (filterBy === "more-than-five") {
+    return stats.filter((s) => s.count > 5);
+  }
+  return stats;
 }

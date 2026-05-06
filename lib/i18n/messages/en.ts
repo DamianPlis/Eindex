@@ -6,7 +6,8 @@ export const enMessages = {
     cancel: "Cancel",
     home: "Home",
     english: "English",
-    czech: "Czech",
+    czech: "Čeština",
+    polish: "Polski",
     light: "light",
     dark: "dark",
     today: "Dnes",
@@ -34,6 +35,7 @@ export const enMessages = {
     switchToCzech: "Switch to Czech",
     themeSaveError: "Could not save your theme. Try again later.",
     languageSaveError: "Could not save your language. Try again later.",
+    languageAlreadyActive: "English is already active.",
   },
   home: {
     today: "Today",
@@ -97,6 +99,11 @@ export const enMessages = {
       leastFrequent: "Least frequent",
       nameAsc: "Name (A-Z)",
       nameDesc: "Name (Z-A)",
+    },
+    filterOptions: {
+      all: "Show all",
+      frequent: "Frequent (> 1)",
+      moreThanFive: "Frequent (> 5)",
     },
     status: {
       today: "Due Today",

@@ -93,7 +93,7 @@ export function getTomorrowISO(): string {
   return isoDate(tomorrow);
 }
 
-export { getWeekStats, sortStats };
+export { getWeekStats, sortStats, filterStats };
 
 export function getCurrentWeekStats(
   statsOption: StatsOptions,

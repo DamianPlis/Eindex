@@ -3,11 +3,15 @@
 import React, { useState } from "react";
 import { useAppLocale, useMessages } from "@/components/i18n/LocaleProvider";
 import { getSubjectDisplayName } from "@/lib/schedule/labels";
-import type { ScheduleState } from "@/lib/schedule/types";
+import type {
+  ScheduleState,
+  SortOption,
+  FilterOption,
+} from "@/lib/schedule/types";
+import { sortStats } from "@/lib/schedule/selectors";
+import { filterStats } from "@/lib/schedule/stats";
 import SortIcon from "@/icons/sort_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import FilterIcon from "@/icons/filter_list_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import type { SortOption } from "@/lib/schedule/types";
-import { sortStats } from "@/lib/schedule/selectors";
 
 interface StatsCardProps {
   title: string;
@@ -19,6 +23,7 @@ export default function StatsCard({ title, stats, subjects }: StatsCardProps) {
   const locale = useAppLocale();
   const messages = useMessages();
   const [sortBy, setSortBy] = useState<SortOption>("count-desc");
+  const [filterBy, setFilterBy] = useState<FilterOption>("all");
 
   const subjectMap = React.useMemo(
     () =>
@@ -30,9 +35,9 @@ export default function StatsCard({ title, stats, subjects }: StatsCardProps) {
       ),
     [messages, subjects],
   );
-  const sortedStats = React.useMemo(
-    () => sortStats(stats, subjectMap, locale, sortBy),
-    [stats, subjectMap, locale, sortBy],
+  const filteredStats = React.useMemo(
+    () => filterStats(sortStats(stats, subjectMap, locale, sortBy), filterBy),
+    [stats, subjectMap, locale, sortBy, filterBy],
   );
 
   return (
@@ -74,30 +79,58 @@ export default function StatsCard({ title, stats, subjects }: StatsCardProps) {
               </option>
             </select>
           </div>
-          <FilterIcon
-            alt="Filter stats"
-            fill="currentColor"
-            className="stats-card-header-icon"
-          />
+          <div className="filter-icon-wrapper" style={{ position: "relative" }}>
+            <FilterIcon
+              alt="Filter stats"
+              fill="currentColor"
+              className="stats-card-header-icon"
+            />
+            <select
+              value={filterBy}
+              onChange={(e) => setFilterBy(e.target.value as FilterOption)}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                opacity: 0,
+                cursor: "pointer",
+              }}
+              aria-label="Filter options"
+            >
+              <option value="all">
+                {messages.deadlines.filterOptions.all}
+              </option>
+              <option value="frequent">
+                {messages.deadlines.filterOptions.frequent}
+              </option>
+              <option value="more-than-five">
+                {messages.deadlines.filterOptions.moreThanFive}
+              </option>
+            </select>
+          </div>
         </div>
       </div>
-      {Object.keys(stats).length === 0 ? (
+      {filteredStats.length === 0 ? (
         <p>{messages.deadlines.noData}</p>
       ) : (
         <ul>
-          {sortedStats.map(({ subjectId, count }) => (
-            <li
-              key={subjectId}
-              className="stats-entry"
-              style={{
-                //color: `color-mix(in srgb, ${subjects.find((s) => s.id === subjectId)?.color || "#000000"} 80%, transparent)`,
-                backgroundColor: `${subjects.find((s) => s.id === subjectId)?.color || "#000000"}55`,
-              }}
-            >
-              {subjectMap.get(subjectId) || subjectId}: {count}{" "}
-              {messages.deadlines.statistics.times}
-            </li>
-          ))}
+          {filteredStats.map(
+            ({ subjectId, count }: { subjectId: string; count: number }) => (
+              <li
+                key={subjectId}
+                className="stats-entry"
+                style={{
+                  //color: `color-mix(in srgb, ${subjects.find((s) => s.id === subjectId)?.color || "#000000"} 80%, transparent)`,
+                  backgroundColor: `${subjects.find((s) => s.id === subjectId)?.color || "#000000"}55`,
+                }}
+              >
+                {subjectMap.get(subjectId) || subjectId}: {count}{" "}
+                {messages.deadlines.statistics.times}
+              </li>
+            ),
+          )}
         </ul>
       )}
     </div>

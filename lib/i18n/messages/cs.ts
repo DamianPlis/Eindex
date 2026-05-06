@@ -7,7 +7,8 @@ export const csMessages = {
     saving: "Ukládání...",
     cancel: "Zrušit",
     home: "Domů",
-    english: "Angličtina",
+    polish: "Polski",
+    english: "English",
     czech: "Čeština",
     light: "světlý",
     dark: "tmavý",
@@ -36,6 +37,7 @@ export const csMessages = {
     switchToCzech: "Přepnout na češtinu",
     themeSaveError: "Motiv se nepodařilo uložit. Zkuste to prosím později.",
     languageSaveError: "Jazyk se nepodařilo uložit. Zkuste to prosím později.",
+    languageAlreadyActive: "Čeština je již aktivní.",
   },
   home: {
     today: "Dnes",
@@ -99,6 +101,11 @@ export const csMessages = {
       leastFrequent: "Nejméně časté",
       nameAsc: "Název (A-Z)",
       nameDesc: "Název (Z-A)",
+    },
+    filterOptions: {
+      all: "Zobrazit vše",
+      frequent: "Časté (> 1)",
+      moreThanFive: "Časté (> 5)",
     },
     status: {
       today: "Dnes",

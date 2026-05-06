@@ -54,4 +54,6 @@ export type ScheduleState = {
 
 export type SortOption = "count-desc" | "count-asc" | "name-asc" | "name-desc";
 
+export type FilterOption = "all" | "frequent" | "more-than-five";
+
 export type StatsOptions = "week" | "month" | "year";
