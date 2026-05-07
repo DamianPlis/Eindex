@@ -124,13 +124,8 @@ export function autoSortSubjectsByUsage(
 
 export function filterStats(
   stats: { subjectId: string; count: number }[],
-  filterBy: FilterOption,
+  filterIds: FilterOption,
 ) {
-  if (filterBy === "frequent") {
-    return stats.filter((s) => s.count > 1);
-  }
-  if (filterBy === "more-than-five") {
-    return stats.filter((s) => s.count > 5);
-  }
-  return stats;
+  if (!filterIds || filterIds.length === 0) return stats;
+  return stats.filter((s) => filterIds.includes(s.subjectId));
 }

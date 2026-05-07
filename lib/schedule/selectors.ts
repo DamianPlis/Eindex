@@ -11,6 +11,7 @@ import {
   getCurrentPeriodStats,
   getWeekStats,
   sortStats,
+  filterStats,
 } from "@/lib/schedule/stats";
 
 const deadlineFormatters = new Map<string, Intl.RelativeTimeFormat>();

@@ -68,16 +68,19 @@ async function StatsCards({
         stats={weekStats}
         title={messages.thisWeek}
         subjects={state.subjects}
+        subjectGroups={state.subjectGroups}
       />
       <StatsCard
         stats={monthStats}
         title={messages.thisMonth}
         subjects={state.subjects}
+        subjectGroups={state.subjectGroups}
       />
       <StatsCard
         stats={yearStats}
         title={messages.thisYear}
         subjects={state.subjects}
+        subjectGroups={state.subjectGroups}
       />
     </>
   );

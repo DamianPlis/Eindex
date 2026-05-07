@@ -11,19 +11,20 @@ import type {
 import { sortStats } from "@/lib/schedule/selectors";
 import { filterStats } from "@/lib/schedule/stats";
 import SortIcon from "@/icons/sort_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import FilterIcon from "@/icons/filter_list_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import SubjectsCombobox from "@/components/deadlines/SubjectsCombobox";
 
 interface StatsCardProps {
   title: string;
   stats: Record<string, number>;
   subjects: ScheduleState["subjects"];
+  subjectGroups?: ScheduleState["subjectGroups"];
 }
 
-export default function StatsCard({ title, stats, subjects }: StatsCardProps) {
+export default function StatsCard({ title, stats, subjects, subjectGroups = [] }: StatsCardProps) {
   const locale = useAppLocale();
   const messages = useMessages();
   const [sortBy, setSortBy] = useState<SortOption>("count-desc");
-  const [filterBy, setFilterBy] = useState<FilterOption>("all");
+  const [filterIds, setFilterIds] = useState<FilterOption>([]);
 
   const subjectMap = React.useMemo(
     () =>
@@ -36,8 +37,8 @@ export default function StatsCard({ title, stats, subjects }: StatsCardProps) {
     [messages, subjects],
   );
   const filteredStats = React.useMemo(
-    () => filterStats(sortStats(stats, subjectMap, locale, sortBy), filterBy),
-    [stats, subjectMap, locale, sortBy, filterBy],
+    () => filterStats(sortStats(stats, subjectMap, locale, sortBy), filterIds),
+    [stats, subjectMap, locale, sortBy, filterIds],
   );
 
   return (
@@ -79,36 +80,13 @@ export default function StatsCard({ title, stats, subjects }: StatsCardProps) {
               </option>
             </select>
           </div>
-          <div className="filter-icon-wrapper" style={{ position: "relative" }}>
-            <FilterIcon
-              alt="Filter stats"
-              fill="currentColor"
-              className="stats-card-header-icon"
+          <div className="filter-combobox-wrapper">
+            <SubjectsCombobox
+              subjects={subjects}
+              subjectGroups={subjectGroups}
+              selectedIds={filterIds}
+              onChange={setFilterIds}
             />
-            <select
-              value={filterBy}
-              onChange={(e) => setFilterBy(e.target.value as FilterOption)}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                opacity: 0,
-                cursor: "pointer",
-              }}
-              aria-label="Filter options"
-            >
-              <option value="all">
-                {messages.deadlines.filterOptions.all}
-              </option>
-              <option value="frequent">
-                {messages.deadlines.filterOptions.frequent}
-              </option>
-              <option value="more-than-five">
-                {messages.deadlines.filterOptions.moreThanFive}
-              </option>
-            </select>
           </div>
         </div>
       </div>

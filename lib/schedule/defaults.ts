@@ -1,4 +1,4 @@
-import type { DeadlineItem, FixedSlotKey, ScheduleState, Slot, Subject } from "@/lib/schedule/types";
+import type { DeadlineItem, FixedSlotKey, ScheduleState, Slot, Subject, SubjectGroup } from "@/lib/schedule/types";
 import { DEFAULT_SETTINGS, normalizeSettings } from "@/lib/settings/defaults";
 import { autoSortSubjectsByUsage } from "@/lib/schedule/stats";
 
@@ -32,6 +32,13 @@ export const defaultSubjects: Subject[] = [
   { id: "other", name: "Ostatni", color: "#8f9cae" },
   { id: "sp", name: "SP", color: "#adadad" },
   { id: "art", name: "Vytvarka", color: "#c4e7ee" },
+];
+
+export const defaultSubjectGroups: SubjectGroup[] = [
+  { id: "languages", name: "Jazyky", subjectIds: ["czech", "english", "spanish", "conversation"] },
+  { id: "sciences", name: "Přírodní vědy", subjectIds: ["math", "physics", "chem", "bio", "it"] },
+  { id: "humanities", name: "Humanitní vědy", subjectIds: ["history", "geo", "obcanka"] },
+  { id: "other", name: "Ostatní", subjectIds: ["theater", "music", "art", "farm", "sp", "other"] },
 ];
 
 export const dayTemplates: DayTemplate[] = [
@@ -130,6 +137,7 @@ export function createDefaultState(): ScheduleState {
   const monday = isoDate(getMonday());
   return {
     subjects: defaultSubjects,
+    subjectGroups: defaultSubjectGroups,
     weeks: {
       [monday]: {
         weekStart: monday,
@@ -242,6 +250,9 @@ export function migrateState(raw: unknown): ScheduleState {
   const base = createDefaultState();
   const basicSubjects = Array.isArray(source.subjects) && source.subjects.length ? source.subjects : defaultSubjects;
   base.subjects = basicSubjects;
+
+  const basicSubjectGroups = Array.isArray(source.subjectGroups) && source.subjectGroups.length ? source.subjectGroups : defaultSubjectGroups;
+  base.subjectGroups = basicSubjectGroups;
 
   const todayISO = isoDate(new Date());
   base.deadlines = normalizeDeadlines(source.deadlines, todayISO);

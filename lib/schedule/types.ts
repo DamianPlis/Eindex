@@ -14,6 +14,12 @@ export type Subject = {
   color: string;
 };
 
+export type SubjectGroup = {
+  id: string;
+  name: string;
+  subjectIds: string[];
+};
+
 export type Slot = {
   id: string;
   time: string;
@@ -46,6 +52,7 @@ export type DeadlineItem = {
 
 export type ScheduleState = {
   subjects: Subject[];
+  subjectGroups: SubjectGroup[];
   weeks: Record<string, WeekSchedule>;
   lunches: Record<string, string>;
   deadlines: DeadlineItem[];
@@ -54,6 +61,6 @@ export type ScheduleState = {
 
 export type SortOption = "count-desc" | "count-asc" | "name-asc" | "name-desc";
 
-export type FilterOption = "all" | "frequent" | "more-than-five";
+export type FilterOption = string[];
 
 export type StatsOptions = "week" | "month" | "year";
