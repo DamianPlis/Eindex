@@ -44,6 +44,7 @@ export const enMessages = {
     noScheduleForToday: "No schedule for today.",
     noDeadlinesForTomorrow: "No deadlines for tomorrow",
     noScheduleForTomorrow: "No schedule for tomorrow.",
+    menuUnavailable: "Menu unavailable",
   },
   network: {
     offline: "You're offline.",

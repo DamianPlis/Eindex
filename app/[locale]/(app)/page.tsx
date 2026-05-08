@@ -164,13 +164,19 @@ async function ScheduleListContainer({
   selectedDateISO: string;
   isToday: boolean;
 }) {
-  const [state, lunchPerDay] = await Promise.all([
+  const [state, scrapedLunch] = await Promise.all([
     getCachedUserState(uid),
     getLunchPerDay(),
   ]);
   //const delay = new Promise(resolve => setTimeout(resolve, 70000));
   //await delay; // Simulate loading delay for demonstration purposes
   const slots = pickTodaySchedule(state, selectedDateISO);
+
+  // Merge: scraped data takes priority, fall back to user-stored lunches
+  const lunchPerDay: Record<string, string> = {
+    ...state.lunches,
+    ...scrapedLunch,
+  };
 
   return (
     <div className="schedule-list">
@@ -185,16 +191,19 @@ async function ScheduleListContainer({
             slot.subjectId === "lunch" ||
             slot.fixedKey === "lunch" ||
             /obed|lunch/i.test(slot.fixedLabel || "");
-          const lunchText = isLunch ? lunchPerDay[selectedDateISO] : "";
+          const lunchText = isLunch ? (lunchPerDay[selectedDateISO] || messages.home.menuUnavailable || "Menu unavailable") : "";
           const title = slot.fixed
             ? getFixedSlotDisplayName(slot, messages)
             : getSubjectDisplayName(subject, messages) || slot.topic || "-";
 
           let subtitle = "";
-          if (isLunch && lunchText) subtitle = lunchText;
-          if (slot.fixed && slot.allowTopic && slot.topic)
+          if (isLunch && lunchText) {
+            subtitle = lunchText;
+          } else if (slot.fixed && slot.allowTopic && slot.topic) {
             subtitle = slot.topic;
-          else if (!slot.fixed && slot.topic) subtitle = slot.topic;
+          } else if (!slot.fixed && slot.topic) {
+            subtitle = slot.topic;
+          }
 
           return (
             <SlotBubble

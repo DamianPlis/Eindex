@@ -45,6 +45,7 @@ export const plMessages = {
     noScheduleForToday: "Brak planu na dzisiaj.",
     noDeadlinesForTomorrow: "Brak terminów na jutro",
     noScheduleForTomorrow: "Brak planu na jutro.",
+    menuUnavailable: "Menu niedostępne",
   },
   network: {
     offline: "Jesteś offline.",

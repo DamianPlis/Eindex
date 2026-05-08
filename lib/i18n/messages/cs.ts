@@ -46,6 +46,7 @@ export const csMessages = {
     noScheduleForToday: "Na dnešek není žádný rozvrh.",
     noDeadlinesForTomorrow: "Na zítřek nejsou žádné úkoly",
     noScheduleForTomorrow: "Na zítřek není žádný rozvrh.",
+    menuUnavailable: "Menu není k dispozici",
   },
   network: {
     offline: "Jste offline.",

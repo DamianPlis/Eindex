@@ -134,7 +134,8 @@ export async function getLunchPerDay(): Promise<Record<string, string>> {
   try {
     const html = await fetchMenuHtml();
     return extractPerDay(html);
-  } catch {
+  } catch (err) {
+    console.error("[lunch] getLunchPerDay failed:", err);
     return {};
   }
 }
