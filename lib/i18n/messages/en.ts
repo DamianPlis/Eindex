@@ -103,8 +103,11 @@ export const enMessages = {
     },
     filterOptions: {
       all: "Show all",
-      frequent: "Frequent (> 1)",
-      moreThanFive: "Frequent (> 5)",
+      groups: "Groups",
+      subjects: "Subjects",
+      searchPlaceholder: "Search for a subject or group...",
+      cancelSelection: "Cancel Selection",
+      nothingFound: "Nothing found",
     },
     status: {
       today: "Due Today",
@@ -191,6 +194,14 @@ export const enMessages = {
       other: "Other",
       sp: "SP",
       art: "Art",
+    },
+  },
+  subjectGroups: {
+    builtin: {
+      languages: "Languages",
+      sciences: "Sciences",
+      humanities: "Humanities",
+      other: "Other",
     },
   },
 };

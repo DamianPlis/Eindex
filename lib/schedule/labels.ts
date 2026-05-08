@@ -1,5 +1,10 @@
 import type { AppMessages } from "@/lib/i18n/messages";
-import type { FixedSlotKey, Slot, Subject } from "@/lib/schedule/types";
+import type {
+  FixedSlotKey,
+  Slot,
+  Subject,
+  SubjectGroup,
+} from "@/lib/schedule/types";
 
 const builtinSubjectIds = [
   "math",
@@ -22,11 +27,23 @@ const builtinSubjectIds = [
   "art",
 ] as const;
 
+const builltInSubjectGroupIds = [
+  "languages",
+  "sciences",
+  "humanities",
+  "other",
+] as const;
+
 type BuiltinSubjectId = (typeof builtinSubjectIds)[number];
+type BuiltinSubjectGroupId = (typeof builltInSubjectGroupIds)[number];
 
 const builtinSubjectIdSet = new Set<string>(builtinSubjectIds);
+const builtinSubjectGroupIdSet = new Set<string>(builltInSubjectGroupIds);
 
-export function getSubjectDisplayName(subject: Subject | null, messages: AppMessages): string {
+export function getSubjectDisplayName(
+  subject: Subject | null,
+  messages: AppMessages,
+): string {
   if (!subject) return "";
   if (builtinSubjectIdSet.has(subject.id)) {
     return messages.subjects.builtin[subject.id as BuiltinSubjectId];
@@ -39,5 +56,22 @@ export function getFixedSlotDisplayName(
   messages: AppMessages,
 ): string {
   const fallbackKey: FixedSlotKey | "activity" = slot.fixedKey || "activity";
-  return messages.planning.fixedSlots[fallbackKey] || slot.fixedLabel || messages.planning.fixedSlots.activity;
+  return (
+    messages.planning.fixedSlots[fallbackKey] ||
+    slot.fixedLabel ||
+    messages.planning.fixedSlots.activity
+  );
+}
+
+export function getSubjectGroupDisplayName(
+  subjectGroup: SubjectGroup | null,
+  messages: AppMessages,
+): string {
+  if (!subjectGroup) return "";
+  if (builtinSubjectGroupIdSet.has(subjectGroup.id)) {
+    return messages.subjectGroups.builtin[
+      subjectGroup.id as BuiltinSubjectGroupId
+    ];
+  }
+  return subjectGroup.name;
 }

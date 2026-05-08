@@ -104,8 +104,11 @@ export const plMessages = {
     },
     filterOptions: {
       all: "Pokaż wszystko",
-      frequent: "Częste (> 1)",
-      moreThanFive: "Częste (> 5)",
+      groups: "Grupy",
+      subjects: "Przedmioty",
+      searchPlaceholder: "Szukaj przedmiotu lub grupy...",
+      cancelSelection: "Anuluj wybór",
+      nothingFound: "Nic nie znaleziono",
     },
     status: {
       today: "Na dzisiaj",
@@ -193,6 +196,14 @@ export const plMessages = {
       other: "Inne",
       sp: "SP",
       art: "Plastyka",
+    },
+  },
+  subjectGroups: {
+    builtin: {
+      languages: "Języki",
+      sciences: "Nauki przyrodnicze",
+      humanities: "Nauki humanistyczne",
+      other: "Inne",
     },
   },
 };

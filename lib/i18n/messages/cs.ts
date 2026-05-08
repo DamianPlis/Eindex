@@ -105,8 +105,11 @@ export const csMessages = {
     },
     filterOptions: {
       all: "Zobrazit vše",
-      frequent: "Časté (> 1)",
-      moreThanFive: "Časté (> 5)",
+      groups: "Skupiny",
+      subjects: "Předměty",
+      searchPlaceholder: "Hledat předmět nebo skupinu...",
+      cancelSelection: "Zrušit výběr",
+      nothingFound: "Nic nenalezeno",
     },
     status: {
       today: "Dnes",
@@ -194,6 +197,14 @@ export const csMessages = {
       other: "Ostatní",
       sp: "SP",
       art: "Výtvarka",
+    },
+  },
+  subjectGroups: {
+    builtin: {
+      languages: "Jazyky",
+      sciences: "Přírodní vědy",
+      humanities: "Humanitní vědy",
+      other: "Ostatní",
     },
   },
 } satisfies typeof enMessages;

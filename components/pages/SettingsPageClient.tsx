@@ -76,7 +76,7 @@ export default function SettingsPageClient({
     });
   }
 
-  function handleLocaleToggle(locale?: AppLocale) {
+  function handleLocaleChange(locale?: AppLocale) {
     const nextLocale = locale || (settings.locale === "en" ? "cs" : "en");
     const previousSettings = settings;
     const query = searchParams.toString();
@@ -144,7 +144,7 @@ export default function SettingsPageClient({
                 alert(`${messages.settings.languageAlreadyActive}`);
                 return;
               }
-              handleLocaleToggle("cs");
+              handleLocaleChange("cs");
             }}
             disabled={isPending}
           >
@@ -160,7 +160,7 @@ export default function SettingsPageClient({
                 alert(`${messages.settings.languageAlreadyActive}`);
                 return;
               }
-              handleLocaleToggle("en");
+              handleLocaleChange("en");
             }}
             disabled={isPending}
           >
@@ -176,7 +176,7 @@ export default function SettingsPageClient({
                 alert(`${messages.settings.languageAlreadyActive}`);
                 return;
               }
-              handleLocaleToggle("pl");
+              handleLocaleChange("pl");
             }}
             disabled={isPending}
           >

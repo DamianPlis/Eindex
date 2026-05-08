@@ -3,7 +3,10 @@
 import { useState, useRef, useEffect } from "react";
 import { useMessages } from "@/components/i18n/LocaleProvider";
 import type { Subject, SubjectGroup } from "@/lib/schedule/types";
-import { getSubjectDisplayName } from "@/lib/schedule/labels";
+import {
+  getSubjectDisplayName,
+  getSubjectGroupDisplayName,
+} from "@/lib/schedule/labels";
 import styles from "@/css/SubjectsCombobox.module.css";
 
 interface SubjectsComboboxProps {
@@ -48,7 +51,7 @@ export default function SubjectsCombobox({
   const handleGroupClick = (group: SubjectGroup) => {
     // Check if all subjects in the group are already selected
     const allSelected = group.subjectIds.every((id) =>
-      selectedIds.includes(id)
+      selectedIds.includes(id),
     );
 
     if (allSelected) {
@@ -66,7 +69,7 @@ export default function SubjectsCombobox({
   };
 
   const query = searchQuery.toLowerCase();
-  
+
   const filteredSubjects = subjects.filter((subject) => {
     const name = getSubjectDisplayName(subject, messages).toLowerCase();
     return name.includes(query);
@@ -126,7 +129,7 @@ export default function SubjectsCombobox({
             <input
               type="text"
               className={styles.searchInput}
-              placeholder="Hledat předmět nebo skupinu..."
+              placeholder={messages.deadlines.filterOptions.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               autoFocus
@@ -140,16 +143,18 @@ export default function SubjectsCombobox({
                 className={styles.clearBtn}
                 onClick={handleClear}
               >
-                Zrušit výběr
+                {messages.deadlines.filterOptions.cancelSelection}
               </button>
             )}
 
             {filteredGroups.length > 0 && (
               <div>
-                <div className={styles.sectionTitle}>Skupiny</div>
+                <div className={styles.sectionTitle}>
+                  {messages.deadlines.filterOptions.groups}
+                </div>
                 {filteredGroups.map((group) => {
                   const allSelected = group.subjectIds.every((id) =>
-                    selectedIds.includes(id)
+                    selectedIds.includes(id),
                   );
                   return (
                     <div
@@ -157,14 +162,23 @@ export default function SubjectsCombobox({
                       className={styles.groupItem}
                       onClick={() => handleGroupClick(group)}
                     >
-                      <div className={`${styles.checkbox} ${allSelected ? styles.checked : ""}`}>
+                      <div
+                        className={`${styles.checkbox} ${allSelected ? styles.checked : ""}`}
+                      >
                         {allSelected && (
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                          >
                             <polyline points="20 6 9 17 4 12" />
                           </svg>
                         )}
                       </div>
-                      <span className={styles.itemText}>{group.name}</span>
+                      <span className={styles.itemText}>
+                        {getSubjectGroupDisplayName(group, messages)}
+                      </span>
                     </div>
                   );
                 })}
@@ -177,7 +191,9 @@ export default function SubjectsCombobox({
 
             {filteredSubjects.length > 0 && (
               <div>
-                <div className={styles.sectionTitle}>Předměty</div>
+                <div className={styles.sectionTitle}>
+                  {messages.deadlines.filterOptions.subjects}
+                </div>
                 {filteredSubjects.map((subject) => {
                   const isSelected = selectedIds.includes(subject.id);
                   return (
@@ -186,9 +202,16 @@ export default function SubjectsCombobox({
                       className={styles.item}
                       onClick={() => handleToggleSubject(subject.id)}
                     >
-                      <div className={`${styles.checkbox} ${isSelected ? styles.checked : ""}`}>
+                      <div
+                        className={`${styles.checkbox} ${isSelected ? styles.checked : ""}`}
+                      >
                         {isSelected && (
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                          >
                             <polyline points="20 6 9 17 4 12" />
                           </svg>
                         )}
@@ -207,7 +230,9 @@ export default function SubjectsCombobox({
             )}
 
             {filteredGroups.length === 0 && filteredSubjects.length === 0 && (
-              <div className={styles.empty}>Nic nenalezeno</div>
+              <div className={styles.empty}>
+                {messages.deadlines.filterOptions.nothingFound}
+              </div>
             )}
           </div>
         </div>
