@@ -8,6 +8,7 @@ import {
   getSubjectGroupDisplayName,
 } from "@/lib/schedule/labels";
 import styles from "@/css/SubjectsCombobox.module.css";
+import SearchIcon from "@/icons/search_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 
 interface SubjectsComboboxProps {
   subjects: Subject[];
@@ -101,7 +102,7 @@ export default function SubjectsCombobox({
       >
         <span>{buttonText}</span>
         <svg
-          width="16"
+          width="24"
           height="16"
           viewBox="0 0 24 24"
           fill="none"
@@ -115,17 +116,7 @@ export default function SubjectsCombobox({
       {isOpen && (
         <div className={styles.popover}>
           <div className={styles.searchWrapper}>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
+            <SearchIcon fill="currentColor" width="24" height="24" />
             <input
               type="text"
               className={styles.searchInput}

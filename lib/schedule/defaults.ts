@@ -311,7 +311,6 @@ export function migrateState(raw: unknown): ScheduleState {
       ? source.subjects
       : defaultSubjects;
   base.subjects = basicSubjects;
-  base.subjects = autoSortSubjectsByUsage(base.subjects, base);
 
   const basicSubjectGroups =
     Array.isArray(source.subjectGroups) && source.subjectGroups.length
@@ -375,6 +374,7 @@ export function migrateState(raw: unknown): ScheduleState {
     };
   }
 
+  base.subjects = autoSortSubjectsByUsage(base.subjects, base);
   return base;
 }
 

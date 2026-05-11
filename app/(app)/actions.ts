@@ -3,7 +3,11 @@
 import { cookies } from "next/headers";
 import { LOCALE_COOKIE, normalizeAppLocale } from "@/lib/i18n/config";
 import { resolveDeadlineStatus } from "@/lib/schedule/defaults";
-import { ensureWeekExists, updateUserSettings, updateUserState } from "@/lib/schedule/store";
+import {
+  ensureWeekExists,
+  updateUserSettings,
+  updateUserState,
+} from "@/lib/schedule/store";
 import { normalizeTheme } from "@/lib/settings/defaults";
 import type { AppSettings } from "@/lib/settings/types";
 import { requireSession } from "@/lib/session";
@@ -22,7 +26,8 @@ export async function setSlotSubjectAction(
     session.uid,
     (state) => {
       const key = ensureWeekExists(state, input.weekStart);
-      const slot = state.weeks[key]?.days?.[input.dayIndex]?.slots?.[input.slotIndex];
+      const slot =
+        state.weeks[key]?.days?.[input.dayIndex]?.slots?.[input.slotIndex];
       if (!slot) return;
 
       if (slot.fixed && slot.fixedLabel.toLowerCase().includes("obed")) {
@@ -46,7 +51,8 @@ export async function setSlotTopicAction(
     session.uid,
     (state) => {
       const key = ensureWeekExists(state, input.weekStart);
-      const slot = state.weeks[key]?.days?.[input.dayIndex]?.slots?.[input.slotIndex];
+      const slot =
+        state.weeks[key]?.days?.[input.dayIndex]?.slots?.[input.slotIndex];
       if (!slot) return;
       if (!slot.allowTopic && slot.fixed) return;
       slot.topic = input.topic || "";
@@ -69,7 +75,8 @@ export async function addCustomSubjectAction(input: {
   await updateUserState(
     session.uid,
     (state) => {
-      const baseId = cleanName.toLowerCase().replace(/[^a-z0-9_]+/g, "_") || "custom";
+      const baseId =
+        cleanName.toLowerCase().replace(/[^a-z0-9_]+/g, "_") || "custom";
       let id = baseId;
       let i = 1;
       const existing = new Set(state.subjects.map((s) => s.id));
@@ -86,6 +93,57 @@ export async function addCustomSubjectAction(input: {
     { writerId: input.writerId },
   );
   return createdId || null;
+}
+
+export async function updateSubjectAction(input: {
+  id: string;
+  name: string;
+  color: string;
+  writerId?: string;
+}) {
+  const session = await requireSession();
+  const cleanName = input.name.trim();
+  if (!cleanName || !input.id) return;
+
+  await updateUserState(
+    session.uid,
+    (state) => {
+      const subject = state.subjects.find((s) => s.id === input.id);
+      if (subject) {
+        subject.name = cleanName;
+        subject.color = input.color || subject.color;
+      }
+    },
+    { writerId: input.writerId },
+  );
+}
+
+export async function deleteSubjectAction(input: {
+  id: string;
+  writerId?: string;
+}) {
+  const session = await requireSession();
+  if (!input.id) return;
+
+  await updateUserState(
+    session.uid,
+    (state) => {
+      state.subjects = state.subjects.filter((s) => s.id !== input.id);
+      for (const week of Object.values(state.weeks)) {
+        for (const day of week.days) {
+          for (const slot of day.slots) {
+            if (slot.subjectId === input.id) {
+              slot.subjectId = null;
+            }
+          }
+        }
+      }
+      for (const group of state.subjectGroups) {
+        group.subjectIds = group.subjectIds.filter((id) => id !== input.id);
+      }
+    },
+    { writerId: input.writerId },
+  );
 }
 
 export async function updateSettingsAction(

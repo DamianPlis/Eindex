@@ -149,6 +149,37 @@
     list-style: none;
 }
 
+.settings-skeleton-title {
+    width: min(190px, 70%);
+    height: 26px;
+}
+
+.settings-skeleton-heading {
+    width: min(170px, 48%);
+    height: 18px;
+}
+
+.settings-skeleton-pill {
+    width: 86px;
+    height: 28px;
+}
+
+.settings-skeleton-choice {
+    width: 100%;
+    height: 56px;
+    border-radius: 8px;
+}
+
+.settings-skeleton-language-choice {
+    width: 100%;
+    height: 68px;
+    border-radius: 8px;
+}
+
+.settings-skeleton-subject {
+    box-shadow: none;
+}
+
 @keyframes skeleton-shimmer {
     0% {
         background-position: 100% 0;

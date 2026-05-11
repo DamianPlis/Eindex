@@ -13,6 +13,8 @@ export const csMessages = {
     light: "světlý",
     dark: "tmavý",
     today: "Dnes",
+    delete: "Smazat",
+    edit: "Upravit",
   },
   nav: {
     home: "Domů",
@@ -38,6 +40,7 @@ export const csMessages = {
     themeSaveError: "Motiv se nepodařilo uložit. Zkuste to prosím později.",
     languageSaveError: "Jazyk se nepodařilo uložit. Zkuste to prosím později.",
     languageAlreadyActive: "Čeština je již aktivní.",
+    subjects: "Předměty",
   },
   home: {
     today: "Dnes",

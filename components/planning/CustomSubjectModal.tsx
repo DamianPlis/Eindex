@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import type { AppMessages } from "@/lib/i18n/messages";
+import CloseIcon from "@/icons/close_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 
 type CustomSubjectModalProps = {
   isOpen: boolean;
   isPending: boolean;
   messages: AppMessages;
+  title?: string;
   onClose: () => void;
   onSave: (name: string, color: string) => void;
 };
@@ -17,6 +19,7 @@ export default function CustomSubjectModal({
   isOpen,
   isPending,
   messages,
+  title,
   onClose,
   onSave,
 }: CustomSubjectModalProps) {
@@ -44,14 +47,16 @@ export default function CustomSubjectModal({
       <div className="modal">
         <div className="modal-header">
           <div className="font-bold">
-            {messages.planning.addCustomSubjectTitle}
+            {title || messages.planning.addCustomSubjectTitle}
           </div>
           <button
-            className="modal-save"
-            onClick={handleSave}
+            className="modal-close"
+            type="button"
+            onClick={handleClose}
             disabled={isPending}
+            aria-label={messages.common.cancel}
           >
-            {messages.common.save}
+            <CloseIcon fill="currentColor" />
           </button>
         </div>
 
@@ -82,10 +87,19 @@ export default function CustomSubjectModal({
         <div className="modal-footer">
           <button
             className="modal-cancel"
+            type="button"
             onClick={handleClose}
             disabled={isPending}
           >
             {messages.common.cancel}
+          </button>
+          <button
+            className="modal-save"
+            type="button"
+            onClick={handleSave}
+            disabled={isPending}
+          >
+            {messages.common.save}
           </button>
         </div>
       </div>

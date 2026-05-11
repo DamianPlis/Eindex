@@ -2,19 +2,17 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
-import {
-  addCustomSubjectAction,
-  setSlotSubjectAction,
-  setSlotTopicAction,
-} from "@/app/(app)/actions";
+import { setSlotSubjectAction, setSlotTopicAction } from "@/app/(app)/actions";
 import { useAppLocale, useMessages } from "@/components/i18n/LocaleProvider";
-import CustomSubjectModal from "@/components/planning/CustomSubjectModal";
 import ArrowLeft from "@/icons/keyboard_arrow_left_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import ArrowRight from "@/icons/keyboard_arrow_right_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import DoubleArrowLeft from "@/icons/keyboard_double_arrow_left_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import DoubleArrowRight from "@/icons/keyboard_double_arrow_right_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import { localizePath } from "@/lib/i18n/routing";
-import { getFixedSlotDisplayName, getSubjectDisplayName } from "@/lib/schedule/labels";
+import {
+  getFixedSlotDisplayName,
+  getSubjectDisplayName,
+} from "@/lib/schedule/labels";
 import type { DaySchedule, Slot, Subject } from "@/lib/schedule/types";
 import { getClientId } from "@/lib/sync/client-id";
 
@@ -30,7 +28,11 @@ type PlanningPageClientProps = {
 function safeHexToRgb(hex: string) {
   let h = (hex || "").trim();
   if (h.startsWith("#")) h = h.slice(1);
-  if (h.length === 3) h = h.split("").map((c) => c + c).join("");
+  if (h.length === 3)
+    h = h
+      .split("")
+      .map((c) => c + c)
+      .join("");
   if (h.length !== 6) return null;
   const n = Number.parseInt(h, 16);
   if (Number.isNaN(n)) return null;
@@ -40,7 +42,8 @@ function safeHexToRgb(hex: string) {
 function contrastForHex(hex: string, fallback = "#000000") {
   const rgb = safeHexToRgb(hex);
   if (!rgb) return fallback;
-  const lum = 0.2126 * (rgb.r / 255) + 0.7152 * (rgb.g / 255) + 0.0722 * (rgb.b / 255);
+  const lum =
+    0.2126 * (rgb.r / 255) + 0.7152 * (rgb.g / 255) + 0.0722 * (rgb.b / 255);
   return lum > 0.6 ? "#000000" : "#ffffff";
 }
 
@@ -89,12 +92,18 @@ function formatDayLabel(isoDateStr: string, locale: string) {
   return getDayLabels(isoDateStr, locale).longName;
 }
 
-function getWeekOffsetInDays(displayedWeekStart: string, currentWeekStart: string) {
+function getWeekOffsetInDays(
+  displayedWeekStart: string,
+  currentWeekStart: string,
+) {
   const displayedWeekDate = new Date(displayedWeekStart);
   const currentWeekDate = new Date(currentWeekStart);
   const millisecondsPerDay = 1000 * 60 * 60 * 24;
 
-  return (displayedWeekDate.getTime() - currentWeekDate.getTime()) / millisecondsPerDay;
+  return (
+    (displayedWeekDate.getTime() - currentWeekDate.getTime()) /
+    millisecondsPerDay
+  );
 }
 
 export default function PlanningPageClient({
@@ -109,19 +118,21 @@ export default function PlanningPageClient({
   const messages = useMessages();
   const planningRootRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const customTargetRef = useRef<{ dayIndex: number; slotIndex: number; slotId: string } | null>(null);
   const pendingSubjectUpdatesRef = useRef<Record<string, string | null>>({});
   const lastSyncedTopicsRef = useRef<Record<string, string>>({});
   const clientIdRef = useRef("");
   const isActiveDayIndexTriggeredByObserver = useRef(false);
   const activeDayIndexRef = useRef(0);
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const [activeDayIndex, setActiveDayIndex] = useState(0);
-  const [customModalOpen, setCustomModalOpen] = useState(false);
 
-  const [subjectOverrides, setSubjectOverrides] = useState<Record<string, string | null>>({});
-  const [topicOverrides, setTopicOverrides] = useState<Record<string, string>>({});
+  const [subjectOverrides, setSubjectOverrides] = useState<
+    Record<string, string | null>
+  >({});
+  const [topicOverrides, setTopicOverrides] = useState<Record<string, string>>(
+    {},
+  );
 
   const weekOffsetInDays = getWeekOffsetInDays(weekStart, currentWeekStart);
   const isShowingCurrentWeek = weekOffsetInDays === 0;
@@ -149,7 +160,11 @@ export default function PlanningPageClient({
       return;
     }
     try {
-      child.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+      child.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "nearest",
+      });
     } catch {
       container.scrollLeft = activeDayIndex * container.clientWidth;
     }
@@ -170,7 +185,10 @@ export default function PlanningPageClient({
           }
         });
 
-        if (mostVisibleIndex !== -1 && mostVisibleIndex !== activeDayIndexRef.current) {
+        if (
+          mostVisibleIndex !== -1 &&
+          mostVisibleIndex !== activeDayIndexRef.current
+        ) {
           isActiveDayIndexTriggeredByObserver.current = true;
           setActiveDayIndex(mostVisibleIndex);
         }
@@ -204,7 +222,10 @@ export default function PlanningPageClient({
       let changed = false;
       const next: Record<string, string | null> = { ...current };
       for (const slotId of slotIds) {
-        const hasServerSlot = Object.prototype.hasOwnProperty.call(subjectsBySlot, slotId);
+        const hasServerSlot = Object.prototype.hasOwnProperty.call(
+          subjectsBySlot,
+          slotId,
+        );
         if (!hasServerSlot) {
           delete next[slotId];
           delete pendingSubjectUpdatesRef.current[slotId];
@@ -217,7 +238,9 @@ export default function PlanningPageClient({
           pendingSubjectUpdatesRef.current,
           slotId,
         );
-        const pendingValue = hasPending ? pendingSubjectUpdatesRef.current[slotId] : null;
+        const pendingValue = hasPending
+          ? pendingSubjectUpdatesRef.current[slotId]
+          : null;
 
         if (hasPending && pendingValue === serverValue) {
           delete next[slotId];
@@ -246,7 +269,12 @@ export default function PlanningPageClient({
     return slot.topic || "";
   }
 
-  function updateSubject(dayIndex: number, slotIndex: number, slot: Slot, subjectId: string | null) {
+  function updateSubject(
+    dayIndex: number,
+    slotIndex: number,
+    slot: Slot,
+    subjectId: string | null,
+  ) {
     const nextSubjectId = subjectId || null;
     if ((currentSubjectValue(slot) || null) === nextSubjectId) return;
 
@@ -285,7 +313,12 @@ export default function PlanningPageClient({
     }));
   }
 
-  function commitTopic(dayIndex: number, slotIndex: number, slot: Slot, topic: string) {
+  function commitTopic(
+    dayIndex: number,
+    slotIndex: number,
+    slot: Slot,
+    topic: string,
+  ) {
     const previous =
       lastSyncedTopicsRef.current[slot.id] !== undefined
         ? lastSyncedTopicsRef.current[slot.id]
@@ -303,71 +336,62 @@ export default function PlanningPageClient({
     });
   }
 
-  function openAddCustomForSlot(dayIndex: number, slotIndex: number, slotId: string) {
-    customTargetRef.current = { dayIndex, slotIndex, slotId };
-    setCustomModalOpen(true);
-  }
-
-  function closeCustomSubjectModal() {
-    setCustomModalOpen(false);
-    customTargetRef.current = null;
-  }
-
-  function handleSaveCustomSubject(name: string, color: string) {
-    const target = customTargetRef.current;
-    if (!target) return;
-
-    startTransition(async () => {
-      const newId = await addCustomSubjectAction({
-        name,
-        color,
-        writerId: clientIdRef.current,
-      });
-      if (newId) {
-        await setSlotSubjectAction({
-          weekStart,
-          dayIndex: target.dayIndex,
-          slotIndex: target.slotIndex,
-          subjectId: newId,
-          writerId: clientIdRef.current,
-        });
-        setSubjectOverrides((current) => ({
-          ...current,
-          [target.slotId]: newId,
-        }));
-      }
-      closeCustomSubjectModal();
-    });
-  }
-
   return (
     <div ref={planningRootRef} className="planning-root" aria-live="polite">
       <div className="planning-inner">
-        <div className="controls" role="region" aria-label={messages.planning.weekControls}>
+        <div
+          className="controls"
+          role="region"
+          aria-label={messages.planning.weekControls}
+        >
           <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            {!isShowingCurrentWeek && isShowingFutureWeek && isAtLeastTwoWeeksFromCurrent ? (
+            {!isShowingCurrentWeek &&
+            isShowingFutureWeek &&
+            isAtLeastTwoWeeksFromCurrent ? (
               <Link
                 className="nav-btn nav-show-current-week"
-                href={localizePath(locale, `/planning?week=${encodeURIComponent(currentWeekStart)}`)}
+                href={localizePath(
+                  locale,
+                  `/planning?week=${encodeURIComponent(currentWeekStart)}`,
+                )}
               >
                 <DoubleArrowLeft fill="currentColor" />
               </Link>
             ) : null}
 
-            <Link className="nav-btn" href={localizePath(locale, `/planning?week=${encodeURIComponent(prevWeek)}`)}>
+            <Link
+              className="nav-btn"
+              href={localizePath(
+                locale,
+                `/planning?week=${encodeURIComponent(prevWeek)}`,
+              )}
+            >
               <ArrowLeft fill="currentColor" />
             </Link>
           </div>
-          <div className="week-title">{messages.planning.weekStarts} {weekStart}</div>
+          <div className="week-title">
+            {messages.planning.weekStarts} {weekStart}
+          </div>
           <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            <Link className="nav-btn" href={localizePath(locale, `/planning?week=${encodeURIComponent(nextWeek)}`)}>
+            <Link
+              className="nav-btn"
+              href={localizePath(
+                locale,
+                `/planning?week=${encodeURIComponent(nextWeek)}`,
+              )}
+            >
               <ArrowRight fill="currentColor" />
             </Link>
 
-            {!isShowingCurrentWeek && isShowingPastWeek && isAtLeastTwoWeeksFromCurrent ? (
+            {!isShowingCurrentWeek &&
+            isShowingPastWeek &&
+            isAtLeastTwoWeeksFromCurrent ? (
               <Link
                 className="nav-btn nav-show-current-week"
-                href={localizePath(locale, `/planning?week=${encodeURIComponent(currentWeekStart)}`)}
+                href={localizePath(
+                  locale,
+                  `/planning?week=${encodeURIComponent(currentWeekStart)}`,
+                )}
               >
                 <DoubleArrowRight fill="currentColor" />
               </Link>
@@ -375,7 +399,11 @@ export default function PlanningPageClient({
           </div>
         </div>
 
-        <div className="planning-day-tabs" role="tablist" aria-label={messages.planning.days}>
+        <div
+          className="planning-day-tabs"
+          role="tablist"
+          aria-label={messages.planning.days}
+        >
           {days.map((day, dayIndex) => {
             const labels = getDayLabels(day.date, locale);
             const isActive = dayIndex === activeDayIndex;
@@ -388,19 +416,30 @@ export default function PlanningPageClient({
                 className={`planning-day-tab ${isActive ? "is-active" : ""}`}
                 onClick={() => setActiveDayIndex(dayIndex)}
               >
-                <span className="planning-day-tab-name">{labels.shortName}</span>
-                <span className="planning-day-tab-date">{labels.shortDate}</span>
+                <span className="planning-day-tab-name">
+                  {labels.shortName}
+                </span>
+                <span className="planning-day-tab-date">
+                  {labels.shortDate}
+                </span>
               </button>
             );
           })}
         </div>
 
-        <div ref={containerRef} className="days-scroll" role="list" aria-label={messages.planning.days}>
+        <div
+          ref={containerRef}
+          className="days-scroll"
+          role="list"
+          aria-label={messages.planning.days}
+        >
           {days.map((day, dayIndex) => (
             <article key={day.date} className="day-card" role="listitem">
               <div className="day-inner">
                 <header className="day-header">
-                  <div className="day-name">{formatDayLabel(day.date, locale)}</div>
+                  <div className="day-name">
+                    {formatDayLabel(day.date, locale)}
+                  </div>
                   <div className="day-date">{day.date}</div>
                 </header>
 
@@ -409,11 +448,19 @@ export default function PlanningPageClient({
                     const isFixed = slot.fixed;
                     const selectedSubject =
                       !isFixed && currentSubjectValue(slot)
-                        ? subjects.find((subject) => subject.id === currentSubjectValue(slot)) || null
+                        ? subjects.find(
+                            (subject) =>
+                              subject.id === currentSubjectValue(slot),
+                          ) || null
                         : null;
-                    const slotBackground = isFixed ? "#ff7fbf" : selectedSubject?.color || null;
+                    const slotBackground = isFixed
+                      ? "#ff7fbf"
+                      : selectedSubject?.color || null;
                     const slotStyle = slotBackground
-                      ? { background: slotBackground, color: contrastForHex(slotBackground, "#000000") }
+                      ? {
+                          background: slotBackground,
+                          color: contrastForHex(slotBackground, "#000000"),
+                        }
                       : undefined;
                     const slotTitle = isFixed
                       ? getFixedSlotDisplayName(slot, messages)
@@ -423,11 +470,18 @@ export default function PlanningPageClient({
                       isFixed &&
                       Boolean(topicValue) &&
                       Boolean(slot.fixedLabel) &&
-                      topicValue.trim().toLowerCase() === slot.fixedLabel.trim().toLowerCase();
-                    const displayedFixedTopic = isFixedTopicSameAsLabel ? "" : topicValue;
+                      topicValue.trim().toLowerCase() ===
+                        slot.fixedLabel.trim().toLowerCase();
+                    const displayedFixedTopic = isFixedTopicSameAsLabel
+                      ? ""
+                      : topicValue;
 
                     return (
-                      <div key={slot.id} className="slot-card" style={slotStyle}>
+                      <div
+                        key={slot.id}
+                        className="slot-card"
+                        style={slotStyle}
+                      >
                         <div className="slot-top">
                           <div className="slot-title">{slotTitle}</div>
                           <div className="slot-time">{slot.time}</div>
@@ -441,29 +495,38 @@ export default function PlanningPageClient({
                                 value={currentSubjectValue(slot)}
                                 onChange={(event) => {
                                   const value = event.target.value;
-                                  if (value === "__add_custom__") {
-                                    openAddCustomForSlot(dayIndex, slotIndex, slot.id);
-                                  } else {
-                                    updateSubject(dayIndex, slotIndex, slot, value || null);
-                                  }
+                                  updateSubject(
+                                    dayIndex,
+                                    slotIndex,
+                                    slot,
+                                    value || null,
+                                  );
                                 }}
                               >
-                                <option value="">- {messages.planning.selectSubject} -</option>
+                                <option value="">
+                                  - {messages.planning.selectSubject} -
+                                </option>
                                 {subjects.map((subject) => (
                                   <option key={subject.id} value={subject.id}>
                                     {getSubjectDisplayName(subject, messages)}
                                   </option>
                                 ))}
-                                <option value="__add_custom__">+ {messages.planning.addCustomSubject}</option>
                               </select>
 
                               <input
                                 className="slot-input"
                                 type="text"
                                 value={topicValue}
-                                onChange={(event) => updateTopicLocal(slot, event.target.value)}
+                                onChange={(event) =>
+                                  updateTopicLocal(slot, event.target.value)
+                                }
                                 onBlur={(event) =>
-                                  commitTopic(dayIndex, slotIndex, slot, event.currentTarget.value)
+                                  commitTopic(
+                                    dayIndex,
+                                    slotIndex,
+                                    slot,
+                                    event.currentTarget.value,
+                                  )
                                 }
                                 onKeyDown={(event) => {
                                   if (event.key === "Enter") {
@@ -480,9 +543,16 @@ export default function PlanningPageClient({
                               className="slot-input"
                               type="text"
                               value={displayedFixedTopic}
-                              onChange={(event) => updateTopicLocal(slot, event.target.value)}
+                              onChange={(event) =>
+                                updateTopicLocal(slot, event.target.value)
+                              }
                               onBlur={(event) =>
-                                commitTopic(dayIndex, slotIndex, slot, event.currentTarget.value)
+                                commitTopic(
+                                  dayIndex,
+                                  slotIndex,
+                                  slot,
+                                  event.currentTarget.value,
+                                )
                               }
                               onKeyDown={(event) => {
                                 if (event.key === "Enter") {
@@ -502,14 +572,6 @@ export default function PlanningPageClient({
           ))}
         </div>
       </div>
-
-      <CustomSubjectModal
-        isOpen={customModalOpen}
-        isPending={isPending}
-        messages={messages}
-        onClose={closeCustomSubjectModal}
-        onSave={handleSaveCustomSubject}
-      />
     </div>
   );
 }

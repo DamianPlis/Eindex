@@ -11,6 +11,8 @@ export const plMessages = {
     light: "jasny",
     dark: "ciemny",
     today: "Dzisiaj",
+    delete: "Usuń",
+    edit: "Edytuj",
   },
   nav: {
     home: "Strona główna",
@@ -37,6 +39,7 @@ export const plMessages = {
     languageSaveError:
       "Nie udało się zapisać języka. Spróbuj ponownie później.",
     languageAlreadyActive: "Język polski jest już aktywny.",
+    subjects: "Przedmioty",
   },
   home: {
     today: "Dzisiaj",

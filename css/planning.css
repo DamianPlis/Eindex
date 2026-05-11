@@ -203,6 +203,28 @@
     border-bottom: 1px solid var(--border-light);
 }
 
+.modal-close {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    background: color-mix(in srgb, var(--text-primary) 8%, transparent);
+}
+
+.modal-close:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 .modal-body {
     padding: 16px;
     display: flex;
