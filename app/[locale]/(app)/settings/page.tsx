@@ -1,4 +1,5 @@
 import SettingsPageClient from "@/components/pages/SettingsPageClient";
+import { SettingsRefreshProvider } from "@/components/settings/SettingsRefreshContext";
 import SettingsPageSkeleton from "@/components/skeletons/SettingsPageSkeleton";
 import { assertLocale } from "@/lib/i18n/server";
 import { getUserSettings, getUserState } from "@/lib/schedule/store";
@@ -13,9 +14,11 @@ export default async function LocaleSettingsPage({
   assertLocale((await params).locale);
 
   return (
-    <Suspense fallback={<SettingsPageSkeleton />}>
-      <SettingsPageContent />
-    </Suspense>
+    <SettingsRefreshProvider>
+      <Suspense fallback={<SettingsPageSkeleton />}>
+        <SettingsPageContent />
+      </Suspense>
+    </SettingsRefreshProvider>
   );
 }
 
@@ -23,6 +26,8 @@ async function SettingsPageContent() {
   const session = await requireSession();
   const settings = await getUserSettings(session.uid);
   const state = await getUserState(session.uid);
+  //const delayPromise = new Promise((resolve) => setTimeout(resolve, 50000));
+  //await delayPromise;
 
   return (
     <SettingsPageClient

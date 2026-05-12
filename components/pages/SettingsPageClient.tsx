@@ -21,6 +21,8 @@ import type { AppLocale } from "@/lib/i18n/config";
 import CustomSubjectModal from "@/components/planning/CustomSubjectModal";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import AddIcon from "@/icons/add_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import SettingsPageSkeleton from "@/components/skeletons/SettingsPageSkeleton";
+import { useSettingsRefresh } from "@/components/settings/SettingsRefreshContext";
 
 type SettingsPageClientProps = {
   initialSettings: AppSettings;
@@ -50,6 +52,7 @@ export default function SettingsPageClient({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const messages = useMessages();
+  const { isRefreshing, refreshSettings } = useSettingsRefresh();
   const clientIdRef = useRef("");
   const [isPending, startTransition] = useTransition();
   const [settings, setSettings] = useState(initialSettings);
@@ -99,6 +102,7 @@ export default function SettingsPageClient({
         });
         setSettings(savedSettings);
         applyTheme(savedSettings.theme);
+        refreshSettings();
       } catch {
         setSettings(previousSettings);
         setErrorMessage(messages.settings.themeSaveError);
@@ -134,6 +138,7 @@ export default function SettingsPageClient({
           writerId: clientIdRef.current,
         });
         setSettings(savedSettings);
+        refreshSettings();
         router.replace(nextPath);
       } catch {
         setSettings(previousSettings);
@@ -162,6 +167,7 @@ export default function SettingsPageClient({
         ),
       );
       setEditingSubjectId(null);
+      refreshSettings();
     });
   }
 
@@ -179,6 +185,7 @@ export default function SettingsPageClient({
       await deleteSubjectAction({ id, writerId: clientIdRef.current });
       setSubjects((prev) => prev.filter((s) => s.id !== id));
       setSubjectPendingDelete(null);
+      refreshSettings();
     });
   }
 
@@ -197,6 +204,7 @@ export default function SettingsPageClient({
         setSubjects((prev) => [...prev, { id, name, color }]);
       }
       closeCustomSubjectModal();
+      refreshSettings();
     });
   }
 
@@ -231,6 +239,8 @@ export default function SettingsPageClient({
   const currentLanguageLabel =
     languageOptions.find((option) => option.locale === settings.locale)
       ?.label || messages.common.czech;
+
+  if (isRefreshing) return <SettingsPageSkeleton />;
 
   return (
     <div className="main-container settings-page">

@@ -45,8 +45,10 @@ export default function SettingsPageSkeleton() {
                 key={`settings-subject-skeleton-${index}`}
                 className="subject-item settings-skeleton-subject"
               >
-                <SkeletonLine className="skeleton-action-circle" />
-                <SkeletonLine className="skeleton-text-line-md" />
+                <div className="settings-skeleton-input-container">
+                  <SkeletonLine className="skeleton-action-circle" />
+                  <SkeletonLine className="skeleton-text-line-md" />
+                </div>
                 <div className="subject-actions">
                   <SkeletonLine className="skeleton-pill" />
                   <SkeletonLine className="skeleton-pill" />
