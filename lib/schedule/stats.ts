@@ -9,23 +9,44 @@ import type {
 } from "@/lib/schedule/types";
 import { isoDate, parseRangeMinutes } from "@/lib/schedule/defaults";
 
-function getDateRange(option: StatsOptions, now: Date = new Date()) {
+export function getDateRange(
+  option: StatsOptions,
+  now: Date = new Date(),
+  offset: number = 0,
+  useSchoolYear: boolean = false,
+) {
   if (option === "year") {
+    if (useSchoolYear) {
+      // School year: Sep 1 – Jun 30
+      // If current month is Aug or earlier (0-7), we're in the school year that started last Sep
+      // If current month is Sep or later (8-11), we're in the school year that started this Sep
+      const baseDate = new Date(now);
+      baseDate.setMonth(baseDate.getMonth() + offset * 12);
+      const startYear = baseDate.getMonth() >= 8 ? baseDate.getFullYear() : baseDate.getFullYear() - 1;
+      const adjustedStartYear = startYear;
+      return {
+        startISO: isoDate(new Date(adjustedStartYear, 8, 1)),
+        endISO: isoDate(new Date(adjustedStartYear + 1, 5, 30)),
+      };
+    }
+    const year = now.getFullYear() + offset;
     return {
-      startISO: isoDate(new Date(now.getFullYear(), 0, 1)),
-      endISO: isoDate(new Date(now.getFullYear(), 11, 31)),
+      startISO: isoDate(new Date(year, 0, 1)),
+      endISO: isoDate(new Date(year, 11, 31)),
     };
   }
 
   if (option === "month") {
+    const d = new Date(now.getFullYear(), now.getMonth() + offset, 1);
     return {
-      startISO: isoDate(new Date(now.getFullYear(), now.getMonth(), 1)),
-      endISO: isoDate(new Date(now.getFullYear(), now.getMonth() + 1, 0)),
+      startISO: isoDate(d),
+      endISO: isoDate(new Date(d.getFullYear(), d.getMonth() + 1, 0)),
     };
   }
 
+  // week
   const weekStart = new Date(now);
-  weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1);
+  weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1 + offset * 7);
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekStart.getDate() + 6);
 
@@ -33,6 +54,36 @@ function getDateRange(option: StatsOptions, now: Date = new Date()) {
     startISO: isoDate(weekStart),
     endISO: isoDate(weekEnd),
   };
+}
+
+/** Return a human-readable label for the period described by offset + option */
+export function getPeriodLabel(
+  option: StatsOptions,
+  locale: string,
+  offset: number,
+  now: Date = new Date(),
+  useSchoolYear: boolean = false,
+): string {
+  const range = getDateRange(option, now, offset, useSchoolYear);
+
+  if (option === "week") {
+    // Show "DD.MM – DD.MM"
+    const s = range.startISO.split("-");
+    const e = range.endISO.split("-");
+    return `${parseInt(s[2])}.${parseInt(s[1])}. – ${parseInt(e[2])}.${parseInt(e[1])}.`;
+  }
+
+  if (option === "month") {
+    const d = new Date(range.startISO);
+    return d.toLocaleString(locale, { month: "long", year: "numeric" });
+  }
+
+  // year
+  if (useSchoolYear) {
+    const startYear = parseInt(range.startISO.split("-")[0]);
+    return `${startYear}/${startYear + 1}`;
+  }
+  return range.startISO.split("-")[0];
 }
 
 export function getWeekStats(
@@ -62,8 +113,10 @@ export function getCurrentPeriodStats(
   option: StatsOptions,
   state: ScheduleState,
   now: Date = new Date(),
+  offset: number = 0,
+  useSchoolYear: boolean = false,
 ) {
-  const { startISO, endISO } = getDateRange(option, now);
+  const { startISO, endISO } = getDateRange(option, now, offset, useSchoolYear);
   return getWeekStats(state, startISO, endISO);
 }
 

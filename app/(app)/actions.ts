@@ -162,6 +162,9 @@ export async function updateSettingsAction(
       if (input.locale !== undefined) {
         settings.locale = normalizeAppLocale(input.locale);
       }
+      if (input.useSchoolYear !== undefined) {
+        settings.useSchoolYear = input.useSchoolYear === true;
+      }
     },
     { writerId: input.writerId },
   );

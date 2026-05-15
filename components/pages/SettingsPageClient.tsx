@@ -29,7 +29,7 @@ type SettingsPageClientProps = {
   initialSubjects: Subject[];
 };
 
-type PendingAction = "theme" | "locale" | null;
+type PendingAction = "theme" | "locale" | "schoolYear" | null;
 
 const themeOptions = [
   {
@@ -205,6 +205,34 @@ export default function SettingsPageClient({
       }
       closeCustomSubjectModal();
       refreshSettings();
+    });
+  }
+
+  function handleSchoolYearToggle(checked: boolean) {
+    const previousSettings = settings;
+    const optimisticSettings = {
+      ...settings,
+      useSchoolYear: checked,
+    };
+
+    setSettings(optimisticSettings);
+    setPendingAction("schoolYear");
+    setErrorMessage("");
+
+    startTransition(async () => {
+      try {
+        const savedSettings = await updateSettingsAction({
+          useSchoolYear: checked,
+          writerId: clientIdRef.current,
+        });
+        setSettings(savedSettings);
+        refreshSettings();
+      } catch {
+        setSettings(previousSettings);
+        setErrorMessage(messages.settings.schoolYearSaveError);
+      } finally {
+        setPendingAction(null);
+      }
     });
   }
 
@@ -443,6 +471,32 @@ export default function SettingsPageClient({
               subjects?
             </p>
           </ConfirmDialog>
+        </section>
+
+        <section className="settings-section">
+          <div className="settings-section-heading">
+            <h3>{messages.settings.statisticsSection}</h3>
+          </div>
+
+          <div className="settings-toggle-row">
+            <div className="settings-toggle-text">
+              <span className="settings-toggle-label">
+                {messages.settings.useSchoolYear}
+              </span>
+              <span className="settings-toggle-description">
+                {messages.settings.useSchoolYearDescription}
+              </span>
+            </div>
+            <label className="settings-toggle-switch">
+              <input
+                type="checkbox"
+                checked={settings.useSchoolYear}
+                onChange={(e) => handleSchoolYearToggle(e.target.checked)}
+                disabled={isPending && pendingAction === "schoolYear"}
+              />
+              <span className="settings-toggle-track" />
+            </label>
+          </div>
         </section>
       </div>
     </div>

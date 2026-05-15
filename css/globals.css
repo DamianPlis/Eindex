@@ -470,15 +470,86 @@ a {
 .stats-card-header {
   display: flex;
   fill: var(--muted);
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 1em;
-  gap: 2em;
+  gap: 1em;
+  justify-content: space-between;
+}
+
+.stats-card-title-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  align-items: center;
+}
+
+.stats-card-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stats-nav-arrow {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-medium);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--text-soft);
+  cursor: pointer;
+  padding: 0;
+  flex: 0 0 auto;
+  transition: all 150ms ease;
+}
+
+.stats-nav-arrow:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 10%, var(--card));
+}
+
+.stats-nav-arrow:active {
+  transform: scale(0.92);
+}
+
+.stats-nav-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-soft);
+  padding: 4px 8px;
+  white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stats-nav-today {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
+  border-radius: 999px;
+  padding: 3px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 150ms ease;
+  flex: 0 0 auto;
+}
+
+.stats-nav-today:hover {
+  background: color-mix(in srgb, var(--primary) 22%, transparent);
 }
 
 .stats-card-header-icons {
   display: flex;
   gap: 4px;
   align-items: center;
+  flex: 0 0 auto;
 }
 
 .stats-card-header-icon {
@@ -495,6 +566,82 @@ a {
 
 .stats-card-header-icon:hover {
   background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* School year toggle in settings */
+.settings-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.settings-toggle-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.settings-toggle-label {
+  font-weight: 650;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.settings-toggle-description {
+  font-size: 0.8rem;
+  color: var(--text-soft);
+  line-height: 1.35;
+}
+
+.settings-toggle-switch {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  flex: 0 0 auto;
+}
+
+.settings-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.settings-toggle-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--muted) 30%, transparent);
+  cursor: pointer;
+  transition: background 200ms ease;
+}
+
+.settings-toggle-track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 200ms ease;
+}
+
+.settings-toggle-switch input:checked+.settings-toggle-track {
+  background: var(--primary);
+}
+
+.settings-toggle-switch input:checked+.settings-toggle-track::after {
+  transform: translateX(20px);
+}
+
+.settings-toggle-switch input:disabled+.settings-toggle-track {
+  opacity: 0.5;
+  cursor: default;
 }
 
 

@@ -4,6 +4,7 @@ import type { AppSettings, AppTheme } from "@/lib/settings/types";
 export const DEFAULT_SETTINGS: AppSettings = {
   theme: "light",
   locale: DEFAULT_LOCALE,
+  useSchoolYear: false,
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -20,6 +21,7 @@ export function normalizeSettings(raw: unknown): AppSettings {
   return {
     theme: normalizeTheme(raw.theme),
     locale: normalizeAppLocale(raw.locale),
+    useSchoolYear: raw.useSchoolYear === true,
   };
 }
 
@@ -33,6 +35,9 @@ export function mergeSettings(...candidates: unknown[]): AppSettings {
     }
     if ("locale" in candidate) {
       next.locale = normalizeAppLocale(candidate.locale);
+    }
+    if ("useSchoolYear" in candidate) {
+      next.useSchoolYear = candidate.useSchoolYear === true;
     }
   }
 
