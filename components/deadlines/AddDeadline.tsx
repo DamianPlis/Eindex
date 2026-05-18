@@ -25,7 +25,7 @@ function SubmitButton() {
   );
 }
 
-export default function AddDeadlinePending() {
+export default function AddDeadline() {
   const formRef = useRef<HTMLFormElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const messages = useMessages();

@@ -12,7 +12,7 @@ import { formatDeadlineRelativeLabel } from "@/lib/schedule/selectors";
 import { useDeadlinesRefresh } from "@/components/deadlines/DeadlinesRefreshContext";
 import DeadlinesListSkeleton from "@/components/skeletons/DeadlinesListSkeleton";
 
-export function DeadlinesList({ deadlines }: { deadlines: DeadlineItem[] }) {
+export default function DeadlinesList({ deadlines }: { deadlines: DeadlineItem[] }) {
   const locale = useAppLocale();
   const messages = useMessages();
   const { isRefreshing } = useDeadlinesRefresh();
@@ -77,5 +77,3 @@ export function DeadlinesList({ deadlines }: { deadlines: DeadlineItem[] }) {
     </>
   );
 }
-
-export default DeadlinesList;

@@ -1,6 +1,6 @@
 import SkeletonLine from "./SkeletonLine";
 
-export default function RemidersListSkeleton() {
+export default function RemindersListSkeleton() {
   return (
     <>
       <ul className="deadlines-list">

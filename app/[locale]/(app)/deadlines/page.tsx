@@ -73,6 +73,5 @@ async function DeadlinesListContainer() {
   const session = await requireSession();
   const uid = session.uid;
   const state = await getCachedUserState(uid);
-  //await new Promise(resolve => setTimeout(resolve, 3000));
   return <DeadlinesList deadlines={state.deadlines} />;
 }

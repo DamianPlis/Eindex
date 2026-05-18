@@ -20,7 +20,7 @@ import { requireSession } from "@/lib/session";
 import { getLunchPerDay } from "@/lib/lunch/server";
 import { AppLocale } from "@/lib/i18n/config";
 import { Suspense } from "react";
-import RemidersListSkeleton from "@/components/skeletons/RemidersListSkeleton";
+import RemindersListSkeleton from "@/components/skeletons/RemindersListSkeleton";
 import ScheduleListSkeleton from "@/components/skeletons/ScheduleListSkeleton";
 
 export default async function LocaleMainPage({
@@ -64,7 +64,7 @@ export default async function LocaleMainPage({
       </div>
       <Suspense
         key={`reminders-${selectedISO}`}
-        fallback={<RemidersListSkeleton />}
+        fallback={<RemindersListSkeleton />}
       >
         <RemindersContainer
           uid={session.uid}
@@ -112,8 +112,6 @@ async function RemindersContainer({
 }) {
   const state = await getUserState(uid);
   const deadlines = splitDeadlines(state.deadlines, selectedISO);
-  //const delay = new Promise(resolve => setTimeout(resolve, 70000));
-  //await delay; // Simulate loading delay for demonstration purposes
 
   return (
     <>
@@ -168,8 +166,6 @@ async function ScheduleListContainer({
     getCachedUserState(uid),
     getLunchPerDay(),
   ]);
-  //const delay = new Promise(resolve => setTimeout(resolve, 70000));
-  //await delay; // Simulate loading delay for demonstration purposes
   const slots = pickTodaySchedule(state, selectedDateISO);
 
   // Merge: scraped data takes priority, fall back to user-stored lunches

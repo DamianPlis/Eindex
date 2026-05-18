@@ -5,14 +5,7 @@ import type {
   DaySchedule,
   ScheduleState,
   Slot,
-  StatsOptions,
 } from "@/lib/schedule/types";
-import {
-  getCurrentPeriodStats,
-  getWeekStats,
-  sortStats,
-  filterStats,
-} from "@/lib/schedule/stats";
 
 const deadlineFormatters = new Map<string, Intl.RelativeTimeFormat>();
 
@@ -65,24 +58,7 @@ export function formatDeadlineRelativeLabel(
   return formatter.format(diffDays, "day");
 }
 
-export function formatDeadlineDate(
-  dateISO: string,
-  locale: AppLocale,
-  today: Date = new Date(),
-): string {
-  const relativeLabel = formatDeadlineRelativeLabel(dateISO, locale, today);
-  return relativeLabel ? `${dateISO} (${relativeLabel})` : dateISO;
-}
 
-export function getCurrentWeekKey(offset = 0): string {
-  const now = new Date();
-  const shifted = new Date(now);
-  shifted.setDate(now.getDate() + offset * 7);
-  const weekday = (shifted.getDay() + 6) % 7;
-  shifted.setDate(shifted.getDate() - weekday);
-  shifted.setHours(0, 0, 0, 0);
-  return isoDate(shifted);
-}
 
 export function getTodayISO(): string {
   return isoDate(new Date());
@@ -94,14 +70,6 @@ export function getTomorrowISO(): string {
   return isoDate(tomorrow);
 }
 
-export { getWeekStats, sortStats, filterStats };
-
-export function getCurrentWeekStats(
-  statsOption: StatsOptions,
-  state: ScheduleState,
-) {
-  return getCurrentPeriodStats(statsOption, state);
-}
 
 export function pickTodaySchedule(
   state: ScheduleState,

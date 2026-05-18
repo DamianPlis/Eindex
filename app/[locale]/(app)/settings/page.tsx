@@ -26,8 +26,8 @@ async function SettingsPageContent() {
   const session = await requireSession();
   const settings = await getUserSettings(session.uid);
   const state = await getUserState(session.uid);
-  //const delayPromise = new Promise((resolve) => setTimeout(resolve, 50000));
-  //await delayPromise;
+
+
 
   return (
     <SettingsPageClient

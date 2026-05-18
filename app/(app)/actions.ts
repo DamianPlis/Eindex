@@ -198,7 +198,6 @@ export async function addDeadlineAction(formData: FormData) {
       status: resolveDeadlineStatus({ date }),
     });
   });
-  //revalidatePath("/deadlines");
 }
 
 export async function removeDeadlineAction(formData: FormData) {
@@ -209,7 +208,6 @@ export async function removeDeadlineAction(formData: FormData) {
   await updateUserState(session.uid, (state) => {
     state.deadlines = state.deadlines.filter((item) => item.id !== id);
   });
-  //revalidatePath("/deadlines");
 }
 
 export async function markAsDoneDeadlineAction(formData: FormData) {
@@ -222,5 +220,4 @@ export async function markAsDoneDeadlineAction(formData: FormData) {
       item.id === id ? { ...item, status: "done" } : item,
     );
   });
-  //revalidatePath("/deadlines");
 }

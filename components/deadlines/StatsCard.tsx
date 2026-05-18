@@ -9,8 +9,7 @@ import type {
   FilterOption,
   StatsOptions,
 } from "@/lib/schedule/types";
-import { sortStats } from "@/lib/schedule/selectors";
-import { filterStats, getCurrentPeriodStats, getPeriodLabel } from "@/lib/schedule/stats";
+import { sortStats, filterStats, getCurrentPeriodStats, getPeriodLabel } from "@/lib/schedule/stats";
 import SortIcon from "@/icons/sort_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import SubjectsCombobox from "@/components/deadlines/SubjectsCombobox";
 

@@ -27,7 +27,7 @@ const builtinSubjectIds = [
   "art",
 ] as const;
 
-const builltInSubjectGroupIds = [
+const builtInSubjectGroupIds = [
   "languages",
   "sciences",
   "humanities",
@@ -35,10 +35,10 @@ const builltInSubjectGroupIds = [
 ] as const;
 
 type BuiltinSubjectId = (typeof builtinSubjectIds)[number];
-type BuiltinSubjectGroupId = (typeof builltInSubjectGroupIds)[number];
+type BuiltinSubjectGroupId = (typeof builtInSubjectGroupIds)[number];
 
 const builtinSubjectIdSet = new Set<string>(builtinSubjectIds);
-const builtinSubjectGroupIdSet = new Set<string>(builltInSubjectGroupIds);
+const builtinSubjectGroupIdSet = new Set<string>(builtInSubjectGroupIds);
 
 export function getSubjectDisplayName(
   subject: Subject | null,

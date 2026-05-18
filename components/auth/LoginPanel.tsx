@@ -12,7 +12,6 @@ import {
 import { auth, googleProvider } from "@/lib/firebase/client";
 
 async function establishSession(user: User) {
-  console.log(user);
   const idToken = await user.getIdToken(true);
   const response = await fetch("/api/session", {
     method: "POST",

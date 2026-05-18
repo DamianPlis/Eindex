@@ -40,5 +40,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# .data folder for chached user data
+# .data folder for cached user data
 .data

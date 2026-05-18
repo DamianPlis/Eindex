@@ -37,8 +37,8 @@ async function PlanningPageContent({ weekStart }: { weekStart: string }) {
     weekStart,
     days: buildDaysForWeek(weekStart),
   };
-  //const delay = new Promise((resolve) => setTimeout(resolve, 50000));
-  //await delay; // Simulate loading delay for skeleton screen
+
+
 
   return (
     <PlanningPageClient
