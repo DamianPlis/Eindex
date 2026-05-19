@@ -43,6 +43,9 @@ export const enMessages = {
     useSchoolYear: "Use school year",
     useSchoolYearDescription: "Show September – June instead of January – December in the year statistics card.",
     schoolYearSaveError: "Could not save the school year setting. Try again later.",
+    allSettings: "All Settings",
+    appearance: "Appearance",
+    searchPlaceholder: "Search settings...",
   },
   home: {
     today: "Today",

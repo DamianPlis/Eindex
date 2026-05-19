@@ -9,9 +9,15 @@ import type {
   FilterOption,
   StatsOptions,
 } from "@/lib/schedule/types";
-import { sortStats, filterStats, getCurrentPeriodStats, getPeriodLabel } from "@/lib/schedule/stats";
+import {
+  sortStats,
+  filterStats,
+  getCurrentPeriodStats,
+  getPeriodLabel,
+} from "@/lib/schedule/stats";
 import SortIcon from "@/icons/sort_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import SubjectsCombobox from "@/components/deadlines/SubjectsCombobox";
+import styles from "./StatsCard.module.css";
 
 interface StatsCardProps {
   period: StatsOptions;
@@ -19,7 +25,11 @@ interface StatsCardProps {
   useSchoolYear?: boolean;
 }
 
-export default function StatsCard({ period, state, useSchoolYear = false }: StatsCardProps) {
+export default function StatsCard({
+  period,
+  state,
+  useSchoolYear = false,
+}: StatsCardProps) {
   const locale = useAppLocale();
   const messages = useMessages();
   const [sortBy, setSortBy] = useState<SortOption>("count-desc");
@@ -39,7 +49,8 @@ export default function StatsCard({ period, state, useSchoolYear = false }: Stat
   }, [offset, period, locale, messages, isSchoolYearPeriod, useSchoolYear]);
 
   const stats = React.useMemo(
-    () => getCurrentPeriodStats(period, state, new Date(), offset, useSchoolYear),
+    () =>
+      getCurrentPeriodStats(period, state, new Date(), offset, useSchoolYear),
     [period, state, offset, useSchoolYear],
   );
 
@@ -65,38 +76,56 @@ export default function StatsCard({ period, state, useSchoolYear = false }: Stat
   );
 
   return (
-    <div className="stats-card">
-      <div className="stats-card-header">
-        <div className="stats-card-title-nav">
+    <div className={styles.statsCard}>
+      <div className={styles.statsCardHeader}>
+        <div className={styles.statsCardTitleNav}>
           <h3 style={{ margin: 0 }}>{title}</h3>
-          <div className="stats-card-nav">
+          <div className={styles.statsCardNav}>
             <button
               type="button"
-              className="stats-nav-arrow"
+              className={styles.statsNavArrow}
               onClick={() => setOffset((prev) => prev - 1)}
               aria-label={messages.deadlines.statistics.previous}
               title={messages.deadlines.statistics.previous}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <polyline points="15 18 9 12 15 6" />
               </svg>
             </button>
-            <span className="stats-nav-label">{periodLabel}</span>
+            <span className={styles.statsNavLabel}>{periodLabel}</span>
             <button
               type="button"
-              className="stats-nav-arrow"
+              className={styles.statsNavArrow}
               onClick={() => setOffset((prev) => prev + 1)}
               aria-label={messages.deadlines.statistics.next}
               title={messages.deadlines.statistics.next}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <polyline points="9 6 15 12 9 18" />
               </svg>
             </button>
             {offset !== 0 && (
               <button
                 type="button"
-                className="stats-nav-today"
+                className={styles.statsNavToday}
                 onClick={() => setOffset(0)}
                 title={messages.common.today}
               >
@@ -105,12 +134,12 @@ export default function StatsCard({ period, state, useSchoolYear = false }: Stat
             )}
           </div>
         </div>
-        <div className="stats-card-header-icons">
+        <div className={styles.statsCardHeaderIcons}>
           <div className="sort-icon-wrapper" style={{ position: "relative" }}>
             <SortIcon
               alt="Sort stats"
               fill="currentColor"
-              className="stats-card-header-icon"
+              className={styles.statsCardHeaderIcon}
             />
             <select
               value={sortBy}
@@ -158,7 +187,7 @@ export default function StatsCard({ period, state, useSchoolYear = false }: Stat
             ({ subjectId, count }: { subjectId: string; count: number }) => (
               <li
                 key={subjectId}
-                className="stats-entry"
+                className={styles.statsEntry}
                 style={{
                   backgroundColor: `${state.subjects.find((s) => s.id === subjectId)?.color || "#000000"}55`,
                 }}

@@ -1,38 +1,26 @@
-import SettingsPageClient from "@/components/pages/SettingsPageClient";
-import { SettingsRefreshProvider } from "@/components/settings/SettingsRefreshContext";
+"use client";
+
+import AppearanceSection from "@/components/settings/sections/AppearanceSection";
+import LanguageSection from "@/components/settings/sections/LanguageSection";
+import SubjectsSection from "@/components/settings/sections/SubjectsSection";
+import StatisticsSection from "@/components/settings/sections/StatisticsSection";
+import { useSettings } from "@/components/settings/SettingsProvider";
 import SettingsPageSkeleton from "@/components/skeletons/SettingsPageSkeleton";
-import { assertLocale } from "@/lib/i18n/server";
-import { getUserSettings, getUserState } from "@/lib/schedule/store";
-import { requireSession } from "@/lib/session";
-import { Suspense } from "react";
+import s from "@/components/settings/settings.module.css";
 
-export default async function LocaleSettingsPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  assertLocale((await params).locale);
+export default function SettingsAllPage() {
+  const { isRefreshing } = useSettings();
+
+  if (isRefreshing) return <SettingsPageSkeleton />;
 
   return (
-    <SettingsRefreshProvider>
-      <Suspense fallback={<SettingsPageSkeleton />}>
-        <SettingsPageContent />
-      </Suspense>
-    </SettingsRefreshProvider>
-  );
-}
-
-async function SettingsPageContent() {
-  const session = await requireSession();
-  const settings = await getUserSettings(session.uid);
-  const state = await getUserState(session.uid);
-
-
-
-  return (
-    <SettingsPageClient
-      initialSettings={settings}
-      initialSubjects={state.subjects}
-    />
+    <div className={s.page}>
+      <div className={s.container}>
+        <AppearanceSection />
+        <LanguageSection />
+        <SubjectsSection />
+        <StatisticsSection />
+      </div>
+    </div>
   );
 }

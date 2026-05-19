@@ -44,6 +44,9 @@ export const plMessages = {
     useSchoolYear: "Użyj roku szkolnego",
     useSchoolYearDescription: "Pokaż wrzesień – czerwiec zamiast styczeń – grudzień w rocznej karcie statystyk.",
     schoolYearSaveError: "Nie udało się zapisać ustawienia roku szkolnego. Spróbuj ponownie później.",
+    allSettings: "Wszystkie ustawienia",
+    appearance: "Wygląd",
+    searchPlaceholder: "Szukaj ustawień...",
   },
   home: {
     today: "Dzisiaj",

@@ -1,0 +1,448 @@
+/* ═══════════════════════════════════════════════════
+   Settings — Layout, Sections & Shared Components
+   ═══════════════════════════════════════════════════ */
+
+/* ── Layout shell ── */
+
+.layout {
+  display: flex;
+  gap: 0;
+  min-height: calc(100dvh - 64px);
+  padding: 16px;
+  padding-bottom: 96px;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Container card ── */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  background: var(--card);
+}
+
+/* ── Section ── */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.section:last-child {
+  border-bottom: 0;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sectionHeading h3 {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.3;
+  font-weight: 750;
+}
+
+/* ── Current-value pill ── */
+
+.currentValue {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: color-mix(in srgb, var(--text-soft) 12%, transparent);
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ── Option grid ── */
+
+.optionGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.optionGridCompact {
+  composes: optionGrid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* ── Choice button (theme / language) ── */
+
+.choiceButton {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--border-medium);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--bubble) 70%, var(--card));
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 10px 12px;
+  text-align: left;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.choiceButton:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border-medium));
+}
+
+.choiceButtonActive {
+  composes: choiceButton;
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 15%, var(--card));
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.choiceButton:disabled,
+.choiceButtonActive:disabled {
+  cursor: default;
+}
+
+.choiceIcon {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: 8px;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.choiceIcon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.choiceLabel {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+/* ── Language-specific ── */
+
+.languageButton {
+  composes: choiceButton;
+  min-height: 68px;
+}
+
+.languageButtonActive {
+  composes: choiceButtonActive;
+  min-height: 68px;
+}
+
+.flagFrame {
+  width: 42px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border-medium);
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
+}
+
+.flag {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.languageText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.languageCode {
+  color: var(--text-soft);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+/* ── Error message ── */
+
+.errorMessage {
+  margin: 0;
+  padding: 12px 22px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--danger-text);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+  font-weight: 650;
+}
+
+/* ── Toggle switch (school year, etc.) ── */
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.toggleText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.toggleLabel {
+  font-weight: 650;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.toggleDescription {
+  font-size: 0.8rem;
+  color: var(--text-soft);
+  line-height: 1.35;
+}
+
+.toggleSwitch {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  flex: 0 0 auto;
+}
+
+.toggleSwitch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.toggleTrack {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--muted) 30%, transparent);
+  cursor: pointer;
+  transition: background 200ms ease;
+}
+
+.toggleTrack::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 200ms ease;
+}
+
+.toggleSwitch input:checked+.toggleTrack {
+  background: var(--primary);
+}
+
+.toggleSwitch input:checked+.toggleTrack::after {
+  transform: translateX(20px);
+}
+
+.toggleSwitch input:disabled+.toggleTrack {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ── Subjects section ── */
+
+.subjectsSection {
+  composes: section;
+  gap: 12px;
+}
+
+.subjectsListHeader {
+  composes: sectionHeading;
+  margin: 0;
+}
+
+.addSubjectButton {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.subjectsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 0;
+}
+
+.subjectItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 58px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--bubble) 72%, var(--card));
+  border: 1px solid var(--border-medium);
+}
+
+.subjectColorPicker {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 1px solid var(--border-medium);
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  background: var(--card);
+}
+
+.subjectColorPicker::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.subjectColorPicker::-webkit-color-swatch {
+  border: none;
+}
+
+.subjectInput {
+  flex: 1;
+  min-width: 140px;
+  height: 40px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-medium);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.subjectInput:focus {
+  outline: 2px solid var(--primary);
+}
+
+.subjectColorDot {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  flex: 0 0 auto;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.subjectName {
+  flex: 1;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.subjectActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.subjectActionBtn {
+  min-height: 34px;
+  padding: 7px 11px;
+  border-radius: 8px;
+  border: 1px solid var(--border-medium);
+  background: var(--card);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: all 0.2s;
+}
+
+.subjectActionBtnSave {
+  composes: subjectActionBtn;
+  color: var(--success);
+  border-color: color-mix(in srgb, var(--success) 30%, transparent);
+  background: color-mix(in srgb, var(--success) 10%, var(--card));
+}
+
+.subjectActionBtnDelete {
+  composes: subjectActionBtn;
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 30%, transparent);
+  background: color-mix(in srgb, var(--danger) 10%, var(--card));
+}
+
+.subjectActionBtn:hover,
+.subjectActionBtnSave:hover,
+.subjectActionBtnDelete:hover {
+  filter: brightness(0.95);
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+    gap: 0;
+    padding: 0 12px 96px;
+  }
+}
+
+@media (max-width: 680px) {
+  .container {
+    border-radius: 12px;
+  }
+
+  .section,
+  .subjectsSection {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .optionGrid,
+  .optionGridCompact {
+    grid-template-columns: 1fr;
+  }
+
+  .subjectItem {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .subjectName {
+    padding-top: 3px;
+  }
+}

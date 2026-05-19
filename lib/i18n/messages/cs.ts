@@ -45,6 +45,9 @@ export const csMessages = {
     useSchoolYear: "Používat školní rok",
     useSchoolYearDescription: "Zobrazovat září – červen místo leden – prosinec v roční statistické kartě.",
     schoolYearSaveError: "Nastavení školního roku se nepodařilo uložit. Zkuste to prosím později.",
+    allSettings: "Všechna nastavení",
+    appearance: "Vzhled",
+    searchPlaceholder: "Hledat nastavení...",
   },
   home: {
     today: "Dnes",

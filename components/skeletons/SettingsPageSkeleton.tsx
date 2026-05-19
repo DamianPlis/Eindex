@@ -1,30 +1,27 @@
 import SkeletonLine from "@/components/skeletons/SkeletonLine";
+import s from "@/components/settings/settings.module.css";
 
 export default function SettingsPageSkeleton() {
   return (
-    <div className="main-container settings-page" aria-hidden="true">
-      <div className="container settings-container">
-        <header className="settings-header">
-          <SkeletonLine className="settings-skeleton-title" />
-        </header>
-
-        <section className="settings-section">
-          <div className="settings-section-heading">
+    <div className={s.page} aria-hidden="true">
+      <div className={s.container}>
+        <section className={s.section}>
+          <div className={s.sectionHeading}>
             <SkeletonLine className="settings-skeleton-heading" />
             <SkeletonLine className="settings-skeleton-pill" />
           </div>
-          <div className="settings-option-grid settings-option-grid-compact">
+          <div className={s.optionGridCompact}>
             <SkeletonLine className="settings-skeleton-choice" />
             <SkeletonLine className="settings-skeleton-choice" />
           </div>
         </section>
 
-        <section className="settings-section">
-          <div className="settings-section-heading">
+        <section className={s.section}>
+          <div className={s.sectionHeading}>
             <SkeletonLine className="settings-skeleton-heading" />
             <SkeletonLine className="settings-skeleton-pill" />
           </div>
-          <div className="settings-option-grid language-option-grid">
+          <div className={s.optionGrid}>
             {[0, 1, 2].map((index) => (
               <SkeletonLine
                 key={`settings-language-skeleton-${index}`}
@@ -34,22 +31,22 @@ export default function SettingsPageSkeleton() {
           </div>
         </section>
 
-        <section className="settings-section subjects-settings-section">
-          <div className="settings-section-heading subjects-list-header">
+        <section className={s.subjectsSection}>
+          <div className={s.subjectsListHeader}>
             <SkeletonLine className="settings-skeleton-heading" />
             <SkeletonLine className="skeleton-action-circle" />
           </div>
-          <div className="subjects-list">
+          <div className={s.subjectsList}>
             {[0, 1, 2, 3, 4].map((index) => (
               <div
                 key={`settings-subject-skeleton-${index}`}
-                className="subject-item settings-skeleton-subject"
+                className={`${s.subjectItem} settings-skeleton-subject`}
               >
                 <div className="settings-skeleton-input-container">
                   <SkeletonLine className="skeleton-action-circle" />
                   <SkeletonLine className="skeleton-text-line-md" />
                 </div>
-                <div className="subject-actions">
+                <div className={s.subjectActions}>
                   <SkeletonLine className="skeleton-pill" />
                   <SkeletonLine className="skeleton-pill" />
                 </div>

@@ -1,6 +1,6 @@
 import AddDeadline from "@/components/deadlines/AddDeadline";
 import DeadlinesList from "@/components/deadlines/DeadlinesList";
-import DeadlinesPageSkeleton from "@/components/skeletons/DeadlinesPageSkeleton";
+import StatsCardSkeleton from "@/components/skeletons/StatsCardSkeleton";
 import StatsCard from "@/components/deadlines/StatsCard";
 import { getMessages } from "@/lib/i18n/messages";
 import { assertLocale } from "@/lib/i18n/server";
@@ -37,7 +37,7 @@ export default async function LocaleDeadlinesPage({
       </h2>
       <div className="stats-container">
         {/* Stream the stats cards */}
-        <Suspense fallback={<DeadlinesPageSkeleton showList={false} />}>
+        <Suspense fallback={<StatsCardSkeleton />}>
           <StatsCards />
         </Suspense>
       </div>
@@ -49,17 +49,13 @@ async function StatsCards() {
   const session = await requireSession();
   const uid = session.uid;
   const state = await getCachedUserState(uid);
+  //const delay = new Promise((resolve) => setTimeout(resolve, 100000));
+  //await delay; // Artificial delay to show skeleton
 
   return (
     <>
-      <StatsCard
-        period="week"
-        state={state}
-      />
-      <StatsCard
-        period="month"
-        state={state}
-      />
+      <StatsCard period="week" state={state} />
+      <StatsCard period="month" state={state} />
       <StatsCard
         period="year"
         state={state}
