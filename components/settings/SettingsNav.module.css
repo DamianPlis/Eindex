@@ -17,7 +17,7 @@
   margin-right: 16px;
   border-radius: 16px;
   border: 1px solid var(--border-light);
-  background: color-mix(in srgb, var(--card) 72%, transparent);
+  background: var(--card-alpha-72);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   box-shadow: var(--shadow-sm);
@@ -59,7 +59,7 @@
 
 .searchInput:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 14%, transparent);
+  box-shadow: var(--shadow-primary-glow);
 }
 
 .links {
@@ -90,8 +90,8 @@
   border-radius: inherit;
   opacity: 0;
   background: linear-gradient(135deg,
-      color-mix(in srgb, var(--primary) 14%, transparent),
-      color-mix(in srgb, var(--primary) 6%, transparent));
+      var(--primary-alpha-14),
+      var(--primary-alpha-6));
   transition: opacity 160ms ease;
 }
 
@@ -112,8 +112,8 @@
 .linkActive::before {
   opacity: 1;
   background: linear-gradient(135deg,
-      color-mix(in srgb, var(--primary) 18%, transparent),
-      color-mix(in srgb, var(--primary) 8%, transparent));
+      var(--primary-alpha-18),
+      var(--primary-alpha-8));
 }
 
 .linkActive::after {
@@ -188,7 +188,7 @@
     justify-content: center;
     border: 1px solid var(--border-medium);
     border-radius: 12px;
-    background: color-mix(in srgb, var(--card) 80%, transparent);
+    background: var(--card-alpha-80);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     color: var(--text-primary);

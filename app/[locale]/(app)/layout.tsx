@@ -24,7 +24,7 @@ export default async function ProtectedLocaleLayout({
     <div className="app-shell" data-theme={settings.theme}>
       <ThemeRootSync theme={settings.theme} />
       <header className="app-topbar">
-        <strong>Eindx</strong>
+        <strong>Eindex</strong>
         <div className="topbar-actions">
           <OnlineStatusBanner />
           <div className="topbar-account-desktop">
@@ -41,7 +41,6 @@ export default async function ProtectedLocaleLayout({
           />
         </div>
       </header>
-
 
       <main style={{ flex: 1 }}>{children}</main>
 

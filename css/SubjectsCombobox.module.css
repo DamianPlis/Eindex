@@ -6,9 +6,9 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+  background-color: var(--primary-alpha-10);
   color: var(--primary);
-  border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+  border: 1px solid var(--primary-alpha-20);
   border-radius: var(--radius-sm);
   padding: 6px 12px;
   font-size: 14px;
@@ -20,8 +20,8 @@
 
 .trigger:hover,
 .trigger[aria-expanded="true"] {
-  background-color: color-mix(in srgb, var(--primary) 15%, transparent);
-  border-color: color-mix(in srgb, var(--primary) 30%, transparent);
+  background-color: var(--primary-alpha-15);
+  border-color: var(--primary-alpha-30);
 }
 
 .popover {
@@ -98,7 +98,7 @@
 
 .item:hover,
 .groupItem:hover {
-  background-color: color-mix(in srgb, var(--primary) 8%, transparent);
+  background-color: var(--primary-alpha-8);
 }
 
 .checkbox {

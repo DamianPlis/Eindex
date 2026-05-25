@@ -2,9 +2,9 @@
   display: block;
   border-radius: 999px;
   background: linear-gradient(90deg,
-      color-mix(in srgb, var(--text-soft) 18%, transparent) 0%,
-      color-mix(in srgb, var(--text-soft) 34%, transparent) 50%,
-      color-mix(in srgb, var(--text-soft) 18%, transparent) 100%);
+      var(--skeleton-shimmer-start) 0%,
+      var(--skeleton-shimmer-middle) 50%,
+      var(--skeleton-shimmer-start) 100%);
   background-size: 240% 100%;
   animation: skeleton-shimmer 1.3s ease-in-out infinite;
 }

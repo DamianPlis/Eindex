@@ -34,6 +34,58 @@
   --radius-sm: 12px;
   --radius-md: 18px;
   --nav-space: 88px;
+
+  /* Extracted standard color-mix variables */
+  --danger-border-glow: color-mix(in srgb, var(--danger) 28%, transparent);
+  --banner-danger-bg: color-mix(in srgb, var(--danger) 14%, var(--card));
+  --danger-shadow-glow: 0 0 0 4px color-mix(in srgb, var(--danger) 18%, transparent);
+  --primary-card-mix-10: color-mix(in srgb, var(--card) 90%, var(--primary) 10%);
+  --card-alpha-80: color-mix(in srgb, var(--card) 80%, transparent);
+  --primary-alpha-12: color-mix(in srgb, var(--primary) 12%, transparent);
+  --muted-alpha-8: color-mix(in srgb, var(--muted) 8%, transparent);
+  --primary-alpha-20: color-mix(in srgb, var(--primary) 20%, transparent);
+  --success-alpha-21: color-mix(in srgb, var(--success) 21%, transparent);
+  --danger-alpha-20: color-mix(in srgb, var(--danger) 20%, transparent);
+  --done-alpha-20: color-mix(in srgb, var(--done) 20%, transparent);
+  --text-soft-alpha-22: color-mix(in srgb, var(--text-soft) 22%, transparent);
+  --nav-track-bg: color-mix(in srgb, var(--bubble) 30%, transparent);
+  --primary-alpha-90: color-mix(in srgb, var(--primary) 90%, transparent);
+  
+  --primary-alpha-8: color-mix(in srgb, var(--primary) 8%, transparent);
+  --primary-alpha-10: color-mix(in srgb, var(--primary) 10%, transparent);
+  --primary-alpha-14: color-mix(in srgb, var(--primary) 14%, transparent);
+  --primary-alpha-15: color-mix(in srgb, var(--primary) 15%, transparent);
+  --primary-alpha-18: color-mix(in srgb, var(--primary) 18%, transparent);
+  --primary-alpha-30: color-mix(in srgb, var(--primary) 30%, transparent);
+  --bubble-alpha-92: color-mix(in srgb, var(--bubble) 92%, transparent);
+  --primary-bubble-mix-18: color-mix(in srgb, var(--primary) 18%, var(--bubble));
+  --primary-border-mix-42: color-mix(in srgb, var(--primary) 42%, var(--border-light));
+  --text-primary-alpha-8: color-mix(in srgb, var(--text-primary) 8%, transparent);
+  --primary-card-mix-14: color-mix(in srgb, var(--primary) 14%, var(--card));
+  --primary-card-mix-22: color-mix(in srgb, var(--primary) 22%, var(--card));
+  --text-soft-alpha-12: color-mix(in srgb, var(--text-soft) 12%, transparent);
+  --primary-border-mix-45: color-mix(in srgb, var(--primary) 45%, var(--border-medium));
+  --primary-card-mix-15: color-mix(in srgb, var(--primary) 15%, var(--card));
+  --danger-alpha-10: color-mix(in srgb, var(--danger) 10%, transparent);
+  --danger-card-mix-10: color-mix(in srgb, var(--danger) 10%, var(--card));
+  --muted-alpha-30: color-mix(in srgb, var(--muted) 30%, transparent);
+  --success-alpha-30: color-mix(in srgb, var(--success) 30%, transparent);
+  --success-card-mix-10: color-mix(in srgb, var(--success) 10%, var(--card));
+  --danger-alpha-30: color-mix(in srgb, var(--danger) 30%, transparent);
+  --card-alpha-72: color-mix(in srgb, var(--card) 72%, transparent);
+  --primary-alpha-6: color-mix(in srgb, var(--primary) 6%, transparent);
+  --text-primary-primary-mix-80: color-mix(in srgb, var(--text-primary) 20%, var(--primary) 80%);
+  --skeleton-shimmer-start: color-mix(in srgb, var(--text-soft) 18%, transparent);
+  --skeleton-shimmer-middle: color-mix(in srgb, var(--text-soft) 34%, transparent);
+
+  /* Extracted custom box shadow variables */
+  --shadow-container: 0 10px 30px rgba(2, 6, 23, 0.06);
+  --shadow-slot: 0 10px 28px rgba(2, 6, 23, 0.06);
+  --shadow-slot-active: 0 14px 40px rgba(2, 6, 23, 0.18);
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.12);
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-border-inset: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  --shadow-primary-glow: 0 0 0 3px color-mix(in srgb, var(--primary) 14%, transparent);
 }
 
 [data-theme="dark"],
@@ -59,6 +111,14 @@
   --warning-text: #ffdede;
   --nav-bg: hsl(224, 24%, 16%);
   --nav-active-bg: rgba(107, 92, 246, 0.18);
+
+  /* Overrides for custom box shadows and relevant dynamic mixes in dark theme */
+  --shadow-container: 0 10px 30px rgba(0, 0, 0, 0.36);
+  --shadow-slot: 0 10px 28px rgba(0, 0, 0, 0.25);
+  --shadow-slot-active: 0 14px 40px rgba(0, 0, 0, 0.45);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.6);
+  --shadow-border-inset: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 * {
@@ -99,8 +159,8 @@ a {
   max-width: calc(100% - 32px);
   padding: 10px 14px;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--danger) 28%, transparent);
-  background: color-mix(in srgb, var(--danger) 14%, var(--card));
+  border: 1px solid var(--danger-border-glow);
+  background: var(--banner-danger-bg);
   color: var(--text-primary);
   display: flex;
   align-items: center;
@@ -115,7 +175,7 @@ a {
   border-radius: 999px;
   flex: 0 0 auto;
   background: var(--danger);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--danger) 18%, transparent);
+  box-shadow: var(--danger-shadow-glow);
 }
 
 @keyframes offline-banner-enter {
@@ -132,7 +192,7 @@ a {
   background: var(--card);
   border-radius: 20px;
   padding: 18px;
-  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.06);
+  box-shadow: var(--shadow-container);
   width: auto;
   max-width: none;
 }
@@ -158,12 +218,12 @@ a {
 .light-mode-btn.active {
   color: #3b82f6;
   border: 1px solid #3b82f6;
-  background-color: color-mix(in srgb, var(--card) 90%, var(--primary) 10%);
+  background-color: var(--primary-card-mix-10);
 }
 
 .dark-mode-btn.active {
   color: var(--primary);
-  background-color: color-mix(in srgb, var(--card) 90%, var(--primary) 10%);
+  background-color: var(--primary-card-mix-10);
   border: 1px solid var(--primary);
 }
 
@@ -188,7 +248,7 @@ a {
 }
 
 .topbar-profile-logout.logout-button:hover {
-  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  background: var(--primary-alpha-12);
 }
 
 .main-container {
@@ -251,7 +311,7 @@ a {
 .empty-day {
   padding: 12px;
   border-radius: 14px;
-  background: color-mix(in srgb, var(--muted) 8%, transparent);
+  background: var(--muted-alpha-8);
   color: var(--muted);
 }
 
@@ -264,7 +324,7 @@ a {
 .slot-bubble {
   padding: 20px;
   border-radius: 22px;
-  box-shadow: 0 10px 28px rgba(2, 6, 23, 0.06);
+  box-shadow: var(--shadow-slot);
   transition: transform 160ms, box-shadow 160ms, opacity 160ms;
   opacity: 0.85;
   display: flex;
@@ -275,7 +335,7 @@ a {
 }
 
 .slot-bubble.active {
-  box-shadow: 0 14px 40px rgba(2, 6, 23, 0.18);
+  box-shadow: var(--shadow-slot-active);
   transform: scale(1.02);
   opacity: 1;
 }
@@ -409,27 +469,27 @@ a {
 }
 
 .status-pill.today {
-  background: color-mix(in srgb, var(--primary) 20%, transparent);
+  background: var(--primary-alpha-20);
   color: var(--accent-strong);
 }
 
 .status-pill.upcoming {
-  background: color-mix(in srgb, var(--success) 21%, transparent);
+  background: var(--success-alpha-21);
   color: var(--success);
 }
 
 .status-pill.expired {
-  background: color-mix(in srgb, var(--danger) 20%, transparent);
+  background: var(--danger-alpha-20);
   color: var(--danger);
 }
 
 .status-pill.done {
-  background: color-mix(in srgb, var(--done) 20%, transparent);
+  background: var(--done-alpha-20);
   color: var(--done);
 }
 
 .status-pill.is-neutral {
-  background: color-mix(in srgb, var(--text-soft) 22%, transparent);
+  background: var(--text-soft-alpha-22);
   color: var(--text-1);
 }
 
@@ -487,7 +547,7 @@ a {
   padding: 8px;
   border-radius: 999px;
   border: 1px solid var(--border-light);
-  background: color-mix(in srgb, var(--bubble) 30%, transparent);
+  background: var(--nav-track-bg);
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(3px);
 }
@@ -512,7 +572,7 @@ a {
 .nav-link.active {
   border-radius: 999px;
   font-weight: 700;
-  background: color-mix(in srgb, var(--primary) 90%, transparent);
+  background: var(--primary-alpha-90);
   color: white;
 }
 

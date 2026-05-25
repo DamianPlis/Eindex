@@ -66,7 +66,7 @@
   align-items: center;
   border-radius: 999px;
   padding: 5px 10px;
-  background: color-mix(in srgb, var(--text-soft) 12%, transparent);
+  background: var(--text-soft-alpha-12);
   color: var(--text-soft);
   font-size: 0.78rem;
   font-weight: 700;
@@ -108,13 +108,13 @@
 }
 
 .choiceButton:hover:not(:disabled) {
-  border-color: color-mix(in srgb, var(--primary) 45%, var(--border-medium));
+  border-color: var(--primary-border-mix-45);
 }
 
 .choiceButtonActive {
   composes: choiceButton;
   border-color: var(--primary);
-  background: color-mix(in srgb, var(--primary) 15%, var(--card));
+  background: var(--primary-card-mix-15);
   box-shadow: inset 0 0 0 1px var(--primary);
 }
 
@@ -132,7 +132,7 @@
   flex: 0 0 auto;
   border-radius: 8px;
   color: var(--primary);
-  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  background: var(--primary-alpha-12);
 }
 
 .choiceIcon svg {
@@ -170,7 +170,7 @@
   overflow: hidden;
   border: 1px solid var(--border-medium);
   background: #ffffff;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
+  box-shadow: var(--shadow-xs);
 }
 
 .flag {
@@ -200,7 +200,7 @@
   padding: 12px 22px;
   border-bottom: 1px solid var(--border-light);
   color: var(--danger-text);
-  background: color-mix(in srgb, var(--danger) 10%, transparent);
+  background: var(--danger-alpha-10);
   font-weight: 650;
 }
 
@@ -250,7 +250,7 @@
   position: absolute;
   inset: 0;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--muted) 30%, transparent);
+  background: var(--muted-alpha-30);
   cursor: pointer;
   transition: background 200ms ease;
 }
@@ -264,7 +264,7 @@
   height: 22px;
   border-radius: 999px;
   background: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-subtle);
   transition: transform 200ms ease;
 }
 
@@ -361,7 +361,7 @@
   height: 26px;
   border-radius: 999px;
   flex: 0 0 auto;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-border-inset);
 }
 
 .subjectName {
@@ -394,15 +394,15 @@
 .subjectActionBtnSave {
   composes: subjectActionBtn;
   color: var(--success);
-  border-color: color-mix(in srgb, var(--success) 30%, transparent);
-  background: color-mix(in srgb, var(--success) 10%, var(--card));
+  border-color: var(--success-alpha-30);
+  background: var(--success-card-mix-10);
 }
 
 .subjectActionBtnDelete {
   composes: subjectActionBtn;
   color: var(--danger);
-  border-color: color-mix(in srgb, var(--danger) 30%, transparent);
-  background: color-mix(in srgb, var(--danger) 10%, var(--card));
+  border-color: var(--danger-alpha-30);
+  background: var(--danger-card-mix-10);
 }
 
 .subjectActionBtn:hover,

@@ -13,12 +13,12 @@ import "../css/topbar.css";
 import "../css/skeletons.css";
 
 export const metadata: Metadata = {
-  title: "Eindx",
+  title: "Eindex",
   description: "Server-first Next.js school planning app",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
-    title: "Eindx",
+    title: "Eindex",
     statusBarStyle: "default",
   },
   formatDetection: {

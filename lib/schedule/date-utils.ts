@@ -32,11 +32,9 @@ export function normalizeWeekKey(input?: string): string {
  * Returns null if the string is invalid.
  */
 export function parseRangeMinutes(timeStr: string): number | null {
-  if (!timeStr || !timeStr.includes("-")) return null;
-  const [startRaw, endRaw] = timeStr.split("-").map((t) => t.trim());
-  const [sh, sm] = startRaw.split(":").map(Number);
-  const [eh, em] = endRaw.split(":").map(Number);
-  if ([sh, sm, eh, em].some(Number.isNaN)) return null;
+  const parsed = parseRange(timeStr);
+  if (!parsed) return null;
+  const [sh, sm, eh, em] = parsed;
   return Math.max(0, eh * 60 + em - (sh * 60 + sm));
 }
 
@@ -48,10 +46,20 @@ export function parseRangeMinutes(timeStr: string): number | null {
 export function parseTimeRange(
   timeStr: string,
 ): { start: number; end: number } | null {
+  const parsed = parseRange(timeStr);
+  if (!parsed) return null;
+  const [sh, sm, eh, em] = parsed;
+  return { start: sh * 60 + sm, end: eh * 60 + em };
+}
+
+/**
+ * Internal helper to parse a "HH:MM-HH:MM" string into an array of numbers.
+ */
+function parseRange(timeStr: string): number[] | null {
   if (!timeStr || !timeStr.includes("-")) return null;
   const [startRaw, endRaw] = timeStr.split("-").map((v) => v.trim());
   const [sh, sm] = startRaw.split(":").map(Number);
   const [eh, em] = endRaw.split(":").map(Number);
   if ([sh, sm, eh, em].some(Number.isNaN)) return null;
-  return { start: sh * 60 + sm, end: eh * 60 + em };
+  return [sh, sm, eh, em];
 }

@@ -20,7 +20,7 @@
 
 .planning-day-tab {
     border: 1px solid var(--border-light);
-    background: color-mix(in srgb, var(--bubble) 92%, transparent);
+    background: var(--bubble-alpha-92);
     border-radius: var(--radius-sm);
     min-width: 76px;
     padding: 8px 9px;
@@ -42,8 +42,8 @@
 }
 
 .planning-day-tab.is-active {
-    background: color-mix(in srgb, var(--primary) 18%, var(--bubble));
-    border-color: color-mix(in srgb, var(--primary) 42%, var(--border-light));
+    background: var(--primary-bubble-mix-18);
+    border-color: var(--primary-border-mix-42);
 }
 
 .controls {
@@ -217,7 +217,7 @@
 }
 
 .modal-close:hover {
-    background: color-mix(in srgb, var(--text-primary) 8%, transparent);
+    background: var(--text-primary-alpha-8);
 }
 
 .modal-close:disabled {
