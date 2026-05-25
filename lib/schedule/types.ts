@@ -16,8 +16,9 @@ export type Subject = {
 
 export type SubjectGroup = {
   id: string;
-  name: string;
+  name: string | Record<string, string>;
   subjectIds: string[];
+  namePreferences?: Record<string, string>; // e.g. { pl: "cs" } means PL uses CS's name
 };
 
 export type Slot = {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useMessages } from "@/components/i18n/LocaleProvider";
+import { useMessages, useAppLocale } from "@/components/i18n/LocaleProvider";
 import type { Subject, SubjectGroup } from "@/lib/schedule/types";
 import {
   getSubjectDisplayName,
@@ -24,6 +24,7 @@ export default function SubjectsCombobox({
   onChange,
 }: SubjectsComboboxProps) {
   const messages = useMessages();
+  const locale = useAppLocale();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -77,7 +78,7 @@ export default function SubjectsCombobox({
   });
 
   const filteredGroups = subjectGroups.filter((group) => {
-    return group.name.toLowerCase().includes(query);
+    return getSubjectGroupDisplayName(group, messages, locale).toLowerCase().includes(query);
   });
 
   // Calculate button text
@@ -168,7 +169,7 @@ export default function SubjectsCombobox({
                         )}
                       </div>
                       <span className={styles.itemText}>
-                        {getSubjectGroupDisplayName(group, messages)}
+                        {getSubjectGroupDisplayName(group, messages, locale)}
                       </span>
                     </div>
                   );

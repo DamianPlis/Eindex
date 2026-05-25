@@ -1,0 +1,81 @@
+.modalTitle {
+  font-weight: 700;
+}
+
+.sectionLabel {
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.375rem;
+  display: block;
+}
+
+.localeNamesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.localeRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.localeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.localeCode {
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.preferenceSelect {
+  font-size: 0.75rem;
+  background: var(--card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  outline: none;
+  cursor: pointer;
+  color: inherit;
+  padding: 0.125rem 0.5rem;
+}
+
+.localeInput {
+  font-size: 1rem;
+}
+
+
+.subjectsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.subjectItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.subjectCheckbox {
+  width: 1rem;
+  height: 1rem;
+  background-color: transparent;
+  border: 2px solid var(--muted);
+}
+
+.subjectColorDot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 9999px;
+}
+
+.subjectName {
+  font-size: 0.875rem;
+}

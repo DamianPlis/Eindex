@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase/client";
 import { getMessages, type AppMessages } from "@/lib/i18n/messages";
@@ -42,8 +42,6 @@ function resolveSnapshotLocale(data: unknown): AppLocale | null {
 export function LocaleProvider({ locale, messages, uid, children }: LocaleProviderProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const query = searchParams.toString();
   const [livePreference, setLivePreference] = useState<{ uid: string | null; locale: AppLocale | null }>({
     uid: uid || null,
     locale: null,
@@ -80,6 +78,7 @@ export function LocaleProvider({ locale, messages, uid, children }: LocaleProvid
   useEffect(() => {
     if (!pathname) return;
 
+    const query = typeof window !== "undefined" ? window.location.search.slice(1) : "";
     const currentPath = `${pathname}${query ? `?${query}` : ""}`;
     const currentPathLocale = getLocaleFromPathname(pathname);
     if (currentPathLocale === activeLocale) return;
@@ -94,7 +93,7 @@ export function LocaleProvider({ locale, messages, uid, children }: LocaleProvid
     return () => {
       window.clearTimeout(timeout);
     };
-  }, [activeLocale, pathname, router, query]);
+  }, [activeLocale, pathname, router]);
 
   return (
     <LocaleContext.Provider value={{ locale: activeLocale, messages: activeMessages }}>{children}</LocaleContext.Provider>

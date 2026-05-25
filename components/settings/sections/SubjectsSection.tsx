@@ -122,14 +122,19 @@ export default function SubjectsSection() {
       <ConfirmDialog
         isOpen={Boolean(subjectPendingDelete)}
         isPending={isPending}
-        title="Delete Subject"
+        title={messages.settings.deleteSubject}
         cancelLabel={messages.common.cancel}
         confirmLabel={messages.common.delete}
         onCancel={() => setSubjectPendingDelete(null)}
         onConfirm={confirmDeleteSubject}
       >
         <p>
-          Delete &quot;{subjectPendingDelete?.name}&quot; from your subjects?
+          {subjectPendingDelete
+            ? messages.settings.deleteSubjectConfirm.replace(
+                "{name}",
+                subjectPendingDelete.name,
+              )
+            : ""}
         </p>
       </ConfirmDialog>
     </section>

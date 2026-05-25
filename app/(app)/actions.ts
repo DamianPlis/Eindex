@@ -146,6 +146,70 @@ export async function deleteSubjectAction(input: {
   );
 }
 
+export async function addSubjectGroupAction(input: {
+  name: Record<string, string>;
+  subjectIds: string[];
+  namePreferences?: Record<string, string>;
+  writerId?: string;
+}) {
+  const session = await requireSession();
+  let createdId = "";
+  await updateUserState(
+    session.uid,
+    (state) => {
+      const id = "group_" + crypto.randomUUID().replace(/-/g, "").substring(0, 8);
+      state.subjectGroups.push({
+        id,
+        name: input.name,
+        subjectIds: input.subjectIds,
+        namePreferences: input.namePreferences || undefined,
+      });
+      createdId = id;
+    },
+    { writerId: input.writerId },
+  );
+  return createdId || null;
+}
+
+export async function updateSubjectGroupAction(input: {
+  id: string;
+  name: Record<string, string>;
+  subjectIds: string[];
+  namePreferences?: Record<string, string>;
+  writerId?: string;
+}) {
+  const session = await requireSession();
+  if (!input.id) return;
+  await updateUserState(
+    session.uid,
+    (state) => {
+      const group = state.subjectGroups.find((g) => g.id === input.id);
+      if (group) {
+        group.name = input.name;
+        group.subjectIds = input.subjectIds;
+        group.namePreferences = input.namePreferences || undefined;
+      }
+    },
+    { writerId: input.writerId },
+  );
+}
+
+export async function deleteSubjectGroupAction(input: {
+  id: string;
+  writerId?: string;
+}) {
+  const session = await requireSession();
+  if (!input.id) return;
+  await updateUserState(
+    session.uid,
+    (state) => {
+      state.subjectGroups = state.subjectGroups.filter((g) => g.id !== input.id);
+    },
+    { writerId: input.writerId },
+  );
+}
+
+
 export async function updateSettingsAction(
   input: Partial<AppSettings> & {
     writerId?: string;

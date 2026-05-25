@@ -38,7 +38,7 @@ type BuiltinSubjectId = (typeof builtinSubjectIds)[number];
 type BuiltinSubjectGroupId = (typeof builtInSubjectGroupIds)[number];
 
 const builtinSubjectIdSet = new Set<string>(builtinSubjectIds);
-const builtinSubjectGroupIdSet = new Set<string>(builtInSubjectGroupIds);
+export const builtinSubjectGroupIdSet = new Set<string>(builtInSubjectGroupIds);
 
 export function getSubjectDisplayName(
   subject: Subject | null,
@@ -66,12 +66,17 @@ export function getFixedSlotDisplayName(
 export function getSubjectGroupDisplayName(
   subjectGroup: SubjectGroup | null,
   messages: AppMessages,
+  locale: string = "cs"
 ): string {
   if (!subjectGroup) return "";
+  if (typeof subjectGroup.name === 'object' && subjectGroup.name !== null) {
+    const nameMap = subjectGroup.name as Record<string, string>;
+    return nameMap[locale] || nameMap["cs"] || Object.values(nameMap)[0] || "";
+  }
   if (builtinSubjectGroupIdSet.has(subjectGroup.id)) {
     return messages.subjectGroups.builtin[
       subjectGroup.id as BuiltinSubjectGroupId
     ];
   }
-  return subjectGroup.name;
+  return String(subjectGroup.name || "");
 }

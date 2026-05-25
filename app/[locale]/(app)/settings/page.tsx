@@ -7,6 +7,7 @@ import StatisticsSection from "@/components/settings/sections/StatisticsSection"
 import { useSettings } from "@/components/settings/SettingsProvider";
 import SettingsPageSkeleton from "@/components/skeletons/SettingsPageSkeleton";
 import s from "@/components/settings/settings.module.css";
+import SubjectGroupsSection from "@/components/settings/sections/SubjectGroupsSection";
 
 export default function SettingsAllPage() {
   const { isRefreshing } = useSettings();
@@ -18,6 +19,7 @@ export default function SettingsAllPage() {
       <div className={s.container}>
         <AppearanceSection />
         <LanguageSection />
+        <SubjectGroupsSection />
         <SubjectsSection />
         <StatisticsSection />
       </div>

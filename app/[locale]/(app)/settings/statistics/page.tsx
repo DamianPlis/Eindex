@@ -2,12 +2,20 @@
 
 import StatisticsSection from "@/components/settings/sections/StatisticsSection";
 import { useSettings } from "@/components/settings/SettingsProvider";
-import SettingsPageSkeleton from "@/components/skeletons/SettingsPageSkeleton";
+import StatisticsSectionSkeleton from "@/components/skeletons/StatisticsSectionSkeleton";
 import s from "@/components/settings/settings.module.css";
 
 export default function StatisticsPage() {
   const { isRefreshing } = useSettings();
-  if (isRefreshing) return <SettingsPageSkeleton />;
+  if (isRefreshing) {
+    return (
+      <div className={s.page}>
+        <div className={s.container}>
+          <StatisticsSectionSkeleton />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={s.page}>
@@ -17,3 +25,4 @@ export default function StatisticsPage() {
     </div>
   );
 }
+

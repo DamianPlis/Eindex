@@ -39,6 +39,7 @@ async function SettingsLayoutContent({
     <SettingsProvider
       initialSettings={settings}
       initialSubjects={state.subjects}
+      initialSubjectGroups={state.subjectGroups}
     >
       <div className={s.layout}>
         <SettingsNav />

@@ -15,12 +15,15 @@ import {
   addCustomSubjectAction,
   updateSubjectAction,
   deleteSubjectAction,
+  addSubjectGroupAction,
+  updateSubjectGroupAction,
+  deleteSubjectGroupAction,
 } from "@/app/(app)/actions";
 import { useMessages } from "@/components/i18n/LocaleProvider";
 import { localizePath, stripLocaleFromPath } from "@/lib/i18n/routing";
 import { applyTheme } from "@/lib/settings/client";
 import type { AppSettings, AppTheme } from "@/lib/settings/types";
-import type { Subject } from "@/lib/schedule/types";
+import type { Subject, SubjectGroup } from "@/lib/schedule/types";
 import { getClientId } from "@/lib/sync/client-id";
 import type { AppLocale } from "@/lib/i18n/config";
 import { useSettingsRefresh } from "@/components/settings/SettingsRefreshContext";
@@ -30,6 +33,7 @@ type PendingAction = "theme" | "locale" | "schoolYear" | null;
 type SettingsContextValue = {
   settings: AppSettings;
   subjects: Subject[];
+  subjectGroups: SubjectGroup[];
   isPending: boolean;
   pendingAction: PendingAction;
   errorMessage: string;
@@ -52,6 +56,9 @@ type SettingsContextValue = {
   customModalOpen: boolean;
   subjectPendingDelete: Subject | null;
   setSubjectPendingDelete: (subject: Subject | null) => void;
+  handleAddSubjectGroup: (name: Record<string, string>, subjectIds: string[], namePreferences?: Record<string, string>) => void;
+  handleUpdateSubjectGroup: (id: string, name: Record<string, string>, subjectIds: string[], namePreferences?: Record<string, string>) => void;
+  handleDeleteSubjectGroup: (id: string) => void;
 };
 
 const SettingsContext = createContext<SettingsContextValue | null>(null);
@@ -65,12 +72,14 @@ export function useSettings() {
 type SettingsProviderProps = {
   initialSettings: AppSettings;
   initialSubjects: Subject[];
+  initialSubjectGroups: SubjectGroup[];
   children: ReactNode;
 };
 
 export default function SettingsProvider({
   initialSettings,
   initialSubjects,
+  initialSubjectGroups,
   children,
 }: SettingsProviderProps) {
   const router = useRouter();
@@ -82,6 +91,7 @@ export default function SettingsProvider({
   const [isPending, startTransition] = useTransition();
   const [settings, setSettings] = useState(initialSettings);
   const [subjects, setSubjects] = useState(initialSubjects);
+  const [subjectGroups, setSubjectGroups] = useState(initialSubjectGroups);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -245,11 +255,51 @@ export default function SettingsProvider({
     });
   }
 
+  function handleAddSubjectGroup(name: Record<string, string>, subjectIds: string[], namePreferences?: Record<string, string>) {
+    startTransition(async () => {
+      const id = await addSubjectGroupAction({
+        name,
+        subjectIds,
+        namePreferences,
+        writerId: clientIdRef.current,
+      });
+      if (id) {
+        setSubjectGroups((prev) => [...prev, { id, name, subjectIds, namePreferences }]);
+      }
+      refreshSettings();
+    });
+  }
+
+  function handleUpdateSubjectGroup(id: string, name: Record<string, string>, subjectIds: string[], namePreferences?: Record<string, string>) {
+    startTransition(async () => {
+      await updateSubjectGroupAction({
+        id,
+        name,
+        subjectIds,
+        namePreferences,
+        writerId: clientIdRef.current,
+      });
+      setSubjectGroups((prev) =>
+        prev.map((g) => (g.id === id ? { id, name, subjectIds, namePreferences } : g)),
+      );
+      refreshSettings();
+    });
+  }
+
+  function handleDeleteSubjectGroup(id: string) {
+    startTransition(async () => {
+      await deleteSubjectGroupAction({ id, writerId: clientIdRef.current });
+      setSubjectGroups((prev) => prev.filter((g) => g.id !== id));
+      refreshSettings();
+    });
+  }
+
   return (
     <SettingsContext.Provider
       value={{
         settings,
         subjects,
+        subjectGroups,
         isPending,
         pendingAction,
         errorMessage,
@@ -272,6 +322,9 @@ export default function SettingsProvider({
         customModalOpen,
         subjectPendingDelete,
         setSubjectPendingDelete,
+        handleAddSubjectGroup,
+        handleUpdateSubjectGroup,
+        handleDeleteSubjectGroup,
       }}
     >
       {children}

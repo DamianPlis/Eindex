@@ -2,12 +2,20 @@
 
 import LanguageSection from "@/components/settings/sections/LanguageSection";
 import { useSettings } from "@/components/settings/SettingsProvider";
-import SettingsPageSkeleton from "@/components/skeletons/SettingsPageSkeleton";
+import LanguageSectionSkeleton from "@/components/skeletons/LanguageSectionSkeleton";
 import s from "@/components/settings/settings.module.css";
 
 export default function LanguagePage() {
   const { isRefreshing } = useSettings();
-  if (isRefreshing) return <SettingsPageSkeleton />;
+  if (isRefreshing) {
+    return (
+      <div className={s.page}>
+        <div className={s.container}>
+          <LanguageSectionSkeleton />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={s.page}>
@@ -17,3 +25,4 @@ export default function LanguagePage() {
     </div>
   );
 }
+
