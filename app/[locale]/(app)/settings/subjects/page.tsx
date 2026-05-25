@@ -3,8 +3,8 @@
 import SubjectsSection from "@/components/settings/sections/SubjectsSection";
 import SubjectGroupsSection from "@/components/settings/sections/SubjectGroupsSection";
 import { useSettings } from "@/components/settings/SettingsProvider";
-import SubjectGroupsSectionSkeleton from "@/components/skeletons/SubjectGroupsSectionSkeleton";
-import SubjectsSectionSkeleton from "@/components/skeletons/SubjectsSectionSkeleton";
+import SubjectGroupsSectionSkeleton from "@/components/skeletons/settings/SubjectGroupsSectionSkeleton";
+import SubjectsSectionSkeleton from "@/components/skeletons/settings/SubjectsSectionSkeleton";
 import s from "@/components/settings/settings.module.css";
 
 export default function SubjectsPage() {
@@ -29,4 +29,3 @@ export default function SubjectsPage() {
     </div>
   );
 }
-

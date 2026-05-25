@@ -4,6 +4,7 @@ import { unstable_noStore as noStore } from "next/cache";
 import { cache } from "react";
 import { adminDb, adminFieldValue } from "@/lib/firebase/admin";
 import { buildDaysForWeek, migrateState, normalizeWeekKey } from "@/lib/schedule/defaults";
+import { autoSortSubjectsByUsage } from "@/lib/schedule/stats";
 import type { ScheduleState } from "@/lib/schedule/types";
 import { DEFAULT_SETTINGS, mergeSettings, normalizeSettings } from "@/lib/settings/defaults";
 import type { AppSettings } from "@/lib/settings/types";
@@ -81,6 +82,7 @@ export async function getUserState(uid: string): Promise<ScheduleState> {
 
   if (!snap.exists) {
     const fresh = migrateState(null);
+    fresh.subjects = autoSortSubjectsByUsage(fresh.subjects, fresh);
     await ref.set(
       {
         state: fresh,
@@ -95,33 +97,15 @@ export async function getUserState(uid: string): Promise<ScheduleState> {
 
   const data = snap.data() || {};
   const state = migrateState(data.state);
+  state.subjects = autoSortSubjectsByUsage(state.subjects, state);
   state.settings = resolveStoredSettings(data);
   if (CACHE_TTL_MS > 0) setCachedState(uid, state);
   return cloneState(state);
 }
 
-export async function getUserStateMaybe(uid: string | null): Promise<ScheduleState | null> {
-  if (!uid) return null;
-  return await getUserState(uid);
-}
-
 export const getCachedUserState = cache(async (uid: string) => {
   return await getUserState(uid); 
 });
-
-export async function saveUserState(uid: string, state: ScheduleState) {
-  const normalizedState = migrateState(state);
-  const ref = userDocRef(uid);
-  await ref.set(
-    {
-      state: normalizedState,
-      settings: normalizedState.settings,
-      updatedAt: adminFieldValue.serverTimestamp(),
-    },
-    { merge: true },
-  );
-  if (CACHE_TTL_MS > 0) setCachedState(uid, normalizedState);
-}
 
 export async function updateUserState(
   uid: string,

@@ -2,7 +2,7 @@
 
 import LanguageSection from "@/components/settings/sections/LanguageSection";
 import { useSettings } from "@/components/settings/SettingsProvider";
-import LanguageSectionSkeleton from "@/components/skeletons/LanguageSectionSkeleton";
+import LanguageSectionSkeleton from "@/components/skeletons/settings/LanguageSectionSkeleton";
 import s from "@/components/settings/settings.module.css";
 
 export default function LanguagePage() {
@@ -25,4 +25,3 @@ export default function LanguagePage() {
     </div>
   );
 }
-

@@ -1,4 +1,4 @@
-import SettingsPageSkeleton from "@/components/skeletons/SettingsPageSkeleton";
+import SettingsPageSkeleton from "@/components/skeletons/settings/SettingsPageSkeleton";
 
 export default function SettingsLoading() {
   return <SettingsPageSkeleton />;

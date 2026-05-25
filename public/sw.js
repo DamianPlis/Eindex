@@ -1,3 +1,4 @@
+// fallow-ignore-file unused-file
 self.addEventListener("install", () => {
   self.skipWaiting();
 });

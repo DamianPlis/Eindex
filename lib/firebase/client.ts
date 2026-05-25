@@ -40,7 +40,7 @@ if (!firebaseConfig.apiKey.startsWith("AIza")) {
   );
 }
 
-export const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 
 function createFirestore() {

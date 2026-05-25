@@ -7,7 +7,14 @@ import type {
   SubjectGroup,
 } from "@/lib/schedule/types";
 import { DEFAULT_SETTINGS, normalizeSettings } from "@/lib/settings/defaults";
-import { autoSortSubjectsByUsage } from "@/lib/schedule/stats";
+import {
+  getMonday,
+  isoDate,
+  normalizeWeekKey,
+} from "@/lib/schedule/date-utils";
+
+// Re-export date utilities for backward compatibility
+export { getMonday, isoDate, normalizeWeekKey, parseRangeMinutes } from "@/lib/schedule/date-utils";
 
 type SlotTemplate = {
   time: string;
@@ -20,7 +27,7 @@ type DayTemplate = {
   slots: SlotTemplate[];
 };
 
-export const defaultSubjects: Subject[] = [
+const defaultSubjects: Subject[] = [
   { id: "math", name: "Matematika", color: "#b09ce3" },
   { id: "theater", name: "Impro", color: "#b09ce3" },
   { id: "conversation", name: "Konverzace", color: "#ea8ae1" },
@@ -41,7 +48,7 @@ export const defaultSubjects: Subject[] = [
   { id: "art", name: "Vytvarka", color: "#c4e7ee" },
 ];
 
-export const defaultSubjectGroups: SubjectGroup[] = [
+const defaultSubjectGroups: SubjectGroup[] = [
   {
     id: "languages",
     name: "Jazyky",
@@ -64,7 +71,7 @@ export const defaultSubjectGroups: SubjectGroup[] = [
   },
 ];
 
-export const dayTemplates: DayTemplate[] = [
+const dayTemplates: DayTemplate[] = [
   {
     slots: [
       {
@@ -139,29 +146,6 @@ export const dayTemplates: DayTemplate[] = [
   },
 ];
 
-export function getMonday(date: Date = new Date()): Date {
-  const d = new Date(date);
-  const weekday = (d.getDay() + 6) % 7;
-  d.setDate(d.getDate() - weekday);
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-export function isoDate(date: Date = new Date()): string {
-  const d = new Date(date);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-
-export function normalizeWeekKey(input?: string): string {
-  if (!input) return isoDate(getMonday());
-  const parsed = new Date(input);
-  if (Number.isNaN(parsed.getTime())) return isoDate(getMonday());
-  return isoDate(getMonday(parsed));
-}
-
 export function buildDaysForWeek(weekStartISO: string) {
   const base = new Date(weekStartISO);
   return dayTemplates.map((dayTpl, dayIdx) => {
@@ -182,7 +166,7 @@ export function buildDaysForWeek(weekStartISO: string) {
   });
 }
 
-export function createDefaultState(): ScheduleState {
+function createDefaultState(): ScheduleState {
   const monday = isoDate(getMonday());
   return {
     subjects: defaultSubjects,
@@ -211,7 +195,7 @@ function normalizeFixedLabel(value: string): string {
     .replace(/[^a-z]+/g, "");
 }
 
-export function inferFixedSlotKey(
+function inferFixedSlotKey(
   rawKey: unknown,
   rawLabel: unknown,
 ): FixedSlotKey | null {
@@ -254,7 +238,7 @@ export function resolveDeadlineStatus(
   return "upcoming";
 }
 
-export function normalizeDeadlines(
+function normalizeDeadlines(
   rawDeadlines: unknown,
   todayISO: string = isoDate(new Date()),
 ): DeadlineItem[] {
@@ -374,15 +358,5 @@ export function migrateState(raw: unknown): ScheduleState {
     };
   }
 
-  base.subjects = autoSortSubjectsByUsage(base.subjects, base);
   return base;
-}
-
-export function parseRangeMinutes(timeStr: string): number | null {
-  if (!timeStr || !timeStr.includes("-")) return null;
-  const [startRaw, endRaw] = timeStr.split("-").map((t) => t.trim());
-  const [sh, sm] = startRaw.split(":").map(Number);
-  const [eh, em] = endRaw.split(":").map(Number);
-  if ([sh, sm, eh, em].some(Number.isNaN)) return null;
-  return Math.max(0, eh * 60 + em - (sh * 60 + sm));
 }

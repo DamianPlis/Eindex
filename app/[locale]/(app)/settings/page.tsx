@@ -5,7 +5,7 @@ import LanguageSection from "@/components/settings/sections/LanguageSection";
 import SubjectsSection from "@/components/settings/sections/SubjectsSection";
 import StatisticsSection from "@/components/settings/sections/StatisticsSection";
 import { useSettings } from "@/components/settings/SettingsProvider";
-import SettingsPageSkeleton from "@/components/skeletons/SettingsPageSkeleton";
+import SettingsPageSkeleton from "@/components/skeletons/settings/SettingsPageSkeleton";
 import s from "@/components/settings/settings.module.css";
 import SubjectGroupsSection from "@/components/settings/sections/SubjectGroupsSection";
 

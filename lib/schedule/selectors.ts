@@ -1,5 +1,5 @@
 import type { AppLocale } from "@/lib/i18n/config";
-import { isoDate } from "@/lib/schedule/defaults";
+import { isoDate } from "@/lib/schedule/date-utils";
 import type {
   DeadlineItem,
   DaySchedule,

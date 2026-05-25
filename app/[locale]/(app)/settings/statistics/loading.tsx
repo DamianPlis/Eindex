@@ -1,4 +1,4 @@
-import StatisticsSectionSkeleton from "@/components/skeletons/StatisticsSectionSkeleton";
+import StatisticsSectionSkeleton from "@/components/skeletons/settings/StatisticsSectionSkeleton";
 import s from "@/components/settings/settings.module.css";
 
 export default function StatisticsLoading() {

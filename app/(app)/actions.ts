@@ -11,12 +11,38 @@ import {
 import { normalizeTheme } from "@/lib/settings/defaults";
 import type { AppSettings } from "@/lib/settings/types";
 import { requireSession } from "@/lib/session";
+import type { ScheduleState, Slot } from "@/lib/schedule/types";
 
 type SlotUpdateInput = {
   weekStart: string;
   dayIndex: number;
   slotIndex: number;
 };
+
+/** Resolve a slot reference inside a state draft, creating the week if needed. */
+function getSlotForUpdate(
+  state: ScheduleState,
+  input: SlotUpdateInput,
+): Slot | null {
+  const key = ensureWeekExists(state, input.weekStart);
+  return (
+    state.weeks[key]?.days?.[input.dayIndex]?.slots?.[input.slotIndex] ?? null
+  );
+}
+
+/** Shared helper: look up a deadline by form ID and apply a mutation. */
+async function modifyDeadlineById(
+  formData: FormData,
+  mutate: (state: ScheduleState, id: string) => void,
+) {
+  const session = await requireSession();
+  const id = String(formData.get("id") || "");
+  if (!id) return;
+
+  await updateUserState(session.uid, (state) => {
+    mutate(state, id);
+  });
+}
 
 export async function setSlotSubjectAction(
   input: SlotUpdateInput & { subjectId: string | null; writerId?: string },
@@ -25,9 +51,7 @@ export async function setSlotSubjectAction(
   await updateUserState(
     session.uid,
     (state) => {
-      const key = ensureWeekExists(state, input.weekStart);
-      const slot =
-        state.weeks[key]?.days?.[input.dayIndex]?.slots?.[input.slotIndex];
+      const slot = getSlotForUpdate(state, input);
       if (!slot) return;
 
       if (slot.fixed && slot.fixedLabel.toLowerCase().includes("obed")) {
@@ -50,9 +74,7 @@ export async function setSlotTopicAction(
   await updateUserState(
     session.uid,
     (state) => {
-      const key = ensureWeekExists(state, input.weekStart);
-      const slot =
-        state.weeks[key]?.days?.[input.dayIndex]?.slots?.[input.slotIndex];
+      const slot = getSlotForUpdate(state, input);
       if (!slot) return;
       if (!slot.allowTopic && slot.fixed) return;
       slot.topic = input.topic || "";
@@ -265,23 +287,16 @@ export async function addDeadlineAction(formData: FormData) {
 }
 
 export async function removeDeadlineAction(formData: FormData) {
-  const session = await requireSession();
-  const id = String(formData.get("id") || "");
-  if (!id) return;
-
-  await updateUserState(session.uid, (state) => {
+  await modifyDeadlineById(formData, (state, id) => {
     state.deadlines = state.deadlines.filter((item) => item.id !== id);
   });
 }
 
 export async function markAsDoneDeadlineAction(formData: FormData) {
-  const session = await requireSession();
-  const id = String(formData.get("id") || "");
-  if (!id) return;
-
-  await updateUserState(session.uid, (state) => {
+  await modifyDeadlineById(formData, (state, id) => {
     state.deadlines = state.deadlines.map((item) =>
       item.id === id ? { ...item, status: "done" } : item,
     );
   });
 }
+

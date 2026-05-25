@@ -1,7 +1,7 @@
 import { SettingsRefreshProvider } from "@/components/settings/SettingsRefreshContext";
 import SettingsProvider from "@/components/settings/SettingsProvider";
 import SettingsNav from "@/components/settings/SettingsNav";
-import SettingsPageSkeleton from "@/components/skeletons/SettingsPageSkeleton";
+import SettingsPageSkeleton from "@/components/skeletons/settings/SettingsPageSkeleton";
 import { assertLocale } from "@/lib/i18n/server";
 import { getUserSettings, getUserState } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";

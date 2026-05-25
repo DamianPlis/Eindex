@@ -1,3 +1,4 @@
+// fallow-ignore-file unused-file
 importScripts("https://www.gstatic.com/firebasejs/9.27.1/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/9.27.1/firebase-messaging-compat.js");
 

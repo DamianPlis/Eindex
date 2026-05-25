@@ -7,9 +7,9 @@ import type {
   StatsOptions,
   Subject,
 } from "@/lib/schedule/types";
-import { isoDate, parseRangeMinutes } from "@/lib/schedule/defaults";
+import { isoDate, parseRangeMinutes } from "@/lib/schedule/date-utils";
 
-export function getDateRange(
+function getDateRange(
   option: StatsOptions,
   now: Date = new Date(),
   offset: number = 0,
@@ -86,7 +86,7 @@ export function getPeriodLabel(
   return range.startISO.split("-")[0];
 }
 
-export function getWeekStats(
+function getWeekStats(
   state: ScheduleState,
   startISO: string,
   endISO: string,

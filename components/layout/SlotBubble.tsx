@@ -3,19 +3,11 @@
 import { useSyncExternalStore } from "react";
 import { useMessages } from "@/components/i18n/LocaleProvider";
 import type { Slot, Subject } from "@/lib/schedule/types";
+import { parseTimeRange } from "@/lib/schedule/date-utils";
 import LunchIcon from "@/icons/restaurant_24dp_999999_FILL0_wght400_GRAD0_opsz24.svg"
 
-function parseRange(timeStr: string) {
-  if (!timeStr || !timeStr.includes("-")) return null;
-  const [startRaw, endRaw] = timeStr.split("-").map((v) => v.trim());
-  const [sh, sm] = startRaw.split(":").map(Number);
-  const [eh, em] = endRaw.split(":").map(Number);
-  if ([sh, sm, eh, em].some(Number.isNaN)) return null;
-  return { start: sh * 60 + sm, end: eh * 60 + em };
-}
-
 function isCurrentSlot(timeStr: string) {
-  const range = parseRange(timeStr);
+  const range = parseTimeRange(timeStr);
   if (!range) return false;
   const now = new Date();
   const minutes = now.getHours() * 60 + now.getMinutes();

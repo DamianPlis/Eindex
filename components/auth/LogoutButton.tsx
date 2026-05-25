@@ -8,6 +8,7 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase/client";
 import { localizePath } from "@/lib/i18n/routing";
 import { getClientId } from "@/lib/sync/client-id";
+import { toMillis } from "@/lib/utils/timestamp";
 import LogoutIcon from "@/icons/logout_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 
 type LogoutButtonProps = {
@@ -20,19 +21,6 @@ type StateVersionResponse = {
   lastWriter?: string;
 };
 
-function toMillis(value: unknown): number {
-  if (!value) return 0;
-  if (typeof value === "number") return value;
-  if (
-    typeof value === "object" &&
-    value !== null &&
-    "toMillis" in value &&
-    typeof (value as { toMillis?: unknown }).toMillis === "function"
-  ) {
-    return ((value as { toMillis: () => number }).toMillis() || 0);
-  }
-  return 0;
-}
 
 function isStandaloneMode(): boolean {
   if (typeof window === "undefined") return false;

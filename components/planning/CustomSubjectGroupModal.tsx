@@ -5,6 +5,7 @@ import type { AppMessages } from "@/lib/i18n/messages";
 import type { Subject } from "@/lib/schedule/types";
 import { getSubjectDisplayName } from "@/lib/schedule/labels";
 import { APP_LOCALES } from "@/lib/i18n/config";
+import ModalFooter from "@/components/planning/ModalFooter";
 import CloseIcon from "@/icons/close_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import styles from "./CustomSubjectGroupModal.module.css";
 
@@ -222,24 +223,12 @@ export default function CustomSubjectGroupModal({
           </div>
         </div>
 
-        <div className="modal-footer">
-          <button
-            className="modal-cancel"
-            type="button"
-            onClick={handleClose}
-            disabled={isPending}
-          >
-            {messages.common.cancel}
-          </button>
-          <button
-            className="modal-save"
-            type="button"
-            onClick={handleSave}
-            disabled={isPending}
-          >
-            {messages.common.save}
-          </button>
-        </div>
+        <ModalFooter
+          messages={messages}
+          isPending={isPending}
+          onCancel={handleClose}
+          onSave={handleSave}
+        />
       </div>
     </div>
   );
