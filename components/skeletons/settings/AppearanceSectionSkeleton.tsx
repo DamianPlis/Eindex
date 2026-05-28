@@ -2,18 +2,19 @@
 
 import SkeletonLine from "@/components/skeletons/SkeletonLine";
 import s from "@/components/settings/settings.module.css";
+import sk from "@/components/skeletons/Skeletons.module.css";
 
 export default function AppearanceSectionSkeleton() {
   return (
     <section className={s.section} aria-hidden="true">
       <div className={s.sectionHeading}>
-        <SkeletonLine className="settings-skeleton-heading" />
-        <SkeletonLine className="settings-skeleton-pill" />
+        <SkeletonLine className={sk.settingsSkeletonHeading} />
+        <SkeletonLine className={sk.settingsSkeletonPill} />
       </div>
 
       <div className={s.optionGridCompact}>
-        <SkeletonLine className="settings-skeleton-choice" />
-        <SkeletonLine className="settings-skeleton-choice" />
+        <SkeletonLine className={sk.settingsSkeletonChoice} />
+        <SkeletonLine className={sk.settingsSkeletonChoice} />
       </div>
     </section>
   );

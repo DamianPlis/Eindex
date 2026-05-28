@@ -10,6 +10,8 @@ import {
   type User,
 } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase/client";
+import s from "./LoginPanel.module.css";
+import u from "@/components/ui/shared.module.css";
 
 async function establishSession(user: User) {
   const idToken = await user.getIdToken(true);
@@ -89,13 +91,13 @@ export default function LoginPanel() {
   }
 
   return (
-    <div className="grid min-h-screen p-5 place-items-center">
-      <div className="container max-w-[520px] w-full text-center">
-        <h1 className="mt-0">Eindx</h1>
+    <div className={s.loginScreen}>
+      <div className={s.loginCard}>
+        <h1 className={s.loginTitle}>Eindx</h1>
         <p>{messages.auth.signInPrompt}</p>
-        {error ? <p className="mt-2 text-sm text-red-800">{error}</p> : null}
+        {error ? <p className={s.loginError}>{error}</p> : null}
         <button
-          className="add-button"
+          className={u.primaryButton}
           onClick={signInWithGoogle}
           disabled={loading}
         >

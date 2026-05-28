@@ -1,4 +1,6 @@
 import SkeletonLine from "@/components/skeletons/SkeletonLine";
+import sk from "./Skeletons.module.css";
+import s from "@/components/pages/PlanningPageClient.module.css";
 
 const tabCount = 5;
 const slotCountFR = [8, 7, 6, 6, 8];
@@ -6,47 +8,47 @@ const slotCount = slotCountFR.map((count) => count - 2); // remove 2 slots artif
 
 export default function PlanningPageSkeleton() {
   return (
-    <div className="planning-root" aria-hidden="true">
-      <div className="planning-inner">
-        <div className="controls">
-          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            <SkeletonLine className="planning-skeleton-nav" />
+    <div className={s.planningRoot} aria-hidden="true">
+      <div className={s.planningInner}>
+        <div className={s.controls}>
+          <div className={s.navGroup}>
+            <SkeletonLine className={sk.planningSkeletonNav} />
           </div>
-          <SkeletonLine className="planning-skeleton-week-title" />
-          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            <SkeletonLine className="planning-skeleton-nav" />
+          <SkeletonLine className={sk.planningSkeletonWeekTitle} />
+          <div className={s.navGroup}>
+            <SkeletonLine className={sk.planningSkeletonNav} />
           </div>
         </div>
 
-        <div className="planning-day-tabs">
+        <div className={s.planningDayTabs}>
           {Array.from({ length: tabCount }).map((_, index) => (
-            <div key={`planning-tab-skeleton-${index}`} className="planning-day-tab">
-              <SkeletonLine className="planning-skeleton-tab-name" />
-              <SkeletonLine className="planning-skeleton-tab-date" />
+            <div key={`planning-tab-skeleton-${index}`} className={s.planningDayTab}>
+              <SkeletonLine className={sk.planningSkeletonTabName} />
+              <SkeletonLine className={sk.planningSkeletonTabDate} />
             </div>
           ))}
         </div>
 
-        <div className="days-scroll">
+        <div className={s.daysScroll}>
           {slotCount.map((slotCount, dayIndex) => (
-            <article key={`planning-day-skeleton-${dayIndex}`} className="day-card">
-              <div className="day-inner">
-                <header className="day-header">
-                  <SkeletonLine className="planning-skeleton-day-name" />
-                  <SkeletonLine className="planning-skeleton-day-date" />
+            <article key={`planning-day-skeleton-${dayIndex}`} className={s.dayCard}>
+              <div className={s.dayInner}>
+                <header className={s.dayHeader}>
+                  <SkeletonLine className={sk.planningSkeletonDayName} />
+                  <SkeletonLine className={sk.planningSkeletonDayDate} />
                 </header>
 
-                <div className="slots">
+                <div className={s.slots}>
                   {Array.from({ length: slotCount }).map((_, slotIndex) => (
-                    <div key={`planning-slot-skeleton-${dayIndex}-${slotIndex}`} className="slot-card">
-                      <div className="slot-top">
-                        <SkeletonLine className="planning-skeleton-slot-title" />
-                        <SkeletonLine className="planning-skeleton-slot-time" />
+                    <div key={`planning-slot-skeleton-${dayIndex}-${slotIndex}`} className={s.slotCard}>
+                      <div className={s.slotTop}>
+                        <SkeletonLine className={sk.planningSkeletonSlotTitle} />
+                        <SkeletonLine className={sk.planningSkeletonSlotTime} />
                       </div>
 
-                      <div className="slot-body">
-                        <SkeletonLine className="planning-skeleton-input" />
-                        <SkeletonLine className="planning-skeleton-input" />
+                      <div className={s.slotBody}>
+                        <SkeletonLine className={sk.planningSkeletonInput} />
+                        <SkeletonLine className={sk.planningSkeletonInput} />
                       </div>
                     </div>
                   ))}

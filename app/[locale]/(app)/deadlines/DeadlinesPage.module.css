@@ -1,0 +1,34 @@
+/* ═══════════════════════════════════════════════════
+   Deadlines Page — page-level layout
+   ═══════════════════════════════════════════════════ */
+
+.detailContainer {
+  margin: 16px;
+}
+
+.detailTitle {
+  margin-bottom: 8px;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.detailDue {
+  margin-bottom: 0;
+}
+
+.detailRelativeDate {
+  margin-bottom: 1em;
+}
+
+.detailDescriptionBlock {
+  margin-bottom: 1em;
+}
+
+.detailDescriptionLabel {
+  margin-bottom: 6px;
+}
+
+.detailDescriptionText {
+  margin: 0;
+  white-space: pre-wrap;
+}

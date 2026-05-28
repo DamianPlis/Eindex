@@ -9,6 +9,16 @@ import type {
 } from "@/lib/schedule/types";
 import { isoDate, parseRangeMinutes } from "@/lib/schedule/date-utils";
 
+/**
+ * Resolves the start and end ISO dates for the chosen period configuration.
+ * Handles weeks, months, and standard/school years.
+ * 
+ * @param option - The period option ("week", "month", or "year").
+ * @param now - Reference date.
+ * @param offset - Offset index (positive for future periods, negative for past).
+ * @param useSchoolYear - If true and option is "year", uses school year boundary (Sep 1 - Jun 30).
+ * @returns An object containing startISO and endISO.
+ */
 function getDateRange(
   option: StatsOptions,
   now: Date = new Date(),
@@ -56,7 +66,16 @@ function getDateRange(
   };
 }
 
-/** Return a human-readable label for the period described by offset + option */
+/**
+ * Returns a human-readable label for the period described by offset and option.
+ * 
+ * @param option - The period type.
+ * @param locale - Locale code for formatting.
+ * @param offset - Offset index.
+ * @param now - Reference date.
+ * @param useSchoolYear - If true, formats school year labels.
+ * @returns The formatted period label.
+ */
 export function getPeriodLabel(
   option: StatsOptions,
   locale: string,
@@ -86,6 +105,14 @@ export function getPeriodLabel(
   return range.startISO.split("-")[0];
 }
 
+/**
+ * Compiles stats (subject occurrence counts/weights) for a given date range.
+ * 
+ * @param state - The schedule state.
+ * @param startISO - Range start ISO string.
+ * @param endISO - Range end ISO string.
+ * @returns A dictionary of subject ID to weighted counts.
+ */
 function getWeekStats(
   state: ScheduleState,
   startISO: string,
@@ -109,6 +136,16 @@ function getWeekStats(
   return counts;
 }
 
+/**
+ * Compiles subject duration/usage statistics for the current selected period.
+ * 
+ * @param option - The period type.
+ * @param state - The schedule state.
+ * @param now - Reference date.
+ * @param offset - Offset index.
+ * @param useSchoolYear - If true, respects school year boundary.
+ * @returns A mapping of subject ID to weighted count.
+ */
 export function getCurrentPeriodStats(
   option: StatsOptions,
   state: ScheduleState,
@@ -120,6 +157,15 @@ export function getCurrentPeriodStats(
   return getWeekStats(state, startISO, endISO);
 }
 
+/**
+ * Sorts subject statistics entries based on counts or names.
+ * 
+ * @param stats - The compiled stats record.
+ * @param subjectMap - Subject ID to display name mapping.
+ * @param locale - Locale for alphabetical sorting.
+ * @param sortBy - Sort criteria option.
+ * @returns Sorted array of stats objects.
+ */
 export function sortStats(
   stats: Record<string, number>,
   subjectMap: Map<string, string>,
@@ -142,6 +188,16 @@ export function sortStats(
     });
 }
 
+/**
+ * Automatically sorts subjects list putting most used subjects first.
+ * Unused subjects are appended to the end sorted alphabetically.
+ * 
+ * @param subjects - Array of subject definitions.
+ * @param state - Current schedule state.
+ * @param locale - Formatting/sorting locale.
+ * @param option - Period range configuration for stats (defaults to "year").
+ * @returns Sorted array of Subject objects.
+ */
 export function autoSortSubjectsByUsage(
   subjects: Subject[],
   state: ScheduleState,
@@ -175,6 +231,13 @@ export function autoSortSubjectsByUsage(
   return [...usedSubjects, ...unusedSubjects];
 }
 
+/**
+ * Filters stats array, keeping only items matching listed filter IDs.
+ * 
+ * @param stats - Array of stats objects.
+ * @param filterIds - Filter configuration option (array of target IDs).
+ * @returns Filtered stats array.
+ */
 export function filterStats(
   stats: { subjectId: string; count: number }[],
   filterIds: FilterOption,

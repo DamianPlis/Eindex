@@ -5,6 +5,7 @@ import { useMessages } from "@/components/i18n/LocaleProvider";
 import type { Slot, Subject } from "@/lib/schedule/types";
 import { parseTimeRange } from "@/lib/schedule/date-utils";
 import LunchIcon from "@/icons/restaurant_24dp_999999_FILL0_wght400_GRAD0_opsz24.svg"
+import s from "./SlotBubble.module.css";
 
 function isCurrentSlot(timeStr: string) {
   const range = parseTimeRange(timeStr);
@@ -64,27 +65,27 @@ export default function SlotBubble({
   return (
     <div
       key={slot.id}
-      className={`slot-bubble ${isHydrated && isCurrentSlot(slot.time) ? "active" : ""}`}
+      className={isHydrated && isCurrentSlot(slot.time) ? s.slotBubbleActive : s.slotBubble}
       style={style}
     >
-      <div className="slot-content">
+      <div className={s.slotContent}>
         <div>
-          <div className="slot-title-text">{title}</div>
+          <div className={s.slotTitleText}>{title}</div>
           {subtitle && isLunch && lunchText ? (
-            <div className="slot-subtitle" style={{ display: "flex" }}>
+            <div className={s.slotSubtitle}>
               <LunchIcon
                 fill="currentColor"
                 alt={messages.planning.fixedSlots.lunch}
                 height={16}
                 width={16}
               />
-              <div style={{ flex: 1 }}>{subtitle}</div>
+              <div className={s.slotSubtitleFlex}>{subtitle}</div>
             </div>
           ) : subtitle ? (
-            <div className="slot-subtitle">{subtitle}</div>
+            <div className={s.slotSubtitle}>{subtitle}</div>
           ) : null}
         </div>
-        <div className="slot-time-text">{slot.time}</div>
+        <div className={s.slotTimeText}>{slot.time}</div>
       </div>
     </div>
   );

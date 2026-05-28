@@ -4,6 +4,8 @@ import { useState } from "react";
 import type { AppMessages } from "@/lib/i18n/messages";
 import ModalFooter from "@/components/planning/ModalFooter";
 import CloseIcon from "@/icons/close_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import u from "@/components/ui/shared.module.css";
+import p from "@/components/pages/PlanningPageClient.module.css";
 
 type CustomSubjectModalProps = {
   isOpen: boolean;
@@ -44,14 +46,14 @@ export default function CustomSubjectModal({
   }
 
   return (
-    <div className="modal-overlay" role="dialog" aria-modal="true">
-      <div className="modal">
-        <div className="modal-header">
-          <div className="font-bold">
+    <div className={u.modalOverlay} role="dialog" aria-modal="true">
+      <div className={u.modal}>
+        <div className={u.modalHeader}>
+          <div className={u.modalHeaderTitle}>
             {title || messages.planning.addCustomSubjectTitle}
           </div>
           <button
-            className="modal-close"
+            className={u.modalClose}
             type="button"
             onClick={handleClose}
             disabled={isPending}
@@ -61,27 +63,27 @@ export default function CustomSubjectModal({
           </button>
         </div>
 
-        <div className="modal-body">
-          <label className="text-sm font-bold mb-1.5">
+        <div className={u.modalBody}>
+          <label className={p.formLabel}>
             {messages.planning.name}
           </label>
           <input
-            className="slot-input mb-3 text-base"
+            className={`${u.formInput} ${p.formInputSpaced}`}
             value={customName}
             onChange={(event) => setCustomName(event.target.value)}
             placeholder={messages.planning.exampleSubject}
           />
 
-          <label className="text-sm font-bold mb-1.5">
+          <label className={p.formLabel}>
             {messages.planning.color}
           </label>
-          <div className="flex gap-2 items-center">
+          <div className={p.colorRow}>
             <input
               type="color"
               value={customColor}
               onChange={(event) => setCustomColor(event.target.value)}
             />
-            <div className="text-sm">{customColor}</div>
+            <div className={p.colorLabel}>{customColor}</div>
           </div>
         </div>
 

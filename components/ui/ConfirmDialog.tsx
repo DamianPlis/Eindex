@@ -2,6 +2,7 @@
 
 import CloseIcon from "@/icons/close_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import type { ReactNode } from "react";
+import u from "@/components/ui/shared.module.css";
 
 type ConfirmDialogProps = {
   isOpen: boolean;
@@ -22,7 +23,7 @@ export default function ConfirmDialog({
   children,
   cancelLabel,
   confirmLabel,
-  confirmClassName = "modal-save",
+  confirmClassName,
   onCancel,
   onConfirm,
 }: ConfirmDialogProps) {
@@ -30,16 +31,16 @@ export default function ConfirmDialog({
 
   return (
     <div
-      className="modal-overlay"
+      className={u.modalOverlay}
       role="dialog"
       aria-modal="true"
       aria-label={title}
     >
-      <div className="modal">
-        <div className="modal-header">
-          <div className="font-bold">{title}</div>
+      <div className={u.modal}>
+        <div className={u.modalHeader}>
+          <div className={u.modalHeaderTitle}>{title}</div>
           <button
-            className="modal-close"
+            className={u.modalClose}
             type="button"
             onClick={onCancel}
             disabled={isPending}
@@ -48,10 +49,10 @@ export default function ConfirmDialog({
             <CloseIcon fill="currentColor" />
           </button>
         </div>
-        <div className="modal-body">{children}</div>
-        <div className="modal-footer">
+        <div className={u.modalBody}>{children}</div>
+        <div className={u.modalFooter}>
           <button
-            className="modal-cancel"
+            className={u.cancelButton}
             type="button"
             onClick={onCancel}
             disabled={isPending}
@@ -59,7 +60,7 @@ export default function ConfirmDialog({
             {cancelLabel}
           </button>
           <button
-            className={confirmClassName}
+            className={confirmClassName || u.primaryButton}
             type="button"
             onClick={onConfirm}
             disabled={isPending}

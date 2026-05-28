@@ -7,6 +7,8 @@ import TopbarProfileMenu from "@/components/layout/TopbarProfileMenu";
 import { getUserSettings } from "@/lib/schedule/store";
 import ThemeRootSync from "@/components/settings/ThemeRootSync";
 import { assertLocale } from "@/lib/i18n/server";
+import s from "@/components/layout/AppShell.module.css";
+import t from "@/components/layout/Topbar.module.css";
 
 export default async function ProtectedLocaleLayout({
   children,
@@ -21,15 +23,15 @@ export default async function ProtectedLocaleLayout({
   const userLabel = session.name || session.email || session.uid;
 
   return (
-    <div className="app-shell" data-theme={settings.theme}>
+    <div className={s.appShell} data-theme={settings.theme}>
       <ThemeRootSync theme={settings.theme} />
-      <header className="app-topbar">
+      <header className={t.appTopbar}>
         <strong>Eindex</strong>
-        <div className="topbar-actions">
+        <div className={t.topbarActions}>
           <OnlineStatusBanner />
-          <div className="topbar-account-desktop">
+          <div className={t.topbarAccountDesktop}>
             <SettingsLink />
-            <span className="topbar-user-label" title={userLabel}>
+            <span className={t.topbarUserLabel} title={userLabel}>
               {userLabel}
             </span>
             <LogoutButton uid={session.uid} />
@@ -42,7 +44,7 @@ export default async function ProtectedLocaleLayout({
         </div>
       </header>
 
-      <main style={{ flex: 1 }}>{children}</main>
+      <main className={s.mainFlex}>{children}</main>
 
       <BottomNav />
     </div>

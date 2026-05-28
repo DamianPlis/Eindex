@@ -9,6 +9,13 @@ import type {
 
 const deadlineFormatters = new Map<string, Intl.RelativeTimeFormat>();
 
+/**
+ * Retrieves or initializes an Intl.RelativeTimeFormat instance for the given locale.
+ * Caches formatters in a local Map.
+ * 
+ * @param locale - The current app locale.
+ * @returns The cached or new relative time formatter.
+ */
 function getRelativeTimeFormatter(locale: AppLocale) {
   const cached = deadlineFormatters.get(locale);
   if (cached) return cached;
@@ -20,18 +27,38 @@ function getRelativeTimeFormatter(locale: AppLocale) {
   return formatter;
 }
 
+/**
+ * Returns a new Date object representing the start of the day (00:00:00) for the given date.
+ * 
+ * @param date - The source Date object.
+ * @returns The normalized Date object.
+ */
 function startOfDay(date: Date): Date {
   const normalized = new Date(date);
   normalized.setHours(0, 0, 0, 0);
   return normalized;
 }
 
+/**
+ * Parses an ISO date string (YYYY-MM-DD) into a local Date object.
+ * 
+ * @param dateISO - The ISO date string.
+ * @returns The parsed Date object or null if invalid.
+ */
 function parseISODate(dateISO: string): Date | null {
   const [year, month, day] = dateISO.split("-").map(Number);
   if (!year || !month || !day) return null;
   return new Date(year, month - 1, day);
 }
 
+/**
+ * Formats an ISO date as a relative deadline string (e.g. "in 3 days", "yesterday").
+ * 
+ * @param dateISO - The target ISO date string.
+ * @param locale - The locale to format the output.
+ * @param today - The reference today date (defaults to current system time).
+ * @returns The formatted relative time string, or empty string if invalid.
+ */
 export function formatDeadlineRelativeLabel(
   dateISO: string,
   locale: AppLocale,
@@ -58,19 +85,33 @@ export function formatDeadlineRelativeLabel(
   return formatter.format(diffDays, "day");
 }
 
-
-
+/**
+ * Returns today's date in YYYY-MM-DD format.
+ * 
+ * @returns Today's ISO date string.
+ */
 export function getTodayISO(): string {
   return isoDate(new Date());
 }
 
+/**
+ * Returns tomorrow's date in YYYY-MM-DD format.
+ * 
+ * @returns Tomorrow's ISO date string.
+ */
 export function getTomorrowISO(): string {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   return isoDate(tomorrow);
 }
 
-
+/**
+ * Extracts and returns the slots for today's schedule from the overall schedule state.
+ * 
+ * @param state - The current schedule state.
+ * @param todayISO - Today's date as an ISO string.
+ * @returns An array of slots for today, or an empty array if not found.
+ */
 export function pickTodaySchedule(
   state: ScheduleState,
   todayISO: string,
@@ -82,6 +123,14 @@ export function pickTodaySchedule(
   return [];
 }
 
+/**
+ * Splits and filters deadlines, organizing today's and expired deadlines.
+ * If referenceDate is provided, returns active unfinished deadlines on or before the date.
+ * 
+ * @param deadlines - The list of deadline items.
+ * @param referenceDate - Optional reference ISO date.
+ * @returns A sorted array of relevant deadlines.
+ */
 export function splitDeadlines(
   deadlines: DeadlineItem[],
   referenceDate?: string,

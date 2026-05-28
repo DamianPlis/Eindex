@@ -2,28 +2,29 @@
 
 import SkeletonLine from "@/components/skeletons/SkeletonLine";
 import s from "@/components/settings/settings.module.css";
+import sk from "@/components/skeletons/Skeletons.module.css";
 
 export default function SubjectsSectionSkeleton() {
   return (
     <section className={s.subjectsSection} aria-hidden="true">
       <div className={s.subjectsListHeader}>
-        <SkeletonLine className="settings-skeleton-heading" />
-        <SkeletonLine className="skeleton-action-circle" />
+        <SkeletonLine className={sk.settingsSkeletonHeading} />
+        <SkeletonLine className={sk.skeletonActionCircle} />
       </div>
 
       <div className={s.subjectsList}>
         {[0, 1, 2, 3, 4].map((index) => (
           <div
             key={`settings-subject-skeleton-${index}`}
-            className={`${s.subjectItem} settings-skeleton-subject`}
+            className={`${s.subjectItem} ${sk.settingsSkeletonSubject}`}
           >
-            <div className="settings-skeleton-input-container">
-              <SkeletonLine className="skeleton-action-circle" />
-              <SkeletonLine className="skeleton-text-line-md" />
+            <div className={sk.settingsSkeletonInputContainer}>
+              <SkeletonLine className={sk.skeletonActionCircle} />
+              <SkeletonLine className={sk.textLineMd} />
             </div>
             <div className={s.subjectActions}>
-              <SkeletonLine className="skeleton-pill" />
-              <SkeletonLine className="skeleton-pill" />
+              <SkeletonLine className={sk.skeletonPill} />
+              <SkeletonLine className={sk.skeletonPill} />
             </div>
           </div>
         ))}

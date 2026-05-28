@@ -1,0 +1,235 @@
+/* ═══════════════════════════════════════════════════
+   Planning Page — Week view, Day cards, Slots
+   ═══════════════════════════════════════════════════ */
+
+.planningRoot {
+  min-height: 100vh;
+  padding: 12px;
+  padding-bottom: calc(var(--pad) + var(--nav-space));
+}
+
+.planningInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--pad);
+}
+
+/* ── Day tabs ── */
+
+.planningDayTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.planningDayTab {
+  border: 1px solid var(--border-light);
+  background: var(--bubble-alpha-92);
+  border-radius: var(--radius-sm);
+  min-width: 76px;
+  padding: 8px 9px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.planningDayTabActive {
+  composes: planningDayTab;
+  background: var(--primary-bubble-mix-18);
+  border-color: var(--primary-border-mix-42);
+}
+
+.planningDayTabName {
+  font-weight: 760;
+  font-size: 0.82rem;
+}
+
+.planningDayTabDate {
+  font-size: 0.73rem;
+  color: var(--muted);
+}
+
+/* ── Controls ── */
+
+.controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.navGroup {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.navBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: var(--text-inverse);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.navShowCurrentWeek {
+  composes: navBtn;
+  padding: 1em;
+  width: auto;
+}
+
+.weekTitle {
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+/* ── Days scroll ── */
+
+.daysScroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 12px;
+  margin-left: calc(-1 * var(--pad));
+  margin-right: calc(-1 * var(--pad));
+}
+
+.dayCard {
+  flex: 0 0 100%;
+  max-width: 100%;
+  scroll-snap-align: start;
+}
+
+.dayInner {
+  padding: 12px var(--pad);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dayHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.dayName {
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.dayDate {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ── Slots ── */
+
+.slots {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.slotCard {
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: var(--shadow-md);
+  background: var(--bubble);
+  color: var(--text-primary);
+}
+
+.slotTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.slotTitle {
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.slotTime {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.slotBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── Custom Subject Modal extras ── */
+
+.formLabel {
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.formInputSpaced {
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
+
+.colorRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.colorLabel {
+  font-size: 0.875rem;
+}
+
+/* ── Responsive ── */
+
+@media (min-width: 900px) {
+  .daysScroll {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: var(--pad);
+    padding-right: var(--pad);
+    display: grid;
+    grid-template-columns: repeat(5, minmax(220px, 1fr));
+    gap: 16px;
+    overflow-x: visible;
+    scroll-snap-type: none;
+  }
+
+  .dayCard {
+    flex: none;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .dayInner {
+    padding: 12px;
+  }
+
+  .planningDayTab,
+  .planningDayTabActive {
+    display: none;
+  }
+}

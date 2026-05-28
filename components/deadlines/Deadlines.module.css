@@ -1,0 +1,277 @@
+/* ═══════════════════════════════════════════════════
+   Deadlines — List, Items, Actions, Status Pills
+   ═══════════════════════════════════════════════════ */
+
+/* ── Container ── */
+
+.deadlinesContainer {
+  padding: 20px;
+}
+
+.deadlinesTitle {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+/* ── Add row ── */
+
+.deadlinesAddRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 14px;
+}
+
+.deadlinePlusButton {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: none;
+  background: var(--primary);
+  color: var(--text-inverse);
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.deadlinePlusButton:hover {
+  filter: brightness(1.05);
+}
+
+/* ── Add form ── */
+
+.addForm {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.addFormModal {
+  composes: addForm;
+  margin-bottom: 0;
+  display: block;
+}
+
+.addInputText {
+  flex: 2;
+}
+
+.addInputDate {
+  flex: 1;
+}
+
+.addInputDescription {
+  resize: vertical;
+  min-height: 96px;
+}
+
+/* ── List ── */
+
+.deadlinesList {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 30px;
+}
+
+.deadlineItem {
+  margin-bottom: 10px;
+  padding: 12px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--bubble);
+}
+
+.deadlineItemToday {
+  composes: deadlineItem;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger);
+  color: var(--danger-text);
+}
+
+.deadlineItemExpired {
+  composes: deadlineItem;
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  color: var(--warning-text);
+}
+
+.deadlineItemUpcoming {
+  composes: deadlineItem;
+  background: var(--bubble);
+}
+
+/* ── Actions ── */
+
+.deadlineActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.deadlineActionButton {
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-inverse);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.removeButton {
+  composes: deadlineActionButton;
+  background: var(--danger);
+}
+
+.doneButton {
+  composes: deadlineActionButton;
+  background: var(--success);
+}
+
+/* ── Status pills ── */
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 0.75rem;
+  font-weight: 680;
+  white-space: nowrap;
+}
+
+.statusPillToday {
+  composes: statusPill;
+  background: var(--primary-alpha-20);
+  color: var(--accent-strong);
+}
+
+.statusPillUpcoming {
+  composes: statusPill;
+  background: var(--success-alpha-21);
+  color: var(--success);
+}
+
+.statusPillExpired {
+  composes: statusPill;
+  background: var(--danger-alpha-20);
+  color: var(--danger);
+}
+
+.statusPillDone {
+  composes: statusPill;
+  background: var(--done-alpha-20);
+  color: var(--done);
+}
+
+.statusPillNeutral {
+  composes: statusPill;
+  background: var(--text-soft-alpha-22);
+  color: var(--text-1);
+}
+
+/* ── Reminders ── */
+
+.remindersSection {
+  margin-bottom: 14px;
+}
+
+.reminderCard {
+  margin-bottom: 8px;
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  background: var(--card);
+  border: 1px solid var(--border-medium);
+}
+
+.reminderContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.reminderTitle {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.reminderDate {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.reminderRelativeDate {
+  color: var(--muted);
+}
+
+/* ── Empty states ── */
+
+.emptyState {
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--muted-alpha-8);
+  color: var(--muted);
+}
+
+/* ── Schedule list ── */
+
+.scheduleList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Stats container ── */
+
+.statsContainer {
+  display: grid;
+  gap: 15px;
+}
+
+@media (min-width: 900px) {
+  .statsContainer {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ── Show done button row ── */
+
+.showDoneRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.showDoneButton {
+  margin-bottom: 16px;
+  margin-left: auto;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: none;
+  background: var(--primary);
+  color: var(--text-inverse);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ── Flex between row ── */
+
+.flexBetween {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ── Modal header with icon ── */
+
+.modalHeaderRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}

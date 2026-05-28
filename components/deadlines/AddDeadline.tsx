@@ -8,6 +8,8 @@ import CloseIcon from "@/icons/close_24dp_000000_FILL0_wght400_GRAD0_opsz24 (1).
 import DeadlineIcon from "@/icons/checklist_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import AddIcon from "@/icons/add_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import { useDeadlinesRefresh } from "@/components/deadlines/DeadlinesRefreshContext";
+import s from "./Deadlines.module.css";
+import u from "@/components/ui/shared.module.css";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -16,7 +18,7 @@ function SubmitButton() {
   return (
     <button
       type="submit"
-      className={`add-button ${pending ? "pending" : ""}`}
+      className={`${u.primaryButton} ${pending ? u.pending : ""}`}
       disabled={pending}
       aria-busy={pending}
     >
@@ -41,10 +43,10 @@ export default function AddDeadline() {
 
   return (
     <>
-      <div className="deadlines-add-row">
+      <div className={s.deadlinesAddRow}>
         <button
           type="button"
-          className="flex items-center justify-center deadline-plus-button"
+          className={s.deadlinePlusButton}
           onClick={openModal}
           aria-label={messages.deadlines.openCreateModal}
           title={messages.deadlines.openCreateModal}
@@ -55,20 +57,20 @@ export default function AddDeadline() {
 
       {isOpen ? (
         <div
-          className="modal-overlay"
+          className={u.modalOverlay}
           role="dialog"
           aria-modal="true"
           aria-label={messages.deadlines.createTitle}
         >
-          <div className="modal">
-            <div className="modal-header">
-              <div className="flex items-center gap-2 font-bold">
+          <div className={u.modal}>
+            <div className={u.modalHeader}>
+              <div className={s.modalHeaderRow}>
                 {messages.deadlines.createTitle}
                 <DeadlineIcon fill="currentColor" />
               </div>
               <button
                 type="button"
-                className="bg-transparent border-none"
+                className={u.transparentButton}
                 onClick={closeModal}
               >
                 <CloseIcon fill="currentColor" />
@@ -83,34 +85,34 @@ export default function AddDeadline() {
                 closeModal();
                 refreshDeadlines();
               }}
-              className="add-form add-form-modal"
+              className={s.addFormModal}
             >
-              <div className="modal-body">
+              <div className={u.modalBody}>
                 <input
                   type="text"
                   name="text"
                   placeholder={messages.deadlines.homeworkTitle}
-                  className="add-input add-input-text"
+                  className={`${u.formInput} ${s.addInputText}`}
                   required
                 />
                 <textarea
                   name="description"
                   placeholder={messages.deadlines.descriptionPlaceholder}
-                  className="add-input add-input-description"
+                  className={`${u.formInput} ${s.addInputDescription}`}
                   rows={4}
                 />
                 <input
                   type="date"
                   name="date"
-                  className="add-input add-input-date"
+                  className={`${u.formInput} ${s.addInputDate}`}
                   required
                   placeholder={messages.deadlines.dueDate}
                 />
               </div>
-              <div className="modal-footer">
+              <div className={u.modalFooter}>
                 <button
                   type="button"
-                  className="modal-cancel"
+                  className={u.cancelButton}
                   onClick={closeModal}
                 >
                   {messages.common.cancel}

@@ -5,6 +5,8 @@ import { useMessages } from "@/components/i18n/LocaleProvider";
 import { removeDeadlineAction } from "@/app/(app)/actions";
 import { useDeadlinesRefresh } from "@/components/deadlines/DeadlinesRefreshContext";
 import RemoveIcon from "@/icons/close_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import s from "./Deadlines.module.css";
+import u from "@/components/ui/shared.module.css";
 
 function RemoveButton() {
   const messages = useMessages();
@@ -13,7 +15,7 @@ function RemoveButton() {
 
   return (
     <button
-      className={`deadline-action-button remove-button ${pending ? "pending" : ""}`}
+      className={`${s.removeButton} ${pending ? u.pending : ""}`}
       title={messages.deadlines.actions.remove}
       type="submit"
       disabled={pending}

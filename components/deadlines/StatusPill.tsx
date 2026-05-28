@@ -2,6 +2,7 @@
 
 import { useMessages } from "@/components/i18n/LocaleProvider";
 import type { DeadlineItem } from "@/lib/schedule/types";
+import s from "./Deadlines.module.css";
 
 type StatusPillProps = {
   status: DeadlineItem["status"];
@@ -10,26 +11,26 @@ type StatusPillProps = {
 function StatusPill(props: StatusPillProps) {
     const messages = useMessages();
     const { status } = props;
-    let statusClass;
+    let pillClass;
     let statusLabel;
     if (status === "today") {
-        statusClass = "today"
+        pillClass = s.statusPillToday
         statusLabel = messages.deadlines.status.today
     } else if (status === "expired") {
-        statusClass = "expired"
+        pillClass = s.statusPillExpired
         statusLabel = messages.deadlines.status.expired
     } else if (status === "done") {
-        statusClass = "done"
+        pillClass = s.statusPillDone
         statusLabel = messages.deadlines.status.done
     }
      else {
-        statusClass = "upcoming"
+        pillClass = s.statusPillUpcoming
         statusLabel = messages.deadlines.status.upcoming
     }
 
 
   return (
-    <span className={`status-pill ${statusClass}`}>{statusLabel}</span>
+    <span className={pillClass}>{statusLabel}</span>
   )
 }
 

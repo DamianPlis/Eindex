@@ -8,6 +8,7 @@ import Home from "@/icons/home_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import Checklist from "@/icons/checklist_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { localizePath, stripLocaleFromPath } from "@/lib/i18n/routing";
+import s from "./BottomNav.module.css";
 
 
 function isRouteActive(pathname: string, route: string) {
@@ -42,18 +43,16 @@ function BottomNav() {
   ];
 
   return (
-    <nav className="nav-bar">
-      <div className="nav-track">
+    <nav className={s.navBar}>
+      <div className={s.navTrack}>
         {routes.map((route) => (
           <Link
             key={route.route}
             href={route.to}
-            className={`nav-link 
-              ${isRouteActive(pathname, route.route) ? "active" : ""}
-              `}
+            className={isRouteActive(pathname, route.route) ? s.navLinkActive : s.navLink}
           >
-            {route.icon ? <span className="nav-icon">{route.icon}</span> : null}
-            { !isNarrowScreen && <span className="nav-label">{route.label}</span>}
+            {route.icon ? <span className={s.navIcon}>{route.icon}</span> : null}
+            { !isNarrowScreen && <span>{route.label}</span>}
           </Link>
         ))}
         </div>

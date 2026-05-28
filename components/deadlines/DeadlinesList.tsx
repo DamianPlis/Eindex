@@ -11,6 +11,8 @@ import type { DeadlineItem } from "@/lib/schedule/types";
 import { formatDeadlineRelativeLabel } from "@/lib/schedule/selectors";
 import { useDeadlinesRefresh } from "@/components/deadlines/DeadlinesRefreshContext";
 import DeadlinesListSkeleton from "@/components/skeletons/DeadlinesListSkeleton";
+import s from "./Deadlines.module.css";
+import u from "@/components/ui/shared.module.css";
 
 export default function DeadlinesList({ deadlines }: { deadlines: DeadlineItem[] }) {
   const locale = useAppLocale();
@@ -35,9 +37,9 @@ export default function DeadlinesList({ deadlines }: { deadlines: DeadlineItem[]
 
   return (
     <>
-      <div className="flex justify-end">
+      <div className={s.showDoneRow}>
         <button
-          className="mb-4 ml-auto show-done-deadlines-button"
+          className={s.showDoneButton}
           type="button"
           onClick={() => setShowDone((current) => !current)}
         >
@@ -46,26 +48,26 @@ export default function DeadlinesList({ deadlines }: { deadlines: DeadlineItem[]
             : messages.deadlines.showDoneDeadlines}
         </button>
       </div>
-      <ul className="deadlines-list">
+      <ul className={s.deadlinesList}>
         {visibleDeadlines.length === 0 ? (
           <p>{messages.deadlines.noDeadlinesYet}</p>
         ) : null}
         {visibleDeadlines.map((deadline) => {
           return (
-            <li key={deadline.id} className={`deadline-item`}>
+            <li key={deadline.id} className={s.deadlineItem}>
               <span>
                 <Link
-                  className="inline-link"
+                  className={u.inlineLink}
                   href={localizePath(locale, `/deadlines/${deadline.id}`)}
                 >
                   {deadline.text}
                 </Link>{" "}
                 - {deadline.date}
-                <div className="reminder-date reminder-relative-date">
+                <div className={s.reminderRelativeDate}>
                   {formatDeadlineRelativeLabel(deadline.date, locale)}
                 </div>
               </span>
-              <div className="deadline-actions">
+              <div className={s.deadlineActions}>
                 <StatusPill status={deadline.status} />
                 <MarkDeadlineDone deadline={deadline} />
                 <RemoveDeadline deadline={deadline} />

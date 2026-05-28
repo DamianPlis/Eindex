@@ -9,6 +9,12 @@ import {
 } from "firebase/auth";
 import { getFirestore, initializeFirestore } from "firebase/firestore";
 
+/**
+ * Cleans environment variables by removing surrounding quotes and trailing commas.
+ * 
+ * @param value - The raw environment variable value.
+ * @returns The cleaned string.
+ */
 function cleanEnv(value: string | undefined): string {
   if (!value) return "";
   return value.trim().replace(/^['"]|['"]$/g, "").replace(/,$/, "");
@@ -43,6 +49,13 @@ if (!firebaseConfig.apiKey.startsWith("AIza")) {
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 
+/**
+ * Initializes and returns the Firestore database instance.
+ * Enables long polling as an experimental workaround for environment restrictions.
+ * Fallbacks to standard Firestore initialization if it fails.
+ * 
+ * @returns The initialized Firestore database instance.
+ */
 function createFirestore() {
   try {
     return initializeFirestore(app, {

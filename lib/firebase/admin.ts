@@ -4,11 +4,23 @@ import { applicationDefault, cert, getApps, initializeApp, type ServiceAccount }
 import { getAuth } from "firebase-admin/auth";
 import { FieldValue, getFirestore } from "firebase-admin/firestore";
 
+/**
+ * Cleans environment variables by trimming whitespace, removing surrounding quotes, and removing trailing commas.
+ * 
+ * @param value - The raw environment variable string.
+ * @returns The cleaned string.
+ */
 function cleanEnv(value: string | undefined): string {
   if (!value) return "";
   return value.trim().replace(/^['"]|['"]$/g, "").replace(/,$/, "");
 }
 
+/**
+ * Loads the Firebase Service Account credentials from environment variables.
+ * Parses the credentials JSON if available, or constructs them from individual variables.
+ * 
+ * @returns The constructed ServiceAccount object or null if credentials are not set.
+ */
 function loadServiceAccountFromEnv(): ServiceAccount | null {
   const rawJson = cleanEnv(process.env.FIREBASE_ADMIN_CREDENTIALS);
   if (rawJson) {

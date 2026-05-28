@@ -5,6 +5,8 @@ import { useMessages } from "@/components/i18n/LocaleProvider";
 import { markAsDoneDeadlineAction } from "@/app/(app)/actions";
 import { useDeadlinesRefresh } from "@/components/deadlines/DeadlinesRefreshContext";
 import Check from "@/icons/check_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import s from "./Deadlines.module.css";
+import u from "@/components/ui/shared.module.css";
 
 function DoneButton() {
   const messages = useMessages();
@@ -13,7 +15,7 @@ function DoneButton() {
 
   return (
     <button
-      className={`deadline-action-button done-button ${pending ? "pending" : ""}`}
+      className={`${s.doneButton} ${pending ? u.pending : ""}`}
       title={messages.deadlines.actions.markDone}
       type="submit"
       disabled={pending}

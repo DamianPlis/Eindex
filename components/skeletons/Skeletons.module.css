@@ -1,0 +1,261 @@
+/* ═══════════════════════════════════════════════════
+   Skeletons — Shimmer lines and skeleton layouts
+   ═══════════════════════════════════════════════════ */
+
+.skeletonLine {
+  display: block;
+  border-radius: 999px;
+  background: linear-gradient(90deg,
+      var(--skeleton-shimmer-start) 0%,
+      var(--skeleton-shimmer-middle) 50%,
+      var(--skeleton-shimmer-start) 100%);
+  background-size: 240% 100%;
+  animation: skeletonShimmer 1.3s ease-in-out infinite;
+}
+
+@keyframes skeletonShimmer {
+  0% {
+    background-position: 100% 0;
+  }
+
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* ── Deadlines skeleton ── */
+
+.deadlinesSkeletonToggle {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.skeletonToggleButton {
+  composes: skeletonLine;
+  width: 170px;
+  height: 34px;
+}
+
+.deadlinesSkeletonItem {
+  gap: 14px;
+}
+
+.deadlinesSkeletonText {
+  flex: 1;
+  min-width: 0;
+}
+
+.textLineLg {
+  composes: skeletonLine;
+  width: min(440px, 95%);
+  height: 18px;
+  margin-bottom: 8px;
+}
+
+.textLineShortLg {
+  composes: skeletonLine;
+  width: min(190px, 70%);
+  height: 18px;
+  margin-bottom: 8px;
+}
+
+.textLineMd {
+  composes: skeletonLine;
+  width: min(260px, 85%);
+  height: 16px;
+}
+
+.textLineSm {
+  composes: skeletonLine;
+  width: min(190px, 70%);
+  height: 14px;
+}
+
+.textLineMediumSm {
+  composes: skeletonLine;
+  width: min(260px, 85%);
+  height: 14px;
+}
+
+.textLineLongMd {
+  composes: skeletonLine;
+  width: min(440px, 95%);
+  height: 14px;
+}
+
+.scheduleSkeletonTextContainer {
+  min-width: min(440px, 95%);
+}
+
+.deadlinesSkeletonActions {
+  gap: 8px;
+}
+
+.skeletonPill {
+  composes: skeletonLine;
+  width: 80px;
+  height: 26px;
+}
+
+.skeletonActionCircle {
+  composes: skeletonLine;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+/* ── Stats card skeleton ── */
+
+.deadlinesSkeletonStatsCard {
+  margin-bottom: 0;
+}
+
+.skeletonTitle {
+  composes: skeletonLine;
+  width: 130px;
+  height: 22px;
+}
+
+.skeletonIcon {
+  composes: skeletonLine;
+  width: 24px;
+  height: 24px;
+}
+
+/* ── Planning skeleton ── */
+
+.planningSkeletonNav {
+  composes: skeletonLine;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+}
+
+.planningSkeletonWeekTitle {
+  composes: skeletonLine;
+  width: min(220px, 48%);
+  height: 18px;
+  border-radius: 999px;
+}
+
+.planningSkeletonTabName {
+  composes: skeletonLine;
+  width: 38px;
+  height: 12px;
+}
+
+.planningSkeletonTabDate {
+  composes: skeletonLine;
+  width: 30px;
+  height: 10px;
+}
+
+.planningSkeletonDayName {
+  composes: skeletonLine;
+  width: min(160px, 42%);
+  height: 18px;
+}
+
+.planningSkeletonDayDate {
+  composes: skeletonLine;
+  width: 96px;
+  height: 12px;
+}
+
+.planningSkeletonSlotTitle {
+  composes: skeletonLine;
+  width: min(140px, 38vw);
+  height: 16px;
+}
+
+.planningSkeletonSlotTime {
+  composes: skeletonLine;
+  width: 74px;
+  height: 12px;
+  border-radius: 999px;
+}
+
+.planningSkeletonInput {
+  composes: skeletonLine;
+  width: 100%;
+  height: 42px;
+  border-radius: var(--radius-sm);
+}
+
+.deadlinesSkeletonStatsList {
+  padding-left: 0;
+  margin: 0;
+  list-style: none;
+}
+
+/* ── Settings skeleton ── */
+
+.settingsSkeletonTitle {
+  composes: skeletonLine;
+  width: min(190px, 70%);
+  height: 26px;
+}
+
+.settingsSkeletonHeading {
+  composes: skeletonLine;
+  width: min(170px, 48%);
+  height: 18px;
+}
+
+.settingsSkeletonPill {
+  composes: skeletonLine;
+  width: 86px;
+  height: 28px;
+}
+
+.settingsSkeletonChoice {
+  composes: skeletonLine;
+  width: 100%;
+  height: 56px;
+  border-radius: 8px;
+}
+
+.settingsSkeletonLanguageChoice {
+  composes: skeletonLine;
+  width: 100%;
+  height: 68px;
+  border-radius: 8px;
+}
+
+.settingsSkeletonSubject {
+  box-shadow: none;
+}
+
+.settingsSkeletonInputContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  flex: 1;
+}
+
+/* ── Spacer utilities for skeletons ── */
+
+.mb1 {
+  margin-bottom: 4px;
+}
+
+.mb2 {
+  margin-bottom: 8px;
+}
+
+.mb4 {
+  margin-bottom: 16px;
+}
+
+.mb6 {
+  margin-bottom: 24px;
+}
+
+.noMargin {
+  margin: 0;
+}
+
+.scheduleSkeletonSlotMb {
+  margin-bottom: 8px;
+}

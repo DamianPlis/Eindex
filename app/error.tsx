@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
+import e from "@/app/ErrorPage.module.css";
+import u from "@/components/ui/shared.module.css";
 
 export default function RootErrorPage({
   error,
@@ -15,16 +17,16 @@ export default function RootErrorPage({
   }, [error]);
 
   return (
-    <main className="container m-4 text-center">
-      <h1 className="mb-2">500 - Something went wrong</h1>
-      <p className="mt-0">
+    <main className={e.errorContainer}>
+      <h1 className={e.errorTitle}>500 - Something went wrong</h1>
+      <p className={e.errorText}>
         The page failed to render. Try again or return home.
       </p>
-      <div className="flex gap-2.5 justify-center mt-3">
-        <button className="add-button" onClick={reset}>
+      <div className={e.errorActions}>
+        <button className={u.primaryButton} onClick={reset}>
           Try Again
         </button>
-        <Link href="/" className="add-button no-underline">
+        <Link href="/" className={`${u.primaryButton} ${e.errorLink}`}>
           Home
         </Link>
       </div>

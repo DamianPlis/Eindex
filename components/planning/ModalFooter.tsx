@@ -1,4 +1,5 @@
 import type { AppMessages } from "@/lib/i18n/messages";
+import u from "@/components/ui/shared.module.css";
 
 type ModalFooterProps = {
   messages: AppMessages;
@@ -14,9 +15,9 @@ export default function ModalFooter({
   onSave,
 }: ModalFooterProps) {
   return (
-    <div className="modal-footer">
+    <div className={u.modalFooter}>
       <button
-        className="modal-cancel"
+        className={u.cancelButton}
         type="button"
         onClick={onCancel}
         disabled={isPending}
@@ -24,7 +25,7 @@ export default function ModalFooter({
         {messages.common.cancel}
       </button>
       <button
-        className="modal-save"
+        className={u.primaryButton}
         type="button"
         onClick={onSave}
         disabled={isPending}

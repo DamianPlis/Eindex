@@ -1,24 +1,26 @@
 import SkeletonLine from "@/components/skeletons/SkeletonLine";
+import sk from "./Skeletons.module.css";
+import u from "@/components/ui/shared.module.css";
 
 export default function DeadlineDetailPageSkeleton({}) {
   return (
     <>
       <>
-        <div className="container m-4">
-          <SkeletonLine className="skeleton-pill" />
+        <div className={u.container} style={{ margin: 16 }}>
+          <SkeletonLine className={sk.skeletonPill} />
           <br />
-          <div className="deadlines-skeleton-text">
-            <SkeletonLine className="skeleton-text-line-lg" />
-            <SkeletonLine className="mb-1 planning-skeleton-day-name" />
-            <SkeletonLine className="mb-4 planning-skeleton-day-date" />
+          <div className={sk.deadlinesSkeletonText}>
+            <SkeletonLine className={sk.textLineLg} />
+            <SkeletonLine className={`${sk.mb1} ${sk.planningSkeletonDayName}`} />
+            <SkeletonLine className={`${sk.mb4} ${sk.planningSkeletonDayDate}`} />
 
-            <SkeletonLine className="skeleton-text-line-lg" />
-            <SkeletonLine className="mb-2 skeleton-text-line-md" />
-            <SkeletonLine className="mb-2 skeleton-text-line-md" />
-            <SkeletonLine className="mb-2 skeleton-text-line-md" />
-            <SkeletonLine className="mb-6 skeleton-text-line-md" />
+            <SkeletonLine className={sk.textLineLg} />
+            <SkeletonLine className={`${sk.mb2} ${sk.textLineMd}`} />
+            <SkeletonLine className={`${sk.mb2} ${sk.textLineMd}`} />
+            <SkeletonLine className={`${sk.mb2} ${sk.textLineMd}`} />
+            <SkeletonLine className={`${sk.mb6} ${sk.textLineMd}`} />
 
-            <SkeletonLine className="skeleton-text-line-short-lg" />
+            <SkeletonLine className={sk.textLineShortLg} />
           </div>
         </div>
       </>

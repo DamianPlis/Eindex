@@ -3,6 +3,13 @@ import "server-only";
 import { load } from "cheerio";
 import { unstable_cache } from "next/cache";
 
+/**
+ * Normalizes text by converting non-breaking spaces to spaces, consolidating
+ * multiple consecutive spaces, and trimming whitespace.
+ * 
+ * @param text - The raw text string.
+ * @returns The normalized string.
+ */
 function normalizeText(text: string): string {
   return text
     .replace(/\u00a0/g, " ")
@@ -10,10 +17,22 @@ function normalizeText(text: string): string {
     .trim();
 }
 
+/**
+ * Removes diacritics (accents) from a given string.
+ * 
+ * @param text - The text string to strip.
+ * @returns The stripped string.
+ */
 function stripDiacritics(text: string): string {
   return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
+/**
+ * Parses a date string in format "DD. MM. YYYY" to an ISO-8601 string (YYYY-MM-DD).
+ * 
+ * @param label - The raw date label string.
+ * @returns The ISO date string or null if not matchable.
+ */
 function parseDateToISO(label: string): string | null {
   const m = label.match(/(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})/);
   if (!m) return null;
@@ -23,11 +42,23 @@ function parseDateToISO(label: string): string | null {
   return `${year}-${month}-${day}`;
 }
 
+/**
+ * Checks if the given label denotes a soup.
+ * 
+ * @param label - The food label.
+ * @returns True if it refers to soup, false otherwise.
+ */
 function isSoupLabel(label: string): boolean {
   const normalized = stripDiacritics(label).toLowerCase();
   return normalized.includes("polevka") || normalized.includes("soup");
 }
 
+/**
+ * Checks if the given label denotes a main course/dish.
+ * 
+ * @param label - The food label.
+ * @returns True if it refers to a main course, false otherwise.
+ */
 function isMainCourseLabel(label: string): boolean {
   const normalized = stripDiacritics(label).toLowerCase();
   return (
@@ -38,6 +69,12 @@ function isMainCourseLabel(label: string): boolean {
   );
 }
 
+/**
+ * Finds the index of the first comma in the text that is not enclosed inside brackets [].
+ * 
+ * @param text - The text to search.
+ * @returns The index of the comma, or -1 if not found.
+ */
 function findCommaOutsideBrackets(text: string): number {
   let depth = 0;
   for (let i = 0; i < text.length; i += 1) {
@@ -49,6 +86,12 @@ function findCommaOutsideBrackets(text: string): number {
   return -1;
 }
 
+/**
+ * Cleans the meal text by removing the soup label if it is prefixed before a comma.
+ * 
+ * @param text - The raw meal text.
+ * @returns The cleaned meal text.
+ */
 function removeLeadingSoup(text: string): string {
   const cleaned = normalizeText(text);
   const commaIndex = findCommaOutsideBrackets(cleaned);
@@ -60,6 +103,12 @@ function removeLeadingSoup(text: string): string {
   return cleaned.slice(commaIndex + 1).replace(/^[,;.\s-]+/, "").trim();
 }
 
+/**
+ * Picks the most appropriate meal from a list of items, prioritizing main courses.
+ * 
+ * @param items - List of item objects containing type and text.
+ * @returns The picked and cleaned meal name string.
+ */
 function pickMeal(items: Array<{ type: string; text: string }>): string {
   const mainCourse = items.find((item) => isMainCourseLabel(item.type) && !isSoupLabel(item.type));
   if (mainCourse) return removeLeadingSoup(mainCourse.text);
@@ -70,6 +119,12 @@ function pickMeal(items: Array<{ type: string; text: string }>): string {
   return removeLeadingSoup(items[0]?.text || "");
 }
 
+/**
+ * Extracts lunch menu details per day from raw HTML content.
+ * 
+ * @param html - The HTML response content from the lunch provider.
+ * @returns A mapping of ISO date strings to meal descriptions.
+ */
 function extractPerDay(html: string): Record<string, string> {
   const perDay: Record<string, string> = {};
   const $ = load(html);
@@ -130,6 +185,12 @@ const fetchMenuHtml = unstable_cache(
   { revalidate: 60 * 60 * 12 },
 );
 
+/**
+ * Fetches the raw HTML menu from the jidelna.cz provider and parses it
+ * to return a mapping of daily ISO date keys to meal name strings.
+ * 
+ * @returns A promise resolving to the menu mapping object.
+ */
 export async function getLunchPerDay(): Promise<Record<string, string>> {
   try {
     const html = await fetchMenuHtml();

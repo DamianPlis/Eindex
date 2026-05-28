@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
+import e from "@/app/ErrorPage.module.css";
+import u from "@/components/ui/shared.module.css";
 
 export default function GlobalErrorPage({
   error,
@@ -16,13 +18,13 @@ export default function GlobalErrorPage({
   return (
     <html lang="en">
       <body>
-        <main className="min-h-screen grid place-items-center p-5">
-          <div className="container text-center">
-            <h1 className="mb-2">500 - Unexpected Error</h1>
-            <p className="mt-0">
+        <main className={e.fullScreenCenter}>
+          <div className={`${u.container} ${e.textCenter}`}>
+            <h1 className={e.errorTitle}>500 - Unexpected Error</h1>
+            <p className={e.errorText}>
               A critical error occurred while rendering the app.
             </p>
-            <button className="add-button" onClick={reset}>
+            <button className={u.primaryButton} onClick={reset}>
               Reload
             </button>
           </div>

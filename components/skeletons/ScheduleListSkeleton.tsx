@@ -1,19 +1,21 @@
 import SkeletonLine from "./SkeletonLine";
+import sk from "./Skeletons.module.css";
+import sb from "@/components/layout/SlotBubble.module.css";
+import d from "@/components/deadlines/Deadlines.module.css";
 
 export default function ScheduleListSkeleton() {
   return (
-    <div className="schedule-list">
+    <div className={d.scheduleList}>
       {Array.from({ length: 5 }).map((_, index) => (
-        <div key={`schedule-skeleton-${index}`} className={`slot-bubble `}>
-          <div className="slot-content">
-            <div className="schedule-skeleton-text-container">
+        <div key={`schedule-skeleton-${index}`} className={sb.slotBubble}>
+          <div className={sb.slotContent}>
+            <div className={sk.scheduleSkeletonTextContainer}>
               <SkeletonLine
-                style={{ marginBottom: 8 }}
-                className=" skeleton-text-line-short-lg"
-              ></SkeletonLine>
-              <SkeletonLine className="skeleton-text-line-medium-sm"></SkeletonLine>
+                className={`${sk.textLineShortLg} ${sk.scheduleSkeletonSlotMb}`}
+              />
+              <SkeletonLine className={sk.textLineMediumSm} />
             </div>
-            <SkeletonLine className="slot-time-text skeleton-pill"></SkeletonLine>
+            <SkeletonLine className={sk.skeletonPill} />
           </div>
         </div>
       ))}

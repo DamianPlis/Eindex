@@ -7,6 +7,8 @@ import { usePathname } from "next/navigation";
 import LogoutButton from "@/components/auth/LogoutButton";
 import { useAppLocale, useMessages } from "@/components/i18n/LocaleProvider";
 import { localizePath, stripLocaleFromPath } from "@/lib/i18n/routing";
+import s from "./Topbar.module.css";
+import u from "@/components/ui/shared.module.css";
 
 type TopbarProfileMenuProps = {
   uid: string;
@@ -63,7 +65,7 @@ export default function TopbarProfileMenu({
   return (
     <div
       ref={rootRef}
-      className={`topbar-profile-menu ${isOpen ? "open" : ""}`}
+      className={isOpen ? s.topbarProfileMenuOpen : s.topbarProfileMenu}
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
       onClick={() => setIsOpen((current) => !current)}
@@ -71,13 +73,13 @@ export default function TopbarProfileMenu({
       <button
         ref={btnRef}
         type="button"
-        className="topbar-profile-trigger"
+        className={s.topbarProfileTrigger}
         aria-expanded={isOpen}
         aria-label={userLabel}
       >
         {photoUrl ? (
           <Image
-            className="topbar-profile-image"
+            className={s.topbarProfileImage}
             src={photoUrl}
             alt={userLabel}
             referrerPolicy="no-referrer"
@@ -89,18 +91,18 @@ export default function TopbarProfileMenu({
         )}
       </button>
 
-      <div className="topbar-profile-dropdown">
-        <div className="topbar-profile-label" title={userLabel}>
+      <div className={s.topbarProfileDropdown}>
+        <div className={s.topbarProfileLabel} title={userLabel}>
           {userLabel}
         </div>
         <Link
-          className={`topbar-profile-item ${isSettingsActive ? "active" : ""}`}
+          className={isSettingsActive ? s.topbarProfileItemActive : s.topbarProfileItem}
           href={localizePath(locale, "/settings")}
           onClick={() => setIsOpen(false)}
         >
           {messages.settings.title}
         </Link>
-        <LogoutButton uid={uid} className="topbar-profile-item topbar-profile-logout" />
+        <LogoutButton uid={uid} className={`${s.topbarProfileItem} ${u.topbarProfileLogout}`} />
       </div>
     </div>
   );

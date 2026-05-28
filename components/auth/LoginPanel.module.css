@@ -1,0 +1,26 @@
+/* ═══════════════════════════════════════════════════
+   Login Panel
+   ═══════════════════════════════════════════════════ */
+
+.loginScreen {
+  display: grid;
+  min-height: 100vh;
+  padding: 20px;
+  place-items: center;
+}
+
+.loginCard {
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+}
+
+.loginTitle {
+  margin-top: 0;
+}
+
+.loginError {
+  margin-top: 8px;
+  font-size: 0.875rem;
+  color: #991b1b;
+}

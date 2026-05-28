@@ -1,0 +1,43 @@
+/* ═══════════════════════════════════════════════════
+   Error, Not-Found, Loading pages — shared styles
+   ═══════════════════════════════════════════════════ */
+
+.errorContainer {
+  margin: 16px;
+  text-align: center;
+}
+
+.errorTitle {
+  margin-bottom: 8px;
+}
+
+.errorText {
+  margin-top: 0;
+}
+
+.errorActions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.errorLink {
+  text-decoration: none;
+  display: inline-block;
+}
+
+.fullScreenCenter {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.loadingContainer {
+  margin: 16px;
+}

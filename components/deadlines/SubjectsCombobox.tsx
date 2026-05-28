@@ -7,7 +7,7 @@ import {
   getSubjectDisplayName,
   getSubjectGroupDisplayName,
 } from "@/lib/schedule/labels";
-import styles from "@/css/SubjectsCombobox.module.css";
+import styles from "./SubjectsCombobox.module.css";
 import SearchIcon from "@/icons/search_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 
 interface SubjectsComboboxProps {

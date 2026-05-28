@@ -10,6 +10,7 @@ import { localizePath } from "@/lib/i18n/routing";
 import { getClientId } from "@/lib/sync/client-id";
 import { toMillis } from "@/lib/utils/timestamp";
 import LogoutIcon from "@/icons/logout_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import u from "@/components/ui/shared.module.css";
 
 type LogoutButtonProps = {
   uid: string;
@@ -155,7 +156,7 @@ export default function LogoutButton({ uid, className }: LogoutButtonProps) {
   }
 
   return (
-    <button className={className ? `logout-button ${className}` : "logout-button"} onClick={handleLogout}>
+    <button className={className ? `${u.logoutButton} ${className}` : u.logoutButton} onClick={handleLogout}>
       {/* <span>{messages.nav.logout}</span> */}
       <LogoutIcon fill="currentColor" alt={messages.nav.logout} height={24} width={24} />
     </button>

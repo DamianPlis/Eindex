@@ -9,6 +9,7 @@ import { requireSession } from "@/lib/session";
 import { Suspense } from "react";
 import DeadlinesListSkeleton from "@/components/skeletons/DeadlinesListSkeleton";
 import { DeadlinesRefreshProvider } from "@/components/deadlines/DeadlinesRefreshContext";
+import d from "@/components/deadlines/Deadlines.module.css";
 
 export default async function LocaleDeadlinesPage({
   params,
@@ -19,10 +20,10 @@ export default async function LocaleDeadlinesPage({
   const messages = getMessages(locale);
 
   return (
-    <div className="deadlines-container">
+    <div className={d.deadlinesContainer}>
       <DeadlinesRefreshProvider>
-        <div className="flex justify-between">
-          <h2 className="deadlines-title">{messages.deadlines.title}</h2>
+        <div className={d.flexBetween}>
+          <h2 className={d.deadlinesTitle}>{messages.deadlines.title}</h2>
           <AddDeadline />
         </div>
 
@@ -32,10 +33,10 @@ export default async function LocaleDeadlinesPage({
         </Suspense>
       </DeadlinesRefreshProvider>
 
-      <h2 className="deadlines-title">
+      <h2 className={d.deadlinesTitle}>
         {messages.deadlines.statistics.statistics}
       </h2>
-      <div className="stats-container">
+      <div className={d.statsContainer}>
         {/* Stream the stats cards */}
         <Suspense fallback={<StatsCardSkeleton />}>
           <StatsCards />

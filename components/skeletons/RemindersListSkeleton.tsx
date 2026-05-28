@@ -1,20 +1,22 @@
 import SkeletonLine from "./SkeletonLine";
+import sk from "./Skeletons.module.css";
+import d from "@/components/deadlines/Deadlines.module.css";
 
 export default function RemindersListSkeleton() {
   return (
     <>
-      <ul className="deadlines-list">
+      <ul className={d.deadlinesList}>
         {Array.from({ length: 3 }).map((_, index) => (
           <li
             key={`deadline-skeleton-${index}`}
-            className="deadline-item deadlines-skeleton-item"
+            className={`${d.deadlineItem} ${sk.deadlinesSkeletonItem}`}
           >
-            <div className="deadlines-skeleton-text">
-              <SkeletonLine className="skeleton-text-line-lg" />
-              <SkeletonLine className="skeleton-text-line-sm" />
+            <div className={sk.deadlinesSkeletonText}>
+              <SkeletonLine className={sk.textLineLg} />
+              <SkeletonLine className={sk.textLineSm} />
             </div>
-            <div className="deadline-actions deadlines-skeleton-actions">
-              <SkeletonLine className="skeleton-pill" />
+            <div className={`${d.deadlineActions} ${sk.deadlinesSkeletonActions}`}>
+              <SkeletonLine className={sk.skeletonPill} />
             </div>
           </li>
         ))}

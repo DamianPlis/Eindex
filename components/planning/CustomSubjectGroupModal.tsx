@@ -8,6 +8,7 @@ import { APP_LOCALES } from "@/lib/i18n/config";
 import ModalFooter from "@/components/planning/ModalFooter";
 import CloseIcon from "@/icons/close_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import styles from "./CustomSubjectGroupModal.module.css";
+import u from "@/components/ui/shared.module.css";
 
 type CustomSubjectGroupModalProps = {
   isOpen: boolean;
@@ -131,14 +132,14 @@ export default function CustomSubjectGroupModal({
   }
 
   return (
-    <div className="modal-overlay" role="dialog" aria-modal="true">
-      <div className="modal" style={{ maxWidth: "500px" }}>
-        <div className="modal-header">
+    <div className={u.modalOverlay} role="dialog" aria-modal="true">
+      <div className={u.modal} style={{ maxWidth: "500px" }}>
+        <div className={u.modalHeader}>
           <div className={styles.modalTitle}>
             {title || modalMessages.title}
           </div>
           <button
-            className="modal-close"
+            className={u.modalClose}
             type="button"
             onClick={handleClose}
             disabled={isPending}
@@ -149,7 +150,7 @@ export default function CustomSubjectGroupModal({
         </div>
 
         <div
-          className="modal-body"
+          className={u.modalBody}
           style={{ maxHeight: "60vh", overflowY: "auto" }}
         >
           <label className={styles.sectionLabel}>
@@ -180,7 +181,7 @@ export default function CustomSubjectGroupModal({
                   </select>
                 </div>
                 <input
-                  className={`${styles.localeInput} slot-input`}
+                  className={`${styles.localeInput} ${u.formInput}`}
                   value={
                     namePreferences[locale]
                       ? names[namePreferences[locale]] || ""

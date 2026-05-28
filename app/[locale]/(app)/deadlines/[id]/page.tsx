@@ -7,6 +7,9 @@ import { assertLocale } from "@/lib/i18n/server";
 import { formatDeadlineRelativeLabel } from "@/lib/schedule/selectors";
 import { getUserState } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
+import dp from "@/app/[locale]/(app)/deadlines/DeadlinesPage.module.css";
+import d from "@/components/deadlines/Deadlines.module.css";
+import u from "@/components/ui/shared.module.css";
 
 export default async function LocaleDeadlineDetailPage({
   params,
@@ -40,29 +43,26 @@ export default async function LocaleDeadlineDetailPage({
 
 
   return (
-    <div className="container" style={{ margin: "16px" }}>
+    <div className={dp.detailContainer}>
       <StatusPill status={item.status} />
-      <h2 className="mb-2 text-2xl font-bold">{item.text}</h2>
-      <p style={{ marginBottom: 0 }}>
+      <h2 className={dp.detailTitle}>{item.text}</h2>
+      <p className={dp.detailDue}>
         {messages.deadlines.due}: {item.date}
       </p>
-      <div
-        style={{ marginBottom: "1em" }}
-        className="reminder-date reminder-relative-date"
-      >
+      <div className={`${d.reminderRelativeDate} ${dp.detailRelativeDate}`}>
         {formatDeadlineRelativeLabel(item.date, locale)}
       </div>
       {item.description ? (
-        <div style={{ marginBottom: "1em" }}>
-          <p style={{ marginBottom: "6px" }}>
+        <div className={dp.detailDescriptionBlock}>
+          <p className={dp.detailDescriptionLabel}>
             {messages.deadlines.description}
           </p>
-          <p style={{ margin: 0, whiteSpace: "pre-wrap" }}>
+          <p className={dp.detailDescriptionText}>
             {item.description}
           </p>
         </div>
       ) : null}
-      <Link href={backHref} className="inline-link">
+      <Link href={backHref} className={u.inlineLink}>
         {messages.deadlines.backTo} {backLabel}
       </Link>
     </div>

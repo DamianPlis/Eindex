@@ -7,10 +7,6 @@ import { getSession } from "@/lib/session";
 import NoScriptNotice from "@/components/layout/NoScriptNotice";
 import { getUserSettingsMaybe } from "@/lib/schedule/store";
 import "../css/globals.css";
-import "../css/noscript.css";
-import "../css/planning.css";
-import "../css/topbar.css";
-import "../css/skeletons.css";
 
 export const metadata: Metadata = {
   title: "Eindex",

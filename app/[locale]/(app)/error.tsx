@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { localizePath } from "@/lib/i18n/routing";
 import { useAppLocale, useMessages } from "@/components/i18n/LocaleProvider";
+import e from "@/app/ErrorPage.module.css";
+import u from "@/components/ui/shared.module.css";
 
 export default function LocaleAppErrorPage({
   error,
@@ -20,14 +22,14 @@ export default function LocaleAppErrorPage({
   }, [error]);
 
   return (
-    <main className="container" style={{ margin: "16px", textAlign: "center" }}>
-      <h1 style={{ marginBottom: 8 }}>{messages.errors.somethingWentWrong}</h1>
-      <p style={{ marginTop: 0 }}>{messages.errors.renderFailed}</p>
-      <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 12 }}>
-        <button className="add-button" onClick={reset}>
+    <main className={e.errorContainer}>
+      <h1 className={e.errorTitle}>{messages.errors.somethingWentWrong}</h1>
+      <p className={e.errorText}>{messages.errors.renderFailed}</p>
+      <div className={e.errorActions}>
+        <button className={u.primaryButton} onClick={reset}>
           {messages.errors.tryAgain}
         </button>
-        <Link href={localizePath(locale, "/")} className="add-button" style={{ textDecoration: "none" }}>
+        <Link href={localizePath(locale, "/")} className={`${u.primaryButton} ${e.errorLink}`}>
           {messages.common.home}
         </Link>
       </div>

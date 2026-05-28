@@ -2,6 +2,7 @@
 
 import SkeletonLine from "@/components/skeletons/SkeletonLine";
 import s from "@/components/settings/settings.module.css";
+import sk from "@/components/skeletons/Skeletons.module.css";
 
 export default function SubjectGroupsSectionSkeleton() {
   return (
@@ -11,8 +12,8 @@ export default function SubjectGroupsSectionSkeleton() {
       aria-hidden="true"
     >
       <div className={s.subjectsListHeader}>
-        <SkeletonLine className="settings-skeleton-heading" />
-        <SkeletonLine className="skeleton-action-circle" />
+        <SkeletonLine className={sk.settingsSkeletonHeading} />
+        <SkeletonLine className={sk.skeletonActionCircle} />
       </div>
 
       <div className={s.subjectsList}>
@@ -27,13 +28,13 @@ export default function SubjectGroupsSectionSkeleton() {
             }}
           >
             <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "8px" }}>
-              <SkeletonLine className="skeleton-text-line-md" style={{ margin: 0 }} />
-              <SkeletonLine className="skeleton-text-line-sm" style={{ margin: 0 }} />
+              <SkeletonLine className={`${sk.textLineMd} ${sk.noMargin}`} />
+              <SkeletonLine className={`${sk.textLineSm} ${sk.noMargin}`} />
             </div>
 
             <div className={s.subjectActions}>
-              <SkeletonLine className="skeleton-pill" />
-              <SkeletonLine className="skeleton-pill" />
+              <SkeletonLine className={sk.skeletonPill} />
+              <SkeletonLine className={sk.skeletonPill} />
             </div>
           </div>
         ))}

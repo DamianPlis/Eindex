@@ -4,6 +4,13 @@
  * between defaults.ts and stats.ts.
  */
 
+/**
+ * Returns a new Date object normalized to the Monday of the given date's week.
+ * The time is reset to midnight (00:00:00.000).
+ * 
+ * @param date - The reference date.
+ * @returns The Date object for Monday of that week.
+ */
 export function getMonday(date: Date = new Date()): Date {
   const d = new Date(date);
   const weekday = (d.getDay() + 6) % 7;
@@ -12,6 +19,12 @@ export function getMonday(date: Date = new Date()): Date {
   return d;
 }
 
+/**
+ * Returns the ISO 8601 string representation (YYYY-MM-DD) of a Date.
+ * 
+ * @param date - The Date object.
+ * @returns The ISO date string.
+ */
 export function isoDate(date: Date = new Date()): string {
   const d = new Date(date);
   const y = d.getFullYear();
@@ -20,6 +33,12 @@ export function isoDate(date: Date = new Date()): string {
   return `${y}-${m}-${day}`;
 }
 
+/**
+ * Normalizes a week input string. If invalid or missing, defaults to Monday of current week.
+ * 
+ * @param input - The optional week start string.
+ * @returns The normalized ISO date string for Monday of the resolved week.
+ */
 export function normalizeWeekKey(input?: string): string {
   if (!input) return isoDate(getMonday());
   const parsed = new Date(input);
@@ -30,6 +49,9 @@ export function normalizeWeekKey(input?: string): string {
 /**
  * Parse a "HH:MM-HH:MM" time range string and return the duration in minutes.
  * Returns null if the string is invalid.
+ * 
+ * @param timeStr - The time range string.
+ * @returns The duration in minutes, or null.
  */
 export function parseRangeMinutes(timeStr: string): number | null {
   const parsed = parseRange(timeStr);
@@ -42,6 +64,9 @@ export function parseRangeMinutes(timeStr: string): number | null {
  * Parse a "HH:MM-HH:MM" time range string and return
  * start/end as total minutes since midnight.
  * Returns null if the string is invalid.
+ * 
+ * @param timeStr - The time range string.
+ * @returns An object with start and end minutes, or null.
  */
 export function parseTimeRange(
   timeStr: string,
@@ -54,6 +79,9 @@ export function parseTimeRange(
 
 /**
  * Internal helper to parse a "HH:MM-HH:MM" string into an array of numbers.
+ * 
+ * @param timeStr - The time range string.
+ * @returns An array [startHours, startMinutes, endHours, endMinutes] or null.
  */
 function parseRange(timeStr: string): number[] | null {
   if (!timeStr || !timeStr.includes("-")) return null;

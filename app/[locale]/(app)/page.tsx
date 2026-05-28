@@ -22,6 +22,9 @@ import { AppLocale } from "@/lib/i18n/config";
 import { Suspense } from "react";
 import RemindersListSkeleton from "@/components/skeletons/RemindersListSkeleton";
 import ScheduleListSkeleton from "@/components/skeletons/ScheduleListSkeleton";
+import a from "@/components/layout/AppShell.module.css";
+import d from "@/components/deadlines/Deadlines.module.css";
+import u from "@/components/ui/shared.module.css";
 
 export default async function LocaleMainPage({
   params,
@@ -41,21 +44,21 @@ export default async function LocaleMainPage({
   const currentDay = isToday ? messages.home.today : messages.home.tomorrow;
 
   return (
-    <div className="main-container">
-      <div className="main-header">
-        <h2 className="main-title">
+    <div className={a.mainContainer}>
+      <div className={a.mainHeader}>
+        <h2 className={a.mainTitle}>
           {currentDay} - {selectedISO}
         </h2>
         {todayISO === selectedISO ? (
           <Link
-            className="add-button main-date-button"
+            className={`${u.primaryButton} ${a.mainDateButton}`}
             href={localizePath(locale, `/?date=${tomorrowISO}`)}
           >
             {messages.home.tomorrow}
           </Link>
         ) : (
           <Link
-            className="add-button main-date-button"
+            className={`${u.primaryButton} ${a.mainDateButton}`}
             href={localizePath(locale, `/`)}
           >
             {messages.home.today}
@@ -115,14 +118,14 @@ async function RemindersContainer({
 
   return (
     <>
-      <div className="reminders-section">
+      <div className={d.remindersSection}>
         {deadlines.length > 0 ? (
           deadlines.map((item) => (
-            <div key={item.id} className="reminder-card">
-              <div className="reminder-content">
+            <div key={item.id} className={d.reminderCard}>
+              <div className={d.reminderContent}>
                 <div>
                   <Link
-                    className="inline-link"
+                    className={u.inlineLink}
                     href={localizePath(
                       locale,
                       `/deadlines/${item.id}?redirect=main`,
@@ -130,8 +133,8 @@ async function RemindersContainer({
                   >
                     {item.text}
                   </Link>
-                  <div className="reminder-date">{item.date}</div>
-                  <div className="reminder-date reminder-relative-date">
+                  <div className={d.reminderDate}>{item.date}</div>
+                  <div className={d.reminderRelativeDate}>
                     {formatDeadlineRelativeLabel(item.date, locale)}
                   </div>
                 </div>
@@ -140,7 +143,7 @@ async function RemindersContainer({
             </div>
           ))
         ) : (
-          <div className="empty-reminders">
+          <div className={d.emptyState}>
             {isToday
               ? messages.home.noDeadlinesForToday
               : messages.home.noDeadlinesForTomorrow}
@@ -175,7 +178,7 @@ async function ScheduleListContainer({
   };
 
   return (
-    <div className="schedule-list">
+    <div className={d.scheduleList}>
       {slots.length > 0 ? (
         slots.map((slot) => {
           const subject = slot.subjectId
@@ -214,7 +217,7 @@ async function ScheduleListContainer({
           );
         })
       ) : (
-        <div className="empty-schedule">
+        <div className={d.emptyState}>
           {isToday
             ? messages.home.noScheduleForToday
             : messages.home.noScheduleForTomorrow}

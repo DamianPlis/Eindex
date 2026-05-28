@@ -1,4 +1,5 @@
 import type { AppMessages } from "@/lib/i18n/messages";
+import s from "./NoScriptNotice.module.css";
 
 const helpLinks = [
   {
@@ -40,17 +41,17 @@ export default function NoScriptNotice({ messages }: NoScriptNoticeProps) {
   ] as const;
 
   return (
-    <section className="noscript-screen">
-      <div className="noscript-card">
-        <p className="noscript-eyebrow">{messages.eyebrow}</p>
-        <h1 className="noscript-title">{messages.title}</h1>
-        <p className="noscript-copy">{messages.copy}</p>
+    <section className={s.noscriptScreen}>
+      <div className={s.noscriptCard}>
+        <p className={s.noscriptEyebrow}>{messages.eyebrow}</p>
+        <h1 className={s.noscriptTitle}>{messages.title}</h1>
+        <p className={s.noscriptCopy}>{messages.copy}</p>
 
-        <div className="noscript-guide">
+        <div className={s.noscriptGuide}>
           {browserGuides.map((browser) => (
-            <div className="noscript-browser" key={browser.name}>
-              <h2 className="noscript-browser-title">{browser.name}</h2>
-              <ol className="noscript-steps">
+            <div className={s.noscriptBrowser} key={browser.name}>
+              <h2 className={s.noscriptBrowserTitle}>{browser.name}</h2>
+              <ol className={s.noscriptSteps}>
                 {browser.steps.map((step) => (
                   <li key={step}>{step}</li>
                 ))}
@@ -59,15 +60,15 @@ export default function NoScriptNotice({ messages }: NoScriptNoticeProps) {
           ))}
         </div>
 
-        <p className="noscript-note">{messages.note}</p>
+        <p className={s.noscriptNote}>{messages.note}</p>
 
-        <div className="noscript-links">
-          <p className="noscript-links-title">{messages.linksTitle}</p>
-          <p className="noscript-links-copy">{messages.linksCopy}</p>
-          <div className="noscript-actions">
+        <div className={s.noscriptLinks}>
+          <p className={s.noscriptLinksTitle}>{messages.linksTitle}</p>
+          <p className={s.noscriptLinksCopy}>{messages.linksCopy}</p>
+          <div className={s.noscriptActions}>
             {helpLinks.map((link) => (
               <a
-                className="noscript-link"
+                className={s.noscriptLink}
                 href={link.href}
                 key={link.href}
                 rel="noreferrer"
