@@ -26,6 +26,7 @@ export const enMessages = {
     signInWithGoogle: "Sign in with Google",
     authenticationFailed: "Authentication failed.",
     signInFailed: "Sign in failed.",
+    aboutLink: "About Eindex",
   },
   settings: {
     title: "Settings",
@@ -231,5 +232,15 @@ export const enMessages = {
       humanities: "Humanities",
       other: "Other",
     },
+  },
+  about: {
+    title: "About Eindex",
+    description: "Eindex is a server-first school planning application designed to keep your academic life organized, real-time synced, and easily accessible.",
+    featuresTitle: "Key Features",
+    featureSchedule: "Weekly Timetable — Manage your lessons, subjects, and topics.",
+    featureDeadlines: "Homework Tracking — Keep track of tasks and check off completed work.",
+    featureLunches: "Lunch Menu — Integrated lunch menus fetched directly for you.",
+    featureSync: "Real-time Sync — Access your schedule and deadlines across all your devices.",
+    backToLogin: "Back to Sign In",
   },
 };

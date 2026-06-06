@@ -17,10 +17,17 @@
 
 .loginTitle {
   margin-top: 0;
+  font-weight: bold;
 }
 
 .loginError {
   margin-top: 8px;
   font-size: 0.875rem;
   color: #991b1b;
+}
+
+.aboutContainer {
+  margin-top: 24px;
+  border-top: 1px solid var(--border-light);
+  padding-top: 16px;
 }

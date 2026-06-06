@@ -28,6 +28,7 @@ export const csMessages = {
     signInWithGoogle: "Přihlásit se přes Google",
     authenticationFailed: "Oveření přihlášení se nepodařilo.",
     signInFailed: "Přihlášení selhalo.",
+    aboutLink: "O Eindexu",
   },
   settings: {
     title: "Nastavení",
@@ -43,15 +44,17 @@ export const csMessages = {
     subjects: "Předměty",
     statisticsSection: "Statistiky",
     useSchoolYear: "Používat školní rok",
-    useSchoolYearDescription: "Zobrazovat září – červen místo leden – prosinec v roční statistické kartě.",
-    schoolYearSaveError: "Nastavení školního roku se nepodařilo uložit. Zkuste to prosím později.",
+    useSchoolYearDescription:
+      "Zobrazovat září – červen místo leden – prosinec v roční statistické kartě.",
+    schoolYearSaveError:
+      "Nastavení školního roku se nepodařilo uložit. Zkuste to prosím později.",
     subjectGroups: "Skupiny předmětů",
     addSubjectGroup: "Přidat skupinu předmětů",
     deleteSubjectGroup: "Smazat skupinu předmětů",
-    deleteSubjectGroupConfirm: "Smazat \"{name}\"?",
+    deleteSubjectGroupConfirm: 'Smazat "{name}"?',
     noSubjects: "Žádné předměty",
     deleteSubject: "Smazat předmět",
-    deleteSubjectConfirm: "Smazat \"{name}\" z předmětů?",
+    deleteSubjectConfirm: 'Smazat "{name}" z předmětů?',
     subjectGroupModal: {
       title: "Skupina předmětů",
       groupName: "Název skupiny",
@@ -234,5 +237,20 @@ export const csMessages = {
       humanities: "Humanitní vědy",
       other: "Ostatní",
     },
+  },
+  about: {
+    title: "O aplikaci Eindex",
+    description:
+      "Eindex je moderní školní plánovací aplikace navržená tak, aby udržovala váš studijní život organizovaný, synchronizovaný v reálném čase a snadno přístupný.",
+    featuresTitle: "Klíčové funkce",
+    featureSchedule:
+      "Týdenní rozvrh — Spravujte své hodiny, předměty a témata.",
+    featureDeadlines:
+      "Sledování úkolů — Mějte přehled o úkolech a označujte je jako splněné.",
+    featureLunches:
+      "Obědové menu — Integrované jídelníčky načítané přímo pro vás.",
+    featureSync:
+      "Synchronizace v reálném čase — Přistupujte ke svému rozvrhu ze všech svých zařízení.",
+    backToLogin: "Zpět na přihlášení",
   },
 } satisfies typeof enMessages;

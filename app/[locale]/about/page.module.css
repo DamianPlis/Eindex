@@ -1,0 +1,73 @@
+.aboutScreen {
+  display: grid;
+  min-height: 100vh;
+  padding: 20px;
+  place-items: center;
+}
+
+.aboutCard {
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+}
+
+.aboutTitle {
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+.aboutDescription {
+  color: var(--text-soft);
+  margin-bottom: 24px;
+}
+
+.featuresList {
+  text-align: left;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.featuresTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 6px;
+}
+
+.featureItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--bubble);
+  border: 1px solid var(--border-light);
+}
+
+.featureIcon {
+  font-size: 1.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  fill: currentColor;
+}
+
+.featureItem p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.backButton {
+  display: inline-block;
+  margin-top: 12px;
+}

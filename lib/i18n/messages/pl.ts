@@ -26,6 +26,7 @@ export const plMessages = {
     signInWithGoogle: "Zaloguj się przez Google",
     authenticationFailed: "Uwierzytelnianie nie powiodło się.",
     signInFailed: "Logowanie nie powiodło się.",
+    aboutLink: "O Eindex",
   },
   settings: {
     title: "Ustawienia",
@@ -233,5 +234,15 @@ export const plMessages = {
       humanities: "Nauki humanistyczne",
       other: "Inne",
     },
+  },
+  about: {
+    title: "O Eindex",
+    description: "Eindex to nowoczesna aplikacja do planowania szkolnego, stworzona w celu organizacji Twojego życia naukowego, synchronizowana w czasie rzeczywistym i łatwo dostępna.",
+    featuresTitle: "Kluczowe funkcje",
+    featureSchedule: "Tygodniowy plan lekcji — Zarządzaj lekcjami, przedmiotami i tematami.",
+    featureDeadlines: "Śledzenie terminów — Kontroluj zadania domowe i oznaczaj je jako wykonane.",
+    featureLunches: "Menu obiadowe — Zintegrowane jadłospisy pobierane bezpośrednio dla Ciebie.",
+    featureSync: "Synchronizacja w czasie rzeczywistym — Dostęp do planu i terminów z dowolnego urządzenia.",
+    backToLogin: "Powrót do logowania",
   },
 };
