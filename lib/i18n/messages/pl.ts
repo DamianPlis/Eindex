@@ -13,6 +13,7 @@ export const plMessages = {
     today: "Dzisiaj",
     delete: "Usuń",
     edit: "Edytuj",
+    areYouSure: "Jesteś pewny?",
   },
   nav: {
     home: "Strona główna",
@@ -24,9 +25,10 @@ export const plMessages = {
     signInPrompt: "Zaloguj się za pomocą konta Google.",
     checking: "Sprawdzanie...",
     signInWithGoogle: "Zaloguj się przez Google",
-    authenticationFailed: "Uwierzytelnianie nie powiodło się.",
+    authenticationFailed: "Uwierzytelnianie nie powiodło sic.",
     signInFailed: "Logowanie nie powiodło się.",
     aboutLink: "O Eindex",
+    logoutConfirmation: "Na pewno chcesz się wylogovać?",
   },
   settings: {
     title: "Ustawienia",
@@ -43,15 +45,17 @@ export const plMessages = {
     subjects: "Przedmioty",
     statisticsSection: "Statystyki",
     useSchoolYear: "Użyj roku szkolnego",
-    useSchoolYearDescription: "Pokaż wrzesień – czerwiec zamiast styczeń – grudzień w rocznej karcie statystyk.",
-    schoolYearSaveError: "Nie udało się zapisać ustawienia roku szkolnego. Spróbuj ponownie później.",
+    useSchoolYearDescription:
+      "Pokaż wrzesień – czerwiec zamiast styczeń – grudzień w rocznej karcie statystyk.",
+    schoolYearSaveError:
+      "Nie udało się zapisać ustawienia roku szkolnego. Spróbuj ponownie później.",
     subjectGroups: "Grupy przedmiotów",
     addSubjectGroup: "Dodaj grupę przedmiotów",
     deleteSubjectGroup: "Usuń grupę przedmiotów",
-    deleteSubjectGroupConfirm: "Usunąć \"{name}\"?",
+    deleteSubjectGroupConfirm: 'Usunąć "{name}"?',
     noSubjects: "Brak przedmiotów",
     deleteSubject: "Usuń przedmiot",
-    deleteSubjectConfirm: "Usunąć \"{name}\" z przedmiotów?",
+    deleteSubjectConfirm: 'Usunąć "{name}" z przedmiotów?',
     subjectGroupModal: {
       title: "Grupa przedmiotów",
       groupName: "Nazwa grupy",
@@ -237,12 +241,17 @@ export const plMessages = {
   },
   about: {
     title: "O Eindex",
-    description: "Eindex to nowoczesna aplikacja do planowania szkolnego, stworzona w celu organizacji Twojego życia naukowego, synchronizowana w czasie rzeczywistym i łatwo dostępna.",
+    description:
+      "Eindex to nowoczesna aplikacja do planowania szkolnego, stworzona w celu organizacji Twojego życia naukowego, synchronizowana w czasie rzeczywistym i łatwo dostępna.",
     featuresTitle: "Kluczowe funkcje",
-    featureSchedule: "Tygodniowy plan lekcji — Zarządzaj lekcjami, przedmiotami i tematami.",
-    featureDeadlines: "Śledzenie terminów — Kontroluj zadania domowe i oznaczaj je jako wykonane.",
-    featureLunches: "Menu obiadowe — Zintegrowane jadłospisy pobierane bezpośrednio dla Ciebie.",
-    featureSync: "Synchronizacja w czasie rzeczywistym — Dostęp do planu i terminów z dowolnego urządzenia.",
+    featureSchedule:
+      "Tygodniowy plan lekcji — Zarządzaj lekcjami, przedmiotami i tematami.",
+    featureDeadlines:
+      "Śledzenie terminów — Kontroluj zadania domowe i oznaczaj je jako wykonane.",
+    featureLunches:
+      "Menu obiadowe — Zintegrowane jadłospisy pobierane bezpośrednio dla Ciebie.",
+    featureSync:
+      "Synchronizacja w czasie rzeczywistym — Dostęp do planu i terminów z dowolnego urządzenia.",
     backToLogin: "Powrót do logowania",
   },
 };

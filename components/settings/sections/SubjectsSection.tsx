@@ -120,6 +120,7 @@ export default function SubjectsSection() {
         onSave={handleSaveCustomSubject}
       />
       <ConfirmDialog
+        isDestructiveAction={true}
         isOpen={Boolean(subjectPendingDelete)}
         isPending={isPending}
         title={messages.settings.deleteSubject}

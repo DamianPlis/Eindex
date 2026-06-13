@@ -13,6 +13,7 @@ export const enMessages = {
     today: "Today",
     delete: "Delete",
     edit: "Edit",
+    areYouSure: "Are you sure?",
   },
   nav: {
     home: "Home",
@@ -27,6 +28,7 @@ export const enMessages = {
     authenticationFailed: "Authentication failed.",
     signInFailed: "Sign in failed.",
     aboutLink: "About Eindex",
+    logoutConfirmation: "Are you sure you want to log out?",
   },
   settings: {
     title: "Settings",
@@ -42,15 +44,17 @@ export const enMessages = {
     subjects: "Subjects",
     statisticsSection: "Statistics",
     useSchoolYear: "Use school year",
-    useSchoolYearDescription: "Show September – June instead of January – December in the year statistics card.",
-    schoolYearSaveError: "Could not save the school year setting. Try again later.",
+    useSchoolYearDescription:
+      "Show September – June instead of January – December in the year statistics card.",
+    schoolYearSaveError:
+      "Could not save the school year setting. Try again later.",
     subjectGroups: "Subject Groups",
     addSubjectGroup: "Add subject group",
     deleteSubjectGroup: "Delete Subject Group",
-    deleteSubjectGroupConfirm: "Delete \"{name}\"?",
+    deleteSubjectGroupConfirm: 'Delete "{name}"?',
     noSubjects: "No subjects",
     deleteSubject: "Delete Subject",
-    deleteSubjectConfirm: "Delete \"{name}\" from your subjects?",
+    deleteSubjectConfirm: 'Delete "{name}" from your subjects?',
     subjectGroupModal: {
       title: "Subject Group",
       groupName: "Group Name",
@@ -235,12 +239,17 @@ export const enMessages = {
   },
   about: {
     title: "About Eindex",
-    description: "Eindex is a server-first school planning application designed to keep your academic life organized, real-time synced, and easily accessible.",
+    description:
+      "Eindex is a server-first school planning application designed to keep your academic life organized, real-time synced, and easily accessible.",
     featuresTitle: "Key Features",
-    featureSchedule: "Weekly Timetable — Manage your lessons, subjects, and topics.",
-    featureDeadlines: "Homework Tracking — Keep track of tasks and check off completed work.",
-    featureLunches: "Lunch Menu — Integrated lunch menus fetched directly for you.",
-    featureSync: "Real-time Sync — Access your schedule and deadlines across all your devices.",
+    featureSchedule:
+      "Weekly Timetable — Manage your lessons, subjects, and topics.",
+    featureDeadlines:
+      "Homework Tracking — Keep track of tasks and check off completed work.",
+    featureLunches:
+      "Lunch Menu — Integrated lunch menus fetched directly for you.",
+    featureSync:
+      "Real-time Sync — Access your schedule and deadlines across all your devices.",
     backToLogin: "Back to Sign In",
   },
 };

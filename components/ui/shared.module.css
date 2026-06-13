@@ -75,30 +75,40 @@
 
 /* ── Buttons ── */
 
-.primaryButton {
+.bareBonesButton {
   padding: 8px 12px;
   border-radius: 10px;
   border: none;
+  cursor: pointer;
+}
+
+.primaryButton {
+  composes: bareBonesButton;
   background: var(--primary);
   color: var(--text-inverse);
   font-weight: 700;
-  cursor: pointer;
 }
 
 .cancelButton {
+  composes: bareBonesButton;
   padding: 8px 12px;
   border-radius: 10px;
   border: 1px solid var(--border-medium);
   background: var(--card);
-  cursor: pointer;
 }
 
 .ghostButton {
+  composes: bareBonesButton;
   padding: 8px 12px;
   border-radius: 10px;
   border: 1px solid var(--border-medium);
   background: var(--card);
-  cursor: pointer;
+}
+
+.destructiveButton {
+  composes: bareBonesButton;
+  background-color: var(--danger);
+  color: var(--danger-text);
 }
 
 /* ── Container card ── */

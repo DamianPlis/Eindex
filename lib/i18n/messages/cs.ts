@@ -15,6 +15,7 @@ export const csMessages = {
     today: "Dnes",
     delete: "Smazat",
     edit: "Upravit",
+    areYouSure: "Jste si jistý?",
   },
   nav: {
     home: "Domů",
@@ -29,6 +30,7 @@ export const csMessages = {
     authenticationFailed: "Oveření přihlášení se nepodařilo.",
     signInFailed: "Přihlášení selhalo.",
     aboutLink: "O Eindexu",
+    logoutConfirmation: "Opravdu se chcete odhásit?",
   },
   settings: {
     title: "Nastavení",

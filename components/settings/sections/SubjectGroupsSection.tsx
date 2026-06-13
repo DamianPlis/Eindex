@@ -180,9 +180,9 @@ export default function SubjectGroupsSection() {
       />
 
       <ConfirmDialog
+        isDestructiveAction={true}
         isOpen={Boolean(groupPendingDelete)}
         isPending={isPending}
-        title={messages.settings.deleteSubjectGroup}
         cancelLabel={messages.common.cancel}
         confirmLabel={messages.common.delete}
         onCancel={() => setGroupPendingDelete(null)}

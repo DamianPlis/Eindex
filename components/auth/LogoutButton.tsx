@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAppLocale, useMessages } from "@/components/i18n/LocaleProvider";
 import { signOut } from "firebase/auth";
@@ -11,6 +11,7 @@ import { getClientId } from "@/lib/sync/client-id";
 import { toMillis } from "@/lib/utils/timestamp";
 import LogoutIcon from "@/icons/logout_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import u from "@/components/ui/shared.module.css";
+import ConfirmDialog from "../ui/ConfirmDialog";
 
 type LogoutButtonProps = {
   uid: string;
@@ -22,11 +23,14 @@ type StateVersionResponse = {
   lastWriter?: string;
 };
 
-
 function isStandaloneMode(): boolean {
   if (typeof window === "undefined") return false;
-  const iosStandalone = (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
-  return iosStandalone || window.matchMedia("(display-mode: standalone)").matches;
+  const iosStandalone =
+    (window.navigator as Navigator & { standalone?: boolean }).standalone ===
+    true;
+  return (
+    iosStandalone || window.matchMedia("(display-mode: standalone)").matches
+  );
 }
 
 export default function LogoutButton({ uid, className }: LogoutButtonProps) {
@@ -39,6 +43,7 @@ export default function LogoutButton({ uid, className }: LogoutButtonProps) {
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastRefreshAtRef = useRef(0);
   const pollInFlightRef = useRef(false);
+  const [logoutPending, setLogoutPending] = useState<boolean | null>(false);
 
   const scheduleRefresh = useCallback(() => {
     if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
@@ -54,7 +59,12 @@ export default function LogoutButton({ uid, className }: LogoutButtonProps) {
     (remoteTs: number, lastWriter: string) => {
       if (!remoteTs || remoteTs <= lastRemoteTsRef.current) return;
       lastRemoteTsRef.current = remoteTs;
-      if (lastWriter && clientIdRef.current && lastWriter === clientIdRef.current) return;
+      if (
+        lastWriter &&
+        clientIdRef.current &&
+        lastWriter === clientIdRef.current
+      )
+        return;
       scheduleRefresh();
     },
     [scheduleRefresh],
@@ -74,8 +84,10 @@ export default function LogoutButton({ uid, className }: LogoutButtonProps) {
       });
       if (!response.ok) return;
       const payload = (await response.json()) as StateVersionResponse;
-      const remoteTs = typeof payload.updatedAt === "number" ? payload.updatedAt : 0;
-      const lastWriter = typeof payload.lastWriter === "string" ? payload.lastWriter : "";
+      const remoteTs =
+        typeof payload.updatedAt === "number" ? payload.updatedAt : 0;
+      const lastWriter =
+        typeof payload.lastWriter === "string" ? payload.lastWriter : "";
       maybeApplyVersion(remoteTs, lastWriter);
     } catch {
       // noop
@@ -94,7 +106,8 @@ export default function LogoutButton({ uid, className }: LogoutButtonProps) {
         if (!snapshot.exists()) return;
         const data = snapshot.data() || {};
         const remoteTs = toMillis(data.updatedAt);
-        const lastWriter = typeof data.lastWriter === "string" ? data.lastWriter : "";
+        const lastWriter =
+          typeof data.lastWriter === "string" ? data.lastWriter : "";
         if (!initializedRef.current) {
           initializedRef.current = true;
           lastRemoteTsRef.current = remoteTs;
@@ -156,9 +169,34 @@ export default function LogoutButton({ uid, className }: LogoutButtonProps) {
   }
 
   return (
-    <button className={className ? `${u.logoutButton} ${className}` : u.logoutButton} onClick={handleLogout}>
-      {/* <span>{messages.nav.logout}</span> */}
-      <LogoutIcon fill="currentColor" alt={messages.nav.logout} height={24} width={24} />
-    </button>
+    <>
+      <button
+        className={
+          className ? `${u.logoutButton} ${className}` : u.logoutButton
+        }
+        onClick={() => setLogoutPending(true)}
+      >
+        {/* <span>{messages.nav.logout}</span> */}
+        <LogoutIcon
+          fill="currentColor"
+          alt={messages.nav.logout}
+          height={24}
+          width={24}
+        />
+      </button>
+      <ConfirmDialog
+        isOpen={Boolean(logoutPending)}
+        title={messages.common.areYouSure}
+        cancelLabel={messages.common.cancel}
+        confirmLabel={messages.nav.logout}
+        onCancel={() => setLogoutPending(null)}
+        onConfirm={() => {
+          handleLogout();
+          setLogoutPending(null);
+        }}
+      >
+        {messages.auth.logoutConfirmation}
+      </ConfirmDialog>
+    </>
   );
 }
