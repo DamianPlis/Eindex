@@ -40,10 +40,8 @@ export default async function LocaleDeadlineDetailPage({
       ? messages.deadlines.homePage
       : messages.deadlines.deadlinesPage;
 
-
-
   return (
-    <div className={dp.detailContainer}>
+    <div className={`${dp.detailContainer} ${u.container}`}>
       <StatusPill status={item.status} />
       <h2 className={dp.detailTitle}>{item.text}</h2>
       <p className={dp.detailDue}>
@@ -57,9 +55,7 @@ export default async function LocaleDeadlineDetailPage({
           <p className={dp.detailDescriptionLabel}>
             {messages.deadlines.description}
           </p>
-          <p className={dp.detailDescriptionText}>
-            {item.description}
-          </p>
+          <p className={dp.detailDescriptionText}>{item.description}</p>
         </div>
       ) : null}
       <Link href={backHref} className={u.inlineLink}>

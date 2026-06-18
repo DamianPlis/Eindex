@@ -1,0 +1,58 @@
+/* ═══════════════════════════════════════════════════
+   Login Locale Switcher
+   ═══════════════════════════════════════════════════ */
+
+.switcher {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ── Pill button ── */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-medium);
+  background: var(--bubble);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.pill:hover:not(:disabled) {
+  border-color: var(--primary-border-mix-45);
+  background: var(--primary-alpha-8);
+}
+
+.pillActive {
+  border-color: var(--primary);
+  background: var(--primary-card-mix-15);
+  box-shadow: inset 0 0 0 1px var(--primary);
+  cursor: default;
+}
+
+/* ── Flag image ── */
+
+.flag {
+  width: 20px;
+  height: 14px;
+  border-radius: 2px;
+  object-fit: cover;
+  box-shadow: var(--shadow-border-inset);
+}
+
+/* ── Label ── */
+
+.label {
+  line-height: 1;
+}

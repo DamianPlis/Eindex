@@ -32,7 +32,7 @@
 - 🔄 **Real-Time Sync** — Changes sync across devices via Firebase Firestore snapshot listeners and polling.
 - 🔐 **Google Authentication** — Sign in with Google via Firebase Auth, secured with server-side session cookies.
 - 📱 **PWA Support** — Installable as a Progressive Web App with service worker and offline fallback pages.
-- 🌓 **Dark/Light Theme** — User-configurable theme preference persisted to the backend.
+- 🌓 **Dark/Light Theme** — User-configurable theme preference persisted via cookie + Firestore for instant server-side rendering (no flash).
 
 ---
 
@@ -45,7 +45,7 @@
 | Language     | TypeScript (strict mode)                                       |
 | Auth         | Firebase Authentication + server-side session cookies          |
 | Database     | Firebase Firestore (server: Admin SDK, client: Web SDK)        |
-| Styling      | Vanilla CSS + Tailwind CSS utilities                           |
+| Styling      | CSS Modules + Vanilla CSS + Tailwind CSS utilities              |
 | i18n         | Custom locale-prefixed routing with compile-time message files |
 | Bundler      | Turbopack (development)                                        |
 | Deployment   | Node.js / Vercel compatible                                    |
@@ -163,8 +163,9 @@ random-next-app-copy/
 │   │   ├── LoginPanel.tsx        # Google sign-in UI + redirect flow
 │   │   └── LogoutButton.tsx      # Logout button + real-time sync listener
 │   │
-│   ├── i18n/                     # Internationalization components
-│   │   └── LocaleProvider.tsx    # React context for locale + messages, live locale sync
+│   ├── i18n/                     # Internationalization & user sync
+│   │   ├── UserSyncProvider.tsx  # React context: locale + messages + live theme/locale sync from Firestore
+│   │   └── UidSync.tsx           # Side-effect component: injects uid into UserSyncProvider
 │   │
 │   ├── layout/                   # App shell / layout components
 │   │   ├── BottomNav.tsx         # Mobile bottom navigation bar
@@ -192,8 +193,16 @@ random-next-app-copy/
 │   │   └── CustomSubjectModal.tsx # Modal to add/edit custom subjects
 │   │
 │   ├── settings/                 # Settings feature components
+│   │   ├── SettingsNav.tsx       # Settings page tab navigation
+│   │   ├── SettingsProvider.tsx  # Settings context provider (theme, locale, subjects, groups)
 │   │   ├── SettingsRefreshContext.tsx # React context for settings optimistic refresh
-│   │   └── ThemeRootSync.tsx     # Syncs theme data-attribute to DOM
+│   │   ├── ThemeRootSync.tsx     # Syncs server-read theme to DOM on mount
+│   │   └── sections/             # Individual settings sections
+│   │       ├── AppearanceSection.tsx   # Dark/light theme toggle
+│   │       ├── LanguageSection.tsx     # Locale picker with flag icons
+│   │       ├── StatisticsSection.tsx   # Stats time period config
+│   │       ├── SubjectGroupsSection.tsx # Subject group CRUD
+│   │       └── SubjectsSection.tsx     # Subject CRUD
 │   │
 │   ├── pwa/                      # Progressive Web App components
 │   │   └── PwaRegistrar.tsx      # Service worker registration
@@ -242,7 +251,9 @@ random-next-app-copy/
 │   ├── settings/                 # User settings logic
 │   │   ├── types.ts              # Settings type definitions (theme, locale, schoolYear)
 │   │   ├── defaults.ts           # Default settings, normalization, merging
-│   │   └── client.ts             # Client-side theme application
+│   │   ├── constants.ts          # Shared cookie constants (no "use client" — safe for server + client)
+│   │   ├── theme-cookie.ts       # Server-only: reads theme preference from request cookie
+│   │   └── client.ts             # Client-side theme application + cookie persistence
 │   │
 │   ├── lunch/                    # Lunch menu scraping
 │   │   └── server.ts             # Server-only: scrapes jidelna.cz, parses HTML
@@ -272,13 +283,10 @@ random-next-app-copy/
 │   ├── sort_24dp_*.svg
 │   └── ... (keyboard arrows, dark/light mode, filter)
 │
-├── css/                          # Global and feature stylesheets
-│   ├── globals.css               # Global styles, CSS variables, theme definitions
-│   ├── topbar.css                # App topbar and profile menu styles
-│   ├── planning.css              # Planning page grid and slot styles
-│   ├── noscript.css              # NoScript notice styles
-│   ├── skeletons.css             # Loading skeleton animations
-│   └── SubjectsCombobox.module.css # CSS Module for subjects combobox
+├── css/                          # Global stylesheet
+│   └── globals.css               # Global styles, CSS variables, theme definitions
+│   # NOTE: Component styles are co-located as CSS Modules (*.module.css)
+│   # alongside their components (e.g., AppShell.module.css, BottomNav.module.css)
 │
 ├── public/                       # Static assets
 │   ├── sw.js                     # Service worker
@@ -334,7 +342,7 @@ This allows non-localized URLs (e.g., `/planning`) to work by auto-redirecting t
 - Default locale: `cs`
 - Locale is determined from: (1) URL path prefix → (2) user settings → (3) cookie → (4) default
 - The **middleware** (`middleware.ts`) reads the locale from the URL path and sets a cookie for server-side access
-- `LocaleProvider` syncs locale changes in real-time via Firestore snapshot listener
+- `UserSyncProvider` syncs locale and theme changes in real-time via Firestore snapshot listener
 
 ### Translation System
 
@@ -413,10 +421,19 @@ When a remote change is detected from a different `clientId`, the component call
 
 The project uses a hybrid approach:
 
-- **Vanilla CSS** — Core layout, components, and theming via CSS custom properties in `css/globals.css`
+- **CSS Modules** — Primary styling method. Component styles are co-located as `*.module.css` files (e.g., `AppShell.module.css`, `BottomNav.module.css`, `Deadlines.module.css`)
+- **Vanilla CSS** — Global theming and CSS custom properties defined in `css/globals.css`
 - **Tailwind CSS** — Utility classes for spacing, flexbox, and typography helpers
-- **CSS Modules** — Used for the `SubjectsCombobox` component (`SubjectsCombobox.module.css`)
 - **CSS Custom Properties** — Theme-aware colors defined in `[data-theme="light"]` and `[data-theme="dark"]`
+
+### Theme Flash Prevention
+
+The theme is persisted as a cookie (`eindx_theme`) so the server can read it during SSR:
+
+1. **Inline script** in root layout reads the cookie and sets `data-theme` on `<html>` before first paint
+2. **`getThemeCookie()`** reads the cookie server-side to pass the correct theme to `ThemeRootSync`
+3. **`UserSyncProvider`** keeps the theme in sync from Firestore snapshots after hydration
+4. **`applyTheme()`** writes the cookie client-side whenever the theme changes, so the next page load is instant
 
 ---
 

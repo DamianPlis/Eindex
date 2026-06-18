@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAppLocale, useMessages } from "@/components/i18n/UserSyncProvider";
+import LoginLocaleSwitcher from "@/components/auth/LoginLocaleSwitcher";
 import { localizePath } from "@/lib/i18n/routing";
 import {
   getRedirectResult,
@@ -115,6 +116,9 @@ export default function LoginPanel() {
           >
             {messages.auth.aboutLink}
           </Link>
+        </div>
+        <div className={s.localeContainer}>
+          <LoginLocaleSwitcher />
         </div>
       </div>
     </div>

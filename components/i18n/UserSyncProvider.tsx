@@ -147,6 +147,13 @@ export function UserSyncProvider({
   useEffect(() => {
     if (!pathname) return;
 
+    // Only force-redirect when a live Firestore preference is driving the
+    // locale. Without a uid or live preference the URL is the source of
+    // truth (e.g. the login-page locale switcher).
+    const hasLivePreference =
+      uid && livePreference.uid === uid && livePreference.locale;
+    if (!hasLivePreference) return;
+
     const query =
       typeof window !== "undefined" ? window.location.search.slice(1) : "";
     const currentPath = `${pathname}${query ? `?${query}` : ""}`;
@@ -163,7 +170,7 @@ export function UserSyncProvider({
     return () => {
       window.clearTimeout(timeout);
     };
-  }, [activeLocale, pathname, router]);
+  }, [activeLocale, pathname, router, uid, livePreference]);
 
   return (
     <UidSetterContext.Provider value={setUid}>
