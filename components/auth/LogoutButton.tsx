@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAppLocale, useMessages } from "@/components/i18n/LocaleProvider";
+import { useAppLocale, useMessages } from "@/components/i18n/UserSyncProvider";
 import { signOut } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase/client";

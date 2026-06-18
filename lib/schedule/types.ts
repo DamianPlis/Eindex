@@ -1,5 +1,3 @@
-import type { AppSettings } from "@/lib/settings/types";
-
 export type FixedSlotKey =
   | "morningCircle"
   | "currentEvents"
@@ -57,7 +55,6 @@ export type ScheduleState = {
   weeks: Record<string, WeekSchedule>;
   lunches: Record<string, string>;
   deadlines: DeadlineItem[];
-  settings: AppSettings;
 };
 
 export type SortOption = "count-desc" | "count-asc" | "name-asc" | "name-desc";

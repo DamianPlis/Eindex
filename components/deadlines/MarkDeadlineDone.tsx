@@ -1,7 +1,7 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
-import { useMessages } from "@/components/i18n/LocaleProvider";
+import { useMessages } from "@/components/i18n/UserSyncProvider";
 import { markAsDoneDeadlineAction } from "@/app/(app)/actions";
 import { useDeadlinesRefresh } from "@/components/deadlines/DeadlinesRefreshContext";
 import Check from "@/icons/check_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";

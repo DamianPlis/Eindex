@@ -1,6 +1,6 @@
 "use client";
 
-import { useMessages } from "@/components/i18n/LocaleProvider";
+import { useMessages } from "@/components/i18n/UserSyncProvider";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import s from "./OnlineStatusBanner.module.css";
 

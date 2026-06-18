@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useAppLocale, useMessages } from "@/components/i18n/LocaleProvider";
+import { useAppLocale, useMessages } from "@/components/i18n/UserSyncProvider";
 import { getSubjectDisplayName } from "@/lib/schedule/labels";
 import type {
   ScheduleState,

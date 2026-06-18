@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAppLocale, useMessages } from "@/components/i18n/LocaleProvider";
+import { useAppLocale, useMessages } from "@/components/i18n/UserSyncProvider";
 import RemoveDeadline from "@/components/deadlines/RemoveDeadline";
 import StatusPill from "@/components/deadlines/StatusPill";
 import MarkDeadlineDone from "@/components/deadlines/MarkDeadlineDone";

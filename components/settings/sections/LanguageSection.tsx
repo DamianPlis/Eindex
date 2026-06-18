@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMessages } from "@/components/i18n/LocaleProvider";
+import { useMessages } from "@/components/i18n/UserSyncProvider";
 import { useSettings } from "@/components/settings/SettingsProvider";
 import type { AppLocale } from "@/lib/i18n/config";
 import s from "@/components/settings/settings.module.css";

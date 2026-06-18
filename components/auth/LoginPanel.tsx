@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useAppLocale, useMessages } from "@/components/i18n/LocaleProvider";
+import { useAppLocale, useMessages } from "@/components/i18n/UserSyncProvider";
 import { localizePath } from "@/lib/i18n/routing";
 import {
   getRedirectResult,

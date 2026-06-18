@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { localizePath } from "@/lib/i18n/routing";
-import { useAppLocale, useMessages } from "@/components/i18n/LocaleProvider";
+import { useAppLocale, useMessages } from "@/components/i18n/UserSyncProvider";
 import e from "@/app/ErrorPage.module.css";
 import u from "@/components/ui/shared.module.css";
 

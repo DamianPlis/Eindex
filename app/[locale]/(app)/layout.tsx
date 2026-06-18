@@ -4,9 +4,10 @@ import BottomNav from "@/components/layout/BottomNav";
 import OnlineStatusBanner from "@/components/layout/OnlineStatusBanner";
 import SettingsLink from "@/components/layout/SettingsLink";
 import TopbarProfileMenu from "@/components/layout/TopbarProfileMenu";
-import { getUserSettings } from "@/lib/schedule/store";
 import ThemeRootSync from "@/components/settings/ThemeRootSync";
+import UidSync from "@/components/i18n/UidSync";
 import { assertLocale } from "@/lib/i18n/server";
+import { getThemeCookie } from "@/lib/settings/theme-cookie";
 import s from "@/components/layout/AppShell.module.css";
 import t from "@/components/layout/Topbar.module.css";
 
@@ -18,13 +19,16 @@ export default async function ProtectedLocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   assertLocale((await params).locale);
+
   const session = await requireSession();
-  const settings = await getUserSettings(session.uid);
   const userLabel = session.name || session.email || session.uid;
 
+  const cookieTheme = (await getThemeCookie()) ?? "light";
+
   return (
-    <div className={s.appShell} data-theme={settings.theme}>
-      <ThemeRootSync theme={settings.theme} />
+    <div className={s.appShell}>
+      <ThemeRootSync theme={cookieTheme} />
+      <UidSync uid={session.uid} />
       <header className={t.appTopbar}>
         <strong>Eindex</strong>
         <div className={t.topbarActions}>

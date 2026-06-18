@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { useMessages } from "@/components/i18n/LocaleProvider";
+import { useMessages } from "@/components/i18n/UserSyncProvider";
 import type { Slot, Subject } from "@/lib/schedule/types";
 import { parseTimeRange } from "@/lib/schedule/date-utils";
 import LunchIcon from "@/icons/restaurant_24dp_999999_FILL0_wght400_GRAD0_opsz24.svg"

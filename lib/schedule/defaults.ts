@@ -6,7 +6,7 @@ import type {
   Subject,
   SubjectGroup,
 } from "@/lib/schedule/types";
-import { DEFAULT_SETTINGS, normalizeSettings } from "@/lib/settings/defaults";
+
 import {
   getMonday,
   isoDate,
@@ -191,7 +191,6 @@ function createDefaultState(): ScheduleState {
     },
     lunches: {},
     deadlines: [],
-    settings: { ...DEFAULT_SETTINGS },
   };
 }
 
@@ -361,7 +360,7 @@ export function migrateState(raw: unknown): ScheduleState {
 
   base.lunches =
     source.lunches && typeof source.lunches === "object" ? source.lunches : {};
-  base.settings = normalizeSettings(source.settings);
+
 
   const weekMap =
     source.weeks && typeof source.weeks === "object" ? source.weeks : {};

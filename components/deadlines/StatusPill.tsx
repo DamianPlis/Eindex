@@ -1,6 +1,6 @@
 "use client";
 
-import { useMessages } from "@/components/i18n/LocaleProvider";
+import { useMessages } from "@/components/i18n/UserSyncProvider";
 import type { DeadlineItem } from "@/lib/schedule/types";
 import s from "./Deadlines.module.css";
 

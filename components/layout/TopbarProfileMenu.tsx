@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import LogoutButton from "@/components/auth/LogoutButton";
-import { useAppLocale, useMessages } from "@/components/i18n/LocaleProvider";
+import { useAppLocale, useMessages } from "@/components/i18n/UserSyncProvider";
 import { localizePath, stripLocaleFromPath } from "@/lib/i18n/routing";
 import s from "./Topbar.module.css";
 import u from "@/components/ui/shared.module.css";

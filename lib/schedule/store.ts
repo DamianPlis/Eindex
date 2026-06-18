@@ -6,7 +6,7 @@ import { adminDb, adminFieldValue } from "@/lib/firebase/admin";
 import { buildDaysForWeek, migrateState, normalizeWeekKey } from "@/lib/schedule/defaults";
 import { autoSortSubjectsByUsage } from "@/lib/schedule/stats";
 import type { ScheduleState } from "@/lib/schedule/types";
-import { DEFAULT_SETTINGS, mergeSettings, normalizeSettings } from "@/lib/settings/defaults";
+import { DEFAULT_SETTINGS, normalizeSettings } from "@/lib/settings/defaults";
 import type { AppSettings } from "@/lib/settings/types";
 
 const USER_COLLECTION = "users";
@@ -31,23 +31,14 @@ function cloneState(state: ScheduleState): ScheduleState {
 }
 
 /**
- * Deep clones the given AppSettings object.
- * 
- * @param settings - The settings object to clone.
- * @returns A deep copy of the settings.
- */
-function cloneSettings(settings: AppSettings): AppSettings {
-  return structuredClone(settings);
-}
-
-/**
- * Resolves the stored AppSettings from raw database document data.
- * Merges top-level settings and nested state-level settings, falling back to defaults.
- * 
+ * Resolves settings from a raw Firestore document, reading from the top-level
+ * `settings` field first, then falling back to `state.settings` for legacy
+ * documents that haven't been migrated yet.
+ *
  * @param data - The raw document data.
  * @returns Resolved AppSettings object.
  */
-function resolveStoredSettings(data: unknown): AppSettings {
+function resolveSettings(data: unknown): AppSettings {
   if (!data || typeof data !== "object") return { ...DEFAULT_SETTINGS };
 
   const source = data as {
@@ -57,7 +48,9 @@ function resolveStoredSettings(data: unknown): AppSettings {
     };
   };
 
-  return mergeSettings(source.state?.settings, source.settings);
+  // Prefer top-level settings; fall back to legacy state.settings
+  const raw = source.settings ?? source.state?.settings;
+  return normalizeSettings(raw);
 }
 
 /**
@@ -87,18 +80,6 @@ function setCachedState(uid: string, state: ScheduleState) {
     expiresAt: Date.now() + Math.max(0, CACHE_TTL_MS),
     state: cloneState(state),
   });
-}
-
-/**
- * Synchronizes new settings into the cached schedule state.
- * 
- * @param uid - The user's unique identifier.
- * @param settings - The new AppSettings object.
- */
-function syncCachedSettings(uid: string, settings: AppSettings) {
-  const entry = stateCache.get(uid);
-  if (!entry) return;
-  entry.state.settings = cloneSettings(settings);
 }
 
 /**
@@ -136,7 +117,7 @@ export async function getUserState(uid: string): Promise<ScheduleState> {
     await ref.set(
       {
         state: fresh,
-        settings: fresh.settings,
+        settings: { ...DEFAULT_SETTINGS },
         updatedAt: adminFieldValue.serverTimestamp(),
       },
       { merge: true },
@@ -148,7 +129,6 @@ export async function getUserState(uid: string): Promise<ScheduleState> {
   const data = snap.data() || {};
   const state = migrateState(data.state);
   state.subjects = autoSortSubjectsByUsage(state.subjects, state);
-  state.settings = resolveStoredSettings(data);
   if (CACHE_TTL_MS > 0) setCachedState(uid, state);
   return cloneState(state);
 }
@@ -176,7 +156,6 @@ export async function updateUserState(
     const snap = await tx.get(ref);
     const data = snap.exists ? snap.data() || {} : null;
     const current = migrateState(data?.state ?? null);
-    current.settings = resolveStoredSettings(data);
     const draft = cloneState(current);
     const result = mutate(draft);
     const next = migrateState((result || draft) as ScheduleState);
@@ -184,7 +163,6 @@ export async function updateUserState(
       ref,
       {
         state: next,
-        settings: next.settings,
         updatedAt: adminFieldValue.serverTimestamp(),
         lastWriter: options?.writerId || null,
       },
@@ -200,6 +178,8 @@ export async function updateUserState(
 
 /**
  * Retrieves the settings object for a given user.
+ * Reads from the top-level `settings` field, falling back to legacy
+ * `state.settings` for older documents.
  * 
  * @param uid - The user's unique identifier.
  * @returns The user's AppSettings.
@@ -207,15 +187,10 @@ export async function updateUserState(
 export async function getUserSettings(uid: string): Promise<AppSettings> {
   noStore();
 
-  if (CACHE_TTL_MS > 0) {
-    const cached = getCachedState(uid);
-    if (cached) return cloneSettings(cached.settings);
-  }
-
   const snap = await getUserDoc(uid);
   if (!snap.exists) return { ...DEFAULT_SETTINGS };
 
-  return cloneSettings(resolveStoredSettings(snap.data() || {}));
+  return structuredClone(resolveSettings(snap.data() || {}));
 }
 
 /**
@@ -245,8 +220,8 @@ export async function updateUserSettings(
   const ref = userDocRef(uid);
   const nextSettings = await adminDb.runTransaction(async (tx) => {
     const snap = await tx.get(ref);
-    const current = resolveStoredSettings(snap.exists ? snap.data() : null);
-    const draft = cloneSettings(current);
+    const current = resolveSettings(snap.exists ? snap.data() : null);
+    const draft = structuredClone(current);
     const result = mutate(draft);
     const next = normalizeSettings((result || draft) as AppSettings);
 
@@ -263,8 +238,7 @@ export async function updateUserSettings(
     return next;
   });
 
-  if (CACHE_TTL_MS > 0) syncCachedSettings(uid, nextSettings);
-  return cloneSettings(nextSettings);
+  return structuredClone(nextSettings);
 }
 
 /**

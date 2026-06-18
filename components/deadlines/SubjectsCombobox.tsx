@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useMessages, useAppLocale } from "@/components/i18n/LocaleProvider";
+import { useMessages, useAppLocale } from "@/components/i18n/UserSyncProvider";
 import type { Subject, SubjectGroup } from "@/lib/schedule/types";
 import {
   getSubjectDisplayName,

@@ -4,7 +4,7 @@ import StatsCardSkeleton from "@/components/skeletons/StatsCardSkeleton";
 import StatsCard from "@/components/deadlines/StatsCard";
 import { getMessages } from "@/lib/i18n/messages";
 import { assertLocale } from "@/lib/i18n/server";
-import { getCachedUserState } from "@/lib/schedule/store";
+import { getCachedUserState, getUserSettings } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
 import { Suspense } from "react";
 import DeadlinesListSkeleton from "@/components/skeletons/DeadlinesListSkeleton";
@@ -50,8 +50,7 @@ async function StatsCards() {
   const session = await requireSession();
   const uid = session.uid;
   const state = await getCachedUserState(uid);
-  //const delay = new Promise((resolve) => setTimeout(resolve, 100000));
-  //await delay; // Artificial delay to show skeleton
+  const settings = await getUserSettings(uid);
 
   return (
     <>
@@ -60,7 +59,7 @@ async function StatsCards() {
       <StatsCard
         period="year"
         state={state}
-        useSchoolYear={state.settings.useSchoolYear}
+        useSchoolYear={settings.useSchoolYear}
       />
     </>
   );

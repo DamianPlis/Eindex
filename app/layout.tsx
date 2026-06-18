@@ -1,11 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { LocaleProvider } from "@/components/i18n/LocaleProvider";
+import { UserSyncProvider } from "@/components/i18n/UserSyncProvider";
 import PwaRegistrar from "@/components/pwa/PwaRegistrar";
 import { getMessages } from "@/lib/i18n/messages";
-import { getPreferredLocale } from "@/lib/i18n/preference";
-import { getSession } from "@/lib/session";
+import { getRequestLocale } from "@/lib/i18n/server";
 import NoScriptNotice from "@/components/layout/NoScriptNotice";
-import { getUserSettingsMaybe } from "@/lib/schedule/store";
+import { getThemeCookie } from "@/lib/settings/theme-cookie";
 import "../css/globals.css";
 
 export const metadata: Metadata = {
@@ -29,28 +28,38 @@ export const viewport: Viewport = {
   themeColor: "#ff7fbf",
 };
 
+/**
+ * Inline script that reads the eindx_theme cookie and sets data-theme
+ * on <html> before the first paint — prevents dark mode flash.
+ * ~130 bytes, runs synchronously.
+ */
+const THEME_FLASH_SCRIPT = `(function(){var m=document.cookie.match(/(?:^|;\\s*)eindx_theme=([^;]*)/);if(m&&m[1])document.documentElement.setAttribute("data-theme",m[1])})()`;
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getSession();
-  const [locale, settings] = await Promise.all([
-    getPreferredLocale(session),
-    getUserSettingsMaybe(session?.uid ?? null),
+  // Only cookie reads — no Firebase Admin, no Firestore, no network calls.
+  const [cookieTheme, locale] = await Promise.all([
+    getThemeCookie(),
+    getRequestLocale(),
   ]);
   const messages = getMessages(locale);
 
   return (
-    <html lang={locale} data-theme={settings?.theme}>
+    <html lang={locale} data-theme={cookieTheme ?? undefined} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_FLASH_SCRIPT }} />
+      </head>
       <body>
         <noscript>
           <NoScriptNotice messages={messages.noscript} />
         </noscript>
-        <LocaleProvider locale={locale} messages={messages} uid={session?.uid}>
+        <UserSyncProvider locale={locale} messages={messages}>
           <PwaRegistrar />
           {children}
-        </LocaleProvider>
+        </UserSyncProvider>
       </body>
     </html>
   );

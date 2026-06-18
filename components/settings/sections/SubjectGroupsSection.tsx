@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useMessages, useAppLocale } from "@/components/i18n/LocaleProvider";
+import { useMessages, useAppLocale } from "@/components/i18n/UserSyncProvider";
 import { useSettings } from "@/components/settings/SettingsProvider";
 import CustomSubjectGroupModal from "@/components/planning/CustomSubjectGroupModal";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";

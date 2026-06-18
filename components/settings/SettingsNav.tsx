@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMessages, useAppLocale } from "@/components/i18n/LocaleProvider";
+import { useMessages, useAppLocale } from "@/components/i18n/UserSyncProvider";
 import s from "./SettingsNav.module.css";
 import AppreanceIcon from "@/icons/palette_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import LanguageIcon from "@/icons/language_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";

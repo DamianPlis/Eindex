@@ -3,7 +3,7 @@
 import CloseIcon from "@/icons/close_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import type { ReactNode } from "react";
 import u from "@/components/ui/shared.module.css";
-import { useMessages } from "../i18n/LocaleProvider";
+import { useMessages } from "../i18n/UserSyncProvider";
 
 type ConfirmDialogProps = {
   isDestructiveAction?: boolean;

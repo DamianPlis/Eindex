@@ -1,7 +1,7 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
-import { useMessages } from "@/components/i18n/LocaleProvider";
+import { useMessages } from "@/components/i18n/UserSyncProvider";
 import { removeDeadlineAction } from "@/app/(app)/actions";
 import { useDeadlinesRefresh } from "@/components/deadlines/DeadlinesRefreshContext";
 import RemoveIcon from "@/icons/close_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";

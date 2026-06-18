@@ -1,6 +1,6 @@
 "use client";
 
-import { useMessages } from "@/components/i18n/LocaleProvider";
+import { useMessages } from "@/components/i18n/UserSyncProvider";
 import { useSettings } from "@/components/settings/SettingsProvider";
 import CustomSubjectModal from "@/components/planning/CustomSubjectModal";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";

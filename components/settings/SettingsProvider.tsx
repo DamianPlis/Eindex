@@ -19,7 +19,7 @@ import {
   updateSubjectGroupAction,
   deleteSubjectGroupAction,
 } from "@/app/(app)/actions";
-import { useMessages } from "@/components/i18n/LocaleProvider";
+import { useMessages } from "@/components/i18n/UserSyncProvider";
 import { localizePath, stripLocaleFromPath } from "@/lib/i18n/routing";
 import { applyTheme } from "@/lib/settings/client";
 import type { AppSettings, AppTheme } from "@/lib/settings/types";
