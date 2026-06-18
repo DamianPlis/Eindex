@@ -13,8 +13,8 @@ import {
   normalizeWeekKey,
 } from "@/lib/schedule/date-utils";
 
-// Re-export date utilities for backward compatibility
-export { getMonday, isoDate, normalizeWeekKey, parseRangeMinutes } from "@/lib/schedule/date-utils";
+// Re-export normalizeWeekKey for consumers that import from this module
+export { normalizeWeekKey } from "@/lib/schedule/date-utils";
 
 type SlotTemplate = {
   time: string;

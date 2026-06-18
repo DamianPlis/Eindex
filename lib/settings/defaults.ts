@@ -25,21 +25,3 @@ export function normalizeSettings(raw: unknown): AppSettings {
   };
 }
 
-export function mergeSettings(...candidates: unknown[]): AppSettings {
-  const next = { ...DEFAULT_SETTINGS };
-
-  for (const candidate of candidates) {
-    if (!isRecord(candidate)) continue;
-    if ("theme" in candidate) {
-      next.theme = normalizeTheme(candidate.theme);
-    }
-    if ("locale" in candidate) {
-      next.locale = normalizeAppLocale(candidate.locale);
-    }
-    if ("useSchoolYear" in candidate) {
-      next.useSchoolYear = candidate.useSchoolYear === true;
-    }
-  }
-
-  return next;
-}

@@ -97,13 +97,7 @@
   background: var(--card);
 }
 
-.ghostButton {
-  composes: bareBonesButton;
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--border-medium);
-  background: var(--card);
-}
+
 
 .destructiveButton {
   composes: bareBonesButton;
@@ -196,19 +190,7 @@
   border: 1px solid var(--muted);
 }
 
-.lightModeBtnActive {
-  composes: lightModeBtn;
-  color: #3b82f6;
-  border: 1px solid #3b82f6;
-  background-color: var(--primary-card-mix-10);
-}
 
-.darkModeBtnActive {
-  composes: darkModeBtn;
-  color: var(--primary);
-  background-color: var(--primary-card-mix-10);
-  border: 1px solid var(--primary);
-}
 
 /* ── Transparent button ── */
 

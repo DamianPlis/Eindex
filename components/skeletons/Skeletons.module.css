@@ -191,12 +191,6 @@
 
 /* ── Settings skeleton ── */
 
-.settingsSkeletonTitle {
-  composes: skeletonLine;
-  width: min(190px, 70%);
-  height: 26px;
-}
-
 .settingsSkeletonHeading {
   composes: skeletonLine;
   width: min(170px, 48%);

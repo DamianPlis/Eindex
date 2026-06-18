@@ -338,6 +338,24 @@ export default function PlanningPageClient({
     });
   }
 
+  function getTopicInputProps(
+    slot: Slot,
+    dayIndex: number,
+    slotIndex: number,
+  ) {
+    return {
+      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+        updateTopicLocal(slot, event.target.value),
+      onBlur: (event: React.FocusEvent<HTMLInputElement>) =>
+        commitTopic(dayIndex, slotIndex, slot, event.currentTarget.value),
+      onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter") {
+          event.currentTarget.blur();
+        }
+      },
+    };
+  }
+
   return (
     <div ref={planningRootRef} className={s.planningRoot} aria-live="polite">
       <div className={s.planningInner}>
@@ -519,22 +537,7 @@ export default function PlanningPageClient({
                                 className={u.formInput}
                                 type="text"
                                 value={topicValue}
-                                onChange={(event) =>
-                                  updateTopicLocal(slot, event.target.value)
-                                }
-                                onBlur={(event) =>
-                                  commitTopic(
-                                    dayIndex,
-                                    slotIndex,
-                                    slot,
-                                    event.currentTarget.value,
-                                  )
-                                }
-                                onKeyDown={(event) => {
-                                  if (event.key === "Enter") {
-                                    event.currentTarget.blur();
-                                  }
-                                }}
+                                {...getTopicInputProps(slot, dayIndex, slotIndex)}
                                 placeholder={messages.planning.topicOptional}
                               />
                             </>
@@ -545,22 +548,7 @@ export default function PlanningPageClient({
                               className={u.formInput}
                               type="text"
                               value={displayedFixedTopic}
-                              onChange={(event) =>
-                                updateTopicLocal(slot, event.target.value)
-                              }
-                              onBlur={(event) =>
-                                commitTopic(
-                                  dayIndex,
-                                  slotIndex,
-                                  slot,
-                                  event.currentTarget.value,
-                                )
-                              }
-                              onKeyDown={(event) => {
-                                if (event.key === "Enter") {
-                                  event.currentTarget.blur();
-                                }
-                              }}
+                              {...getTopicInputProps(slot, dayIndex, slotIndex)}
                               placeholder={`${messages.planning.topicFor} ${getFixedSlotDisplayName(slot, messages)}`}
                             />
                           ) : null}

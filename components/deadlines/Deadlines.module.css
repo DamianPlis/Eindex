@@ -87,24 +87,7 @@
   background-color: var(--bubble);
 }
 
-.deadlineItemToday {
-  composes: deadlineItem;
-  background: var(--danger-bg);
-  border: 1px solid var(--danger);
-  color: var(--danger-text);
-}
 
-.deadlineItemExpired {
-  composes: deadlineItem;
-  background: var(--warning-bg);
-  border: 1px solid var(--warning-border);
-  color: var(--warning-text);
-}
-
-.deadlineItemUpcoming {
-  composes: deadlineItem;
-  background: var(--bubble);
-}
 
 /* ── Actions ── */
 
@@ -170,11 +153,7 @@
   color: var(--done);
 }
 
-.statusPillNeutral {
-  composes: statusPill;
-  background: var(--text-soft-alpha-22);
-  color: var(--text-1);
-}
+
 
 /* ── Reminders ── */
 
@@ -197,10 +176,7 @@
   justify-content: space-between;
 }
 
-.reminderTitle {
-  font-weight: 700;
-  color: var(--text-primary);
-}
+
 
 .reminderDate {
   font-size: 12px;

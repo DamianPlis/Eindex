@@ -2,7 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════
+   Design Tokens — Light Mode (default)
+   ═══════════════════════════════════════════════════ */
+
 :root {
+  /* ── Core palette ── */
   --primary: #6b5cf6;
   --bg: hsl(222, 50%, 96%);
   --bg-dark: hsl(223, 34%, 12%);
@@ -10,16 +15,8 @@
   --muted: #6b7280;
   --bubble: hsl(210, 37%, 97%);
   --fixed: #ff7fbf;
-  --text-primary: #0f1724;
-  --text-inverse: #ffffff;
-  --text-soft: var(--muted);
-  --text-1: var(--text-primary);
-  --accent-strong: var(--primary);
-  --border-light: rgba(0, 0, 0, 0.06);
-  --border-medium: rgba(0, 0, 0, 0.12);
-  --shadow-sm: 0 6px 18px rgba(99, 102, 241, 0.12);
-  --shadow-md: 0 12px 28px rgba(2, 6, 23, 0.06);
-  --shadow-lg: 0 30px 80px rgba(2, 6, 23, 0.2);
+
+  /* ── Semantic colors ── */
   --danger: #ef4444;
   --danger-bg: #fecaca;
   --danger-text: #991b1b;
@@ -28,97 +25,140 @@
   --warning-text: #a00;
   --success: hsl(175, 77%, 26%);
   --done: hsl(120, 87%, 40%);
-  --nav-bg: #ffffff;
-  --nav-active-bg: rgba(37, 99, 235, 0.08);
+
+  /* ── Typography ── */
+  --text-primary: #0f1724;
+  --text-inverse: #ffffff;
+  --text-soft: var(--muted);
+  --text-1: var(--text-primary);
+  --accent-strong: var(--primary);
+
+  /* ── Layout ── */
   --pad: 16px;
   --radius-sm: 12px;
   --radius-md: 18px;
   --nav-space: 88px;
+  --nav-bg: #ffffff;
+  --nav-active-bg: rgba(37, 99, 235, 0.08);
 
-  /* Extracted standard color-mix variables */
-  --danger-border-glow: color-mix(in srgb, var(--danger) 28%, transparent);
-  --banner-danger-bg: color-mix(in srgb, var(--danger) 14%, var(--card));
-  --danger-shadow-glow: 0 0 0 4px color-mix(in srgb, var(--danger) 18%, transparent);
-  --primary-card-mix-10: color-mix(in srgb, var(--card) 90%, var(--primary) 10%);
-  --card-alpha-80: color-mix(in srgb, var(--card) 80%, transparent);
-  --primary-alpha-12: color-mix(in srgb, var(--primary) 12%, transparent);
-  --muted-alpha-8: color-mix(in srgb, var(--muted) 8%, transparent);
-  --primary-alpha-20: color-mix(in srgb, var(--primary) 20%, transparent);
-  --success-alpha-21: color-mix(in srgb, var(--success) 21%, transparent);
-  --danger-alpha-20: color-mix(in srgb, var(--danger) 20%, transparent);
-  --done-alpha-20: color-mix(in srgb, var(--done) 20%, transparent);
-  --text-soft-alpha-22: color-mix(in srgb, var(--text-soft) 22%, transparent);
-  --nav-track-bg: color-mix(in srgb, var(--bubble) 30%, transparent);
-  --primary-alpha-90: color-mix(in srgb, var(--primary) 90%, transparent);
+  /* ── Borders ── */
+  --border-light: rgba(0, 0, 0, 0.06);
+  --border-medium: rgba(0, 0, 0, 0.12);
 
-  --primary-alpha-8: color-mix(in srgb, var(--primary) 8%, transparent);
-  --primary-alpha-10: color-mix(in srgb, var(--primary) 10%, transparent);
-  --primary-alpha-14: color-mix(in srgb, var(--primary) 14%, transparent);
-  --primary-alpha-15: color-mix(in srgb, var(--primary) 15%, transparent);
-  --primary-alpha-18: color-mix(in srgb, var(--primary) 18%, transparent);
-  --primary-alpha-30: color-mix(in srgb, var(--primary) 30%, transparent);
-  --bubble-alpha-92: color-mix(in srgb, var(--bubble) 92%, transparent);
-  --primary-bubble-mix-18: color-mix(in srgb, var(--primary) 18%, var(--bubble));
-  --primary-border-mix-42: color-mix(in srgb, var(--primary) 42%, var(--border-light));
-  --text-primary-alpha-8: color-mix(in srgb, var(--text-primary) 8%, transparent);
-  --primary-card-mix-14: color-mix(in srgb, var(--primary) 14%, var(--card));
-  --primary-card-mix-22: color-mix(in srgb, var(--primary) 22%, var(--card));
-  --text-soft-alpha-12: color-mix(in srgb, var(--text-soft) 12%, transparent);
-  --primary-border-mix-45: color-mix(in srgb, var(--primary) 45%, var(--border-medium));
-  --primary-card-mix-15: color-mix(in srgb, var(--primary) 15%, var(--card));
-  --danger-alpha-10: color-mix(in srgb, var(--danger) 10%, transparent);
-  --danger-card-mix-10: color-mix(in srgb, var(--danger) 10%, var(--card));
-  --muted-alpha-30: color-mix(in srgb, var(--muted) 30%, transparent);
-  --success-alpha-30: color-mix(in srgb, var(--success) 30%, transparent);
-  --success-card-mix-10: color-mix(in srgb, var(--success) 10%, var(--card));
-  --danger-alpha-30: color-mix(in srgb, var(--danger) 30%, transparent);
-  --card-alpha-72: color-mix(in srgb, var(--card) 72%, transparent);
-  --primary-alpha-6: color-mix(in srgb, var(--primary) 6%, transparent);
-  --text-primary-primary-mix-80: color-mix(in srgb, var(--text-primary) 20%, var(--primary) 80%);
-  --skeleton-shimmer-start: color-mix(in srgb, var(--text-soft) 18%, transparent);
-  --skeleton-shimmer-middle: color-mix(in srgb, var(--text-soft) 34%, transparent);
-
-  /* Extracted custom box shadow variables */
+  /* ── Shadows ── */
+  --shadow-sm: 0 6px 18px rgba(99, 102, 241, 0.12);
+  --shadow-md: 0 12px 28px rgba(2, 6, 23, 0.06);
+  --shadow-lg: 0 30px 80px rgba(2, 6, 23, 0.2);
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.12);
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.2);
   --shadow-container: 0 10px 30px rgba(2, 6, 23, 0.06);
   --shadow-slot: 0 10px 28px rgba(2, 6, 23, 0.06);
   --shadow-slot-active: 0 14px 40px rgba(2, 6, 23, 0.18);
-  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.12);
-  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.2);
   --shadow-border-inset: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
   --shadow-primary-glow: 0 0 0 3px color-mix(in srgb, var(--primary) 14%, transparent);
+
+  /* ── Danger color-mix ── */
+  --danger-border-glow: color-mix(in srgb, var(--danger) 28%, transparent);
+  --banner-danger-bg: color-mix(in srgb, var(--danger) 14%, var(--card));
+  --danger-shadow-glow: 0 0 0 4px color-mix(in srgb, var(--danger) 18%, transparent);
+  --danger-alpha-10: color-mix(in srgb, var(--danger) 10%, transparent);
+  --danger-alpha-20: color-mix(in srgb, var(--danger) 20%, transparent);
+  --danger-alpha-30: color-mix(in srgb, var(--danger) 30%, transparent);
+  --danger-card-mix-10: color-mix(in srgb, var(--danger) 10%, var(--card));
+
+  /* ── Primary color-mix ── */
+  --primary-alpha-6: color-mix(in srgb, var(--primary) 6%, transparent);
+  --primary-alpha-8: color-mix(in srgb, var(--primary) 8%, transparent);
+  --primary-alpha-10: color-mix(in srgb, var(--primary) 10%, transparent);
+  --primary-alpha-12: color-mix(in srgb, var(--primary) 12%, transparent);
+  --primary-alpha-14: color-mix(in srgb, var(--primary) 14%, transparent);
+  --primary-alpha-15: color-mix(in srgb, var(--primary) 15%, transparent);
+  --primary-alpha-18: color-mix(in srgb, var(--primary) 18%, transparent);
+  --primary-alpha-20: color-mix(in srgb, var(--primary) 20%, transparent);
+  --primary-alpha-30: color-mix(in srgb, var(--primary) 30%, transparent);
+  --primary-alpha-90: color-mix(in srgb, var(--primary) 90%, transparent);
+  --primary-card-mix-10: color-mix(in srgb, var(--card) 90%, var(--primary) 10%);
+  --primary-card-mix-14: color-mix(in srgb, var(--primary) 14%, var(--card));
+  --primary-card-mix-15: color-mix(in srgb, var(--primary) 15%, var(--card));
+  --primary-card-mix-22: color-mix(in srgb, var(--primary) 22%, var(--card));
+  --primary-bubble-mix-18: color-mix(in srgb, var(--primary) 18%, var(--bubble));
+  --primary-border-mix-42: color-mix(in srgb, var(--primary) 42%, var(--border-light));
+  --primary-border-mix-45: color-mix(in srgb, var(--primary) 45%, var(--border-medium));
+
+  /* ── Success / done color-mix ── */
+  --success-alpha-21: color-mix(in srgb, var(--success) 21%, transparent);
+  --success-alpha-30: color-mix(in srgb, var(--success) 30%, transparent);
+  --success-card-mix-10: color-mix(in srgb, var(--success) 10%, var(--card));
+  --done-alpha-20: color-mix(in srgb, var(--done) 20%, transparent);
+
+  /* ── Muted / text color-mix ── */
+  --muted-alpha-8: color-mix(in srgb, var(--muted) 8%, transparent);
+  --muted-alpha-30: color-mix(in srgb, var(--muted) 30%, transparent);
+  --text-soft-alpha-12: color-mix(in srgb, var(--text-soft) 12%, transparent);
+  --text-soft-alpha-22: color-mix(in srgb, var(--text-soft) 22%, transparent);
+  --text-primary-alpha-8: color-mix(in srgb, var(--text-primary) 8%, transparent);
+  --text-primary-primary-mix-80: color-mix(in srgb, var(--text-primary) 20%, var(--primary) 80%);
+
+  /* ── Card / bubble / nav color-mix ── */
+  --card-alpha-72: color-mix(in srgb, var(--card) 72%, transparent);
+  --card-alpha-80: color-mix(in srgb, var(--card) 80%, transparent);
+  --bubble-alpha-92: color-mix(in srgb, var(--bubble) 92%, transparent);
+  --nav-track-bg: color-mix(in srgb, var(--bubble) 30%, transparent);
+
+  /* ── Skeleton shimmer ── */
+  --skeleton-shimmer-start: color-mix(in srgb, var(--text-soft) 18%, transparent);
+  --skeleton-shimmer-middle: color-mix(in srgb, var(--text-soft) 34%, transparent);
 }
+
+/* ═══════════════════════════════════════════════════
+   Design Tokens — Dark Mode
+   ═══════════════════════════════════════════════════ */
 
 [data-theme="dark"] {
   color-scheme: dark;
+
+  /* ── Core palette ── */
   --bg: var(--bg-dark);
   --card: hsl(225, 24%, 16%);
   --muted: #94a3b8;
   --bubble: hsl(224, 20%, 20%);
-  --text-primary: #f8fafc;
-  --text-soft: #94a3b8;
-  --text-1: #f8fafc;
-  --accent-strong: #c7d2fe;
-  --border-light: rgba(255, 255, 255, 0.06);
-  --border-medium: rgba(255, 255, 255, 0.12);
-  --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.28);
-  --shadow-md: 0 12px 28px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 30px 80px rgba(0, 0, 0, 0.46);
+
+  /* ── Semantic colors ── */
   --danger-bg: rgba(239, 68, 68, 0.18);
   --danger-text: #fecaca;
   --warning-bg: rgba(255, 179, 179, 0.1);
   --warning-border: rgba(255, 179, 179, 0.25);
   --warning-text: #ffdede;
+
+  /* ── Typography ── */
+  --text-primary: #f8fafc;
+  --text-soft: #94a3b8;
+  --text-1: #f8fafc;
+  --accent-strong: #c7d2fe;
+
+  /* ── Layout ── */
   --nav-bg: hsl(224, 24%, 16%);
   --nav-active-bg: rgba(107, 92, 246, 0.18);
 
-  /* Overrides for custom box shadows */
+  /* ── Borders ── */
+  --border-light: rgba(255, 255, 255, 0.06);
+  --border-medium: rgba(255, 255, 255, 0.12);
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.28);
+  --shadow-md: 0 12px 28px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 30px 80px rgba(0, 0, 0, 0.46);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.6);
   --shadow-container: 0 10px 30px rgba(0, 0, 0, 0.36);
   --shadow-slot: 0 10px 28px rgba(0, 0, 0, 0.25);
   --shadow-slot-active: 0 14px 40px rgba(0, 0, 0, 0.45);
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.6);
   --shadow-border-inset: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
+
+/* ═══════════════════════════════════════════════════
+   Base Resets
+   ═══════════════════════════════════════════════════ */
 
 * {
   box-sizing: border-box;

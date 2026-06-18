@@ -193,16 +193,7 @@ export async function getUserSettings(uid: string): Promise<AppSettings> {
   return structuredClone(resolveSettings(snap.data() || {}));
 }
 
-/**
- * Helper to retrieve user settings if UID is provided, otherwise returns null.
- * 
- * @param uid - The user's unique identifier or null.
- * @returns The user's AppSettings or null.
- */
-export async function getUserSettingsMaybe(uid: string | null): Promise<AppSettings | null> {
-  if (!uid) return null;
-  return await getUserSettings(uid);
-}
+
 
 /**
  * Updates a user's settings object inside a Firestore transaction.

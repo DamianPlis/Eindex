@@ -2,7 +2,7 @@ import "server-only";
 
 import { cookies } from "next/headers";
 import type { AppTheme } from "@/lib/settings/types";
-import { THEME_COOKIE, COOKIE_MAX_AGE } from "@/lib/settings/constants";
+import { THEME_COOKIE } from "@/lib/settings/constants";
 
 /**
  * Reads the theme preference from the request cookie.
@@ -18,7 +18,3 @@ export async function getThemeCookie(): Promise<AppTheme | null> {
   return null;
 }
 
-export const themeCookieKeys = {
-  name: THEME_COOKIE,
-  maxAge: COOKIE_MAX_AGE,
-} as const;
