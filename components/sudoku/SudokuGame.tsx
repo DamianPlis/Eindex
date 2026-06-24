@@ -3,9 +3,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { Board, Difficulty } from "@/lib/sudoku/sudoku";
 import {
-  generatePuzzle,
   cloneBoard,
   getAllCandidates,
+  generatePuzzleAsync,
 } from "@/lib/sudoku/sudoku";
 import type { AppMessages } from "@/lib/i18n/messages";
 import s from "./Sudoku.module.css";
@@ -24,34 +24,84 @@ export default function SudokuGame({ messages }: Props) {
   const [initialPuzzle, setInitialPuzzle] = useState<Board | null>(null);
   const [solution, setSolution] = useState<Board | null>(null);
   const [board, setBoard] = useState<Board | null>(null);
-  const [selectedCell, setSelectedCell] = useState<[number, number] | null>(null);
+  const [selectedCell, setSelectedCell] = useState<[number, number] | null>(
+    null,
+  );
   const [showCandidates, setShowCandidates] = useState(false);
   const [status, setStatus] = useState<GameStatus>(null);
   const [errorCells, setErrorCells] = useState<Set<string>>(new Set());
   const [seconds, setSeconds] = useState(0);
+  const [gameId, setGameId] = useState(0);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [checkingCell, setCheckingCell] = useState<[number, number] | null>(null);
+
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const activeGenRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(null);
 
   // ── New game ──
   const startNewGame = useCallback((diff: Difficulty) => {
-    const { puzzle, solution: sol } = generatePuzzle(diff);
-    setInitialPuzzle(puzzle);
-    setSolution(sol);
-    setBoard(cloneBoard(puzzle));
+    if (activeGenRef.current) {
+      cancelAnimationFrame(activeGenRef.current);
+      activeGenRef.current = null;
+    }
+
+    setIsGenerating(true);
+    setCheckingCell(null);
     setSelectedCell(null);
     setStatus(null);
     setErrorCells(new Set());
     setSeconds(0);
+
+    const gen = generatePuzzleAsync(diff);
+
+    function nextStep() {
+      const startTime = performance.now();
+      let result = gen.next();
+
+      // Batch generator steps within ~12ms to keep UI responsive and fast
+      while (!result.done && result.value.type === "progress") {
+        if (performance.now() - startTime > 12) {
+          setBoard(result.value.board);
+          setCheckingCell(result.value.checking);
+          activeGenRef.current = requestAnimationFrame(nextStep);
+          return;
+        }
+        result = gen.next();
+      }
+
+      if (result.done) {
+        setIsGenerating(false);
+        setCheckingCell(null);
+        return;
+      }
+
+      if (result.value.type === "done") {
+        setInitialPuzzle(result.value.puzzle);
+        setSolution(result.value.solution);
+        setBoard(cloneBoard(result.value.puzzle));
+        setIsGenerating(false);
+        setCheckingCell(null);
+        setGameId((id) => id + 1);
+      }
+    }
+
+    nextStep();
   }, []);
 
   // Initialize on mount
   useEffect(() => {
     startNewGame(difficulty);
+    return () => {
+      if (activeGenRef.current) {
+        cancelAnimationFrame(activeGenRef.current);
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Timer
   useEffect(() => {
-    if (status === "solved") {
+    if (status === "solved" || isGenerating || !board) {
       if (timerRef.current) clearInterval(timerRef.current);
       return;
     }
@@ -59,10 +109,11 @@ export default function SudokuGame({ messages }: Props) {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [status, board]);
+  }, [status, board, isGenerating]);
 
   // ── Input handling ──
   const handleCellClick = (r: number, c: number) => {
+    if (isGenerating) return;
     if (!initialPuzzle || initialPuzzle[r][c] !== 0) return; // can't select givens
     setSelectedCell([r, c]);
     setStatus(null);
@@ -70,6 +121,7 @@ export default function SudokuGame({ messages }: Props) {
 
   const placeNumber = useCallback(
     (num: number) => {
+      if (isGenerating) return;
       if (!board || !selectedCell || !initialPuzzle) return;
       const [r, c] = selectedCell;
       if (initialPuzzle[r][c] !== 0) return;
@@ -80,7 +132,7 @@ export default function SudokuGame({ messages }: Props) {
       setStatus(null);
       setErrorCells(new Set());
     },
-    [board, selectedCell, initialPuzzle],
+    [board, selectedCell, initialPuzzle, isGenerating],
   );
 
   const eraseCell = useCallback(() => {
@@ -90,6 +142,7 @@ export default function SudokuGame({ messages }: Props) {
   // Keyboard input
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
+      if (isGenerating) return;
       const num = parseInt(e.key, 10);
       if (num >= 1 && num <= 9) {
         placeNumber(num);
@@ -111,7 +164,7 @@ export default function SudokuGame({ messages }: Props) {
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [placeNumber, eraseCell, selectedCell, board]);
+  }, [placeNumber, eraseCell, selectedCell, board, isGenerating]);
 
   // ── Check solution ──
   const checkSolution = () => {
@@ -158,7 +211,7 @@ export default function SudokuGame({ messages }: Props) {
   const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
   const secs = String(seconds % 60).padStart(2, "0");
 
-  if (!board || !initialPuzzle) {
+  if (!board) {
     return (
       <div className={s.container}>
         <div className={s.header}>
@@ -202,19 +255,21 @@ export default function SudokuGame({ messages }: Props) {
       </div>
 
       {/* Status banner */}
-      {status === "solved" && (
-        <div className={s.statusSolved}>{t.solved}</div>
-      )}
-      {status === "error" && (
-        <div className={s.statusError}>{t.hasErrors}</div>
-      )}
+      {status === "solved" && <div className={s.statusSolved}>{t.solved}</div>}
+      {status === "error" && <div className={s.statusError}>{t.hasErrors}</div>}
 
       {/* Grid */}
       <div className={s.gridWrapper}>
-        <div className={s.grid} role="grid" aria-label="Sudoku grid">
+        <div
+          key={gameId}
+          className={s.grid}
+          role="grid"
+          aria-label="Sudoku grid"
+        >
           {board.map((row, r) =>
             row.map((val, c) => {
-              const isGiven = initialPuzzle[r][c] !== 0;
+              const isGiven = initialPuzzle ? initialPuzzle[r][c] !== 0 : val !== 0;
+              const isChecking = checkingCell?.[0] === r && checkingCell?.[1] === c;
               const isSelected =
                 selectedCell?.[0] === r && selectedCell?.[1] === c;
               const isHighlighted =
@@ -235,6 +290,7 @@ export default function SudokuGame({ messages }: Props) {
                 isHighlighted ? s.cellHighlighted : "",
                 hasError ? s.cellError : "",
                 !isGiven && val !== 0 ? s.cellUserFilled : "",
+                isChecking ? s.cellChecking : "",
               ]
                 .filter(Boolean)
                 .join(" ");
@@ -246,10 +302,20 @@ export default function SudokuGame({ messages }: Props) {
                   role="gridcell"
                   aria-label={`Row ${r + 1}, Column ${c + 1}`}
                   onClick={() => handleCellClick(r, c)}
-                  tabIndex={isGiven ? -1 : 0}
+                  tabIndex={isGiven || isGenerating ? -1 : 0}
+                  style={!isGenerating ? { animationDelay: `${(r + c) * 30}ms` } : undefined}
                 >
                   {val !== 0 ? (
-                    val
+                    isGiven && !isGenerating ? (
+                      <span
+                        className={s.givenNumber}
+                        style={{ animationDelay: `${(r + c) * 30 + 100}ms` }}
+                      >
+                        {val}
+                      </span>
+                    ) : (
+                      val
+                    )
                   ) : showCellCandidates ? (
                     <div className={s.candidates}>
                       {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
@@ -270,9 +336,7 @@ export default function SudokuGame({ messages }: Props) {
       <div className={s.candidatesToggle}>
         <button
           className={
-            showCandidates
-              ? s.candidatesToggleBtnActive
-              : s.candidatesToggleBtn
+            showCandidates ? s.candidatesToggleBtnActive : s.candidatesToggleBtn
           }
           onClick={() => setShowCandidates((v) => !v)}
         >
@@ -283,11 +347,7 @@ export default function SudokuGame({ messages }: Props) {
       {/* Number pad */}
       <div className={s.numberPad}>
         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
-          <button
-            key={n}
-            className={s.numBtn}
-            onClick={() => placeNumber(n)}
-          >
+          <button key={n} className={s.numBtn} onClick={() => placeNumber(n)}>
             {n}
           </button>
         ))}
