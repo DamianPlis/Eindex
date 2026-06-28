@@ -270,5 +270,6 @@ export const csMessages = {
     hideCandidates: "Skrýt kandidáty",
     reset: "Resetovat",
     timer: "Čas",
+    clues: "vodítek",
   },
 } satisfies typeof enMessages;

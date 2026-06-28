@@ -269,5 +269,6 @@ export const plMessages = {
     hideCandidates: "Ukryj kandydatów",
     reset: "Reset",
     timer: "Czas",
+    clues: "wskazówek",
   },
 };

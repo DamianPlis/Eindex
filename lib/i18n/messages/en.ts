@@ -267,5 +267,6 @@ export const enMessages = {
     hideCandidates: "Hide candidates",
     reset: "Reset",
     timer: "Time",
+    clues: "clues",
   },
 };

@@ -7,6 +7,7 @@ import {
   getAllCandidates,
   generatePuzzleAsync,
 } from "@/lib/sudoku/sudoku";
+import { initPool, takeFromPool } from "@/lib/sudoku/pool";
 import type { AppMessages } from "@/lib/i18n/messages";
 import s from "./Sudoku.module.css";
 
@@ -33,10 +34,17 @@ export default function SudokuGame({ messages }: Props) {
   const [seconds, setSeconds] = useState(0);
   const [gameId, setGameId] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [checkingCell, setCheckingCell] = useState<[number, number] | null>(null);
+  const [checkingCell, setCheckingCell] = useState<[number, number] | null>(
+    null,
+  );
+
+  const [genTimeMs, setGenTimeMs] = useState<number | null>(null);
+  const [genGivens, setGenGivens] = useState<number | null>(null);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const activeGenRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(null);
+  const activeGenRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(
+    null,
+  );
 
   // ── New game ──
   const startNewGame = useCallback((diff: Difficulty) => {
@@ -45,12 +53,32 @@ export default function SudokuGame({ messages }: Props) {
       activeGenRef.current = null;
     }
 
-    setIsGenerating(true);
-    setCheckingCell(null);
     setSelectedCell(null);
     setStatus(null);
     setErrorCells(new Set());
     setSeconds(0);
+    setGenTimeMs(null);
+    setGenGivens(null);
+
+    // Try the pool first — instant puzzle if available
+    const poolEntry = takeFromPool(diff);
+    if (poolEntry) {
+      console.log("taking from pool", poolEntry);
+      setInitialPuzzle(poolEntry.puzzle);
+      setSolution(poolEntry.solution);
+      setBoard(cloneBoard(poolEntry.puzzle));
+      setIsGenerating(false);
+      setCheckingCell(null);
+      setGenTimeMs(poolEntry.elapsedMs);
+      setGenGivens(poolEntry.finalGivens);
+      setGameId((id) => id + 1);
+      return;
+    }
+    console.log("not taking from pool", poolEntry);
+
+    // Pool empty — fall back to async generator with animation
+    setIsGenerating(true);
+    setCheckingCell(null);
 
     const gen = generatePuzzleAsync(diff);
 
@@ -81,6 +109,8 @@ export default function SudokuGame({ messages }: Props) {
         setBoard(cloneBoard(result.value.puzzle));
         setIsGenerating(false);
         setCheckingCell(null);
+        setGenTimeMs(result.value.elapsedMs);
+        setGenGivens(result.value.finalGivens);
         setGameId((id) => id + 1);
       }
     }
@@ -91,6 +121,7 @@ export default function SudokuGame({ messages }: Props) {
   // Initialize on mount
   useEffect(() => {
     startNewGame(difficulty);
+    initPool(); // start pre-generating puzzles in the background
     return () => {
       if (activeGenRef.current) {
         cancelAnimationFrame(activeGenRef.current);
@@ -246,12 +277,20 @@ export default function SudokuGame({ messages }: Props) {
         </div>
       </div>
 
-      {/* Timer */}
+      {/* Timer + Gen time */}
       <div className={s.timerBar}>
         <span className={s.timerLabel}>{t.timer}:</span>
         <span>
           {mins}:{secs}
         </span>
+        {genTimeMs !== null && !isGenerating && (
+          <span className={s.genTimeBadge}>
+            {genTimeMs >= 1000
+              ? `${(genTimeMs / 1000).toFixed(1)}s`
+              : `${genTimeMs}ms`}
+            {genGivens !== null && ` · ${genGivens} ${t.clues}`}
+          </span>
+        )}
       </div>
 
       {/* Status banner */}
@@ -268,8 +307,11 @@ export default function SudokuGame({ messages }: Props) {
         >
           {board.map((row, r) =>
             row.map((val, c) => {
-              const isGiven = initialPuzzle ? initialPuzzle[r][c] !== 0 : val !== 0;
-              const isChecking = checkingCell?.[0] === r && checkingCell?.[1] === c;
+              const isGiven = initialPuzzle
+                ? initialPuzzle[r][c] !== 0
+                : val !== 0;
+              const isChecking =
+                checkingCell?.[0] === r && checkingCell?.[1] === c;
               const isSelected =
                 selectedCell?.[0] === r && selectedCell?.[1] === c;
               const isHighlighted =
@@ -303,7 +345,11 @@ export default function SudokuGame({ messages }: Props) {
                   aria-label={`Row ${r + 1}, Column ${c + 1}`}
                   onClick={() => handleCellClick(r, c)}
                   tabIndex={isGiven || isGenerating ? -1 : 0}
-                  style={!isGenerating ? { animationDelay: `${(r + c) * 30}ms` } : undefined}
+                  style={
+                    !isGenerating
+                      ? { animationDelay: `${(r + c) * 30}ms` }
+                      : undefined
+                  }
                 >
                   {val !== 0 ? (
                     isGiven && !isGenerating ? (

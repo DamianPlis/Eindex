@@ -6,7 +6,12 @@
 export type Board = number[][];
 export type Difficulty = "easy" | "medium" | "hard";
 
-const GIVENS: Record<Difficulty, number> = { easy: 38, medium: 30, hard: 22 };
+export const GIVENS: Record<Difficulty, number> = {
+  easy: 38,
+  medium: 30,
+  hard: 25,
+};
+const TIME_CAP = 3000;
 
 /* ── Helpers ── */
 
@@ -23,14 +28,6 @@ function isValid(b: Board, row: number, col: number, num: number): boolean {
   for (let r = br; r < br + 3; r++)
     for (let c = bc; c < bc + 3; c++) if (b[r][c] === num) return false;
   return true;
-}
-
-/** How many valid numbers could go in this cell (0 if filled). */
-function candidateCount(b: Board, row: number, col: number): number {
-  if (b[row][col] !== 0) return 0;
-  let n = 0;
-  for (let v = 1; v <= 9; v++) if (isValid(b, row, col, v)) n++;
-  return n;
 }
 
 /* ── Solver ── */
@@ -98,57 +95,28 @@ function fillBoard(b: Board): boolean {
 }
 
 /**
- * Scores each filled cell by how safe it is to remove.
- * Cells whose value is more constrained (fewer candidates if emptied,
- * more filled neighbors) are prioritized — they're easiest to
- * re-derive so removing them rarely breaks uniqueness.
- */
-function rankCellsForRemoval(puzzle: Board): [number, number][] {
-  const cells: { r: number; c: number; score: number }[] = [];
-
-  for (let r = 0; r < 9; r++) {
-    for (let c = 0; c < 9; c++) {
-      if (puzzle[r][c] === 0) continue;
-
-      // Temporarily empty the cell to count its candidates
-      const saved = puzzle[r][c];
-      puzzle[r][c] = 0;
-      const cands = candidateCount(puzzle, r, c);
-      puzzle[r][c] = saved;
-
-      // Fewer candidates = more constrained = safer to remove
-      // Add small random jitter to break ties and add variety
-      cells.push({ r, c, score: -cands + Math.random() * 0.5 });
-    }
-  }
-
-  cells.sort((a, b) => b.score - a.score);
-  return cells.map(({ r, c }) => [r, c]);
-}
-let time = 0;
-let time2 = 0;
-/**
- * Generate a puzzle. Tries to hit the target givens count by:
- *  1. Ranking cells by removal safety (heuristic)
- *  2. Removing them one by one, checking uniqueness each time
- *  3. Re-ranking after each pass (board changed → scores changed)
- *  4. Stopping after 3 seconds no matter what
+ * Generate a puzzle (synchronous, no progress animation).
  */
 export function generatePuzzle(difficulty: Difficulty): {
   puzzle: Board;
   solution: Board;
 } {
-  time = Date.now();
   const solution: Board = Array.from({ length: 9 }, () => Array(9).fill(0));
   fillBoard(solution);
   const puzzle = cloneBoard(solution);
 
   const target = GIVENS[difficulty];
   let filled = 81;
-  const deadline = Date.now() + 3000; // 3s time cap
+  const deadline = Date.now() + TIME_CAP;
 
   for (let pass = 0; pass < 4000 && filled > target; pass++) {
-    const order = rankCellsForRemoval(puzzle);
+    //const order = rankCellsForRemoval(puzzle);
+    const order = shuffle(
+      Array.from(
+        { length: 81 },
+        (_, i) => [Math.floor(i / 9), i % 9] as [number, number],
+      ),
+    );
 
     for (const [r, c] of order) {
       if (filled <= target || Date.now() > deadline) break;
@@ -164,38 +132,113 @@ export function generatePuzzle(difficulty: Difficulty): {
       }
     }
   }
-  console.log(
-    "finished after x ms",
-    Date.now() - time,
-    "with y givens",
-    filled,
-  );
+  // console.log(
+  //   `[sudoku] ${difficulty} generated in ${Date.now() - start}ms — ${filled} givens`,
+  // );
   return { puzzle, solution };
+}
+
+/**
+ * Generate a puzzle with NO time cap — keeps going until it hits the
+ * target givens. Yields periodically so the caller can avoid blocking
+ * the main thread. Used by the background pool.
+ */
+/**
+ * Synchronous puzzle generator specifically meant to be run inside a Web Worker.
+ * It loops until it hits the target givens. Since it's off the main thread,
+ * it runs at full speed without needing to yield.
+ */
+export function generatePuzzleWorker(difficulty: Difficulty): {
+  puzzle: Board;
+  solution: Board;
+  elapsedMs: number;
+  finalGivens: number;
+} {
+  const TOTAL_START = Date.now();
+  const target = GIVENS[difficulty];
+  const ITERATION_LIMIT = 300;
+
+  while (true) {
+    const solution: Board = Array.from({ length: 9 }, () => Array(9).fill(0));
+    fillBoard(solution);
+    const puzzle = cloneBoard(solution);
+
+    let filled = 81;
+    let iterations = 0;
+
+    for (let pass = 0; pass < 10000 && filled > target; pass++) {
+      const order = shuffle(
+        Array.from(
+          { length: 81 },
+          (_, i) => [Math.floor(i / 9), i % 9] as [number, number],
+        ),
+      );
+
+      for (const [r, c] of order) {
+        if (filled <= target || iterations >= ITERATION_LIMIT) break;
+        if (puzzle[r][c] === 0) continue;
+
+        iterations++;
+
+        const saved = puzzle[r][c];
+        puzzle[r][c] = 0;
+
+        if (countSolutions(cloneBoard(puzzle)) !== 1) {
+          puzzle[r][c] = saved;
+        } else {
+          filled--;
+        }
+      }
+
+      if (iterations >= ITERATION_LIMIT) break;
+    }
+
+    if (filled <= target) {
+      const elapsed = Date.now() - TOTAL_START;
+      return { puzzle, solution, elapsedMs: elapsed, finalGivens: filled };
+    }
+
+    console.log(
+      `[sudoku worker] ${difficulty} hit iteration limit (${ITERATION_LIMIT}), restarting...`,
+    );
+  }
 }
 
 export type AsyncGenStep =
   | { type: "progress"; board: Board; checking: [number, number] | null }
-  | { type: "done"; puzzle: Board; solution: Board };
+  | {
+      type: "done";
+      puzzle: Board;
+      solution: Board;
+      elapsedMs: number;
+      finalGivens: number;
+    };
 
 /**
- * Async generator version of generatePuzzle that yields progress states.
+ * Async generator version — yields progress states so the UI can
+ * animate cell removal in real-time.
  */
 export function* generatePuzzleAsync(
   difficulty: Difficulty,
 ): Generator<AsyncGenStep, void, unknown> {
-  time2 = Date.now();
+  const start = Date.now();
   const solution: Board = Array.from({ length: 9 }, () => Array(9).fill(0));
   fillBoard(solution);
   const puzzle = cloneBoard(solution);
 
   const target = GIVENS[difficulty];
   let filled = 81;
-  const deadline = Date.now() + 7000;
+  const deadline = Date.now() + TIME_CAP;
 
   yield { type: "progress", board: cloneBoard(puzzle), checking: null };
 
   for (let pass = 0; pass < 4000 && filled > target; pass++) {
-    const order = rankCellsForRemoval(puzzle);
+    const order = shuffle(
+      Array.from(
+        { length: 81 },
+        (_, i) => [Math.floor(i / 9), i % 9] as [number, number],
+      ),
+    );
 
     for (const [r, c] of order) {
       if (filled <= target || Date.now() > deadline) break;
@@ -213,13 +256,17 @@ export function* generatePuzzleAsync(
       }
     }
   }
+  const elapsed = Date.now() - start;
   console.log(
-    "finished after x ms",
-    Date.now() - time2,
-    "with y givens",
-    filled,
+    `[sudoku] ${difficulty} async generated in ${elapsed}ms — ${filled} givens`,
   );
-  yield { type: "done", puzzle, solution };
+  yield {
+    type: "done",
+    puzzle,
+    solution,
+    elapsedMs: elapsed,
+    finalGivens: filled,
+  };
 }
 
 /* ── Candidates (used by the UI) ── */

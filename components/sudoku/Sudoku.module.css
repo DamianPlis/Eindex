@@ -439,3 +439,28 @@
   justify-content: center;
   flex-wrap: wrap;
 }
+
+/* ── Generation time badge ── */
+
+.genTimeBadge {
+  margin-left: 8px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--primary-alpha-8);
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+  animation: badgePop 350ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes badgePop {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
