@@ -198,9 +198,9 @@ export function generatePuzzleWorker(difficulty: Difficulty): {
       return { puzzle, solution, elapsedMs: elapsed, finalGivens: filled };
     }
 
-    console.log(
-      `[sudoku worker] ${difficulty} hit iteration limit (${ITERATION_LIMIT}), restarting...`,
-    );
+    // console.log(
+    //   `[sudoku worker] ${difficulty} hit iteration limit (${ITERATION_LIMIT}), restarting...`,
+    // );
   }
 }
 
@@ -257,9 +257,9 @@ export function* generatePuzzleAsync(
     }
   }
   const elapsed = Date.now() - start;
-  console.log(
-    `[sudoku] ${difficulty} async generated in ${elapsed}ms — ${filled} givens`,
-  );
+  // console.log(
+  //   `[sudoku] ${difficulty} async generated in ${elapsed}ms — ${filled} givens`,
+  // );
   yield {
     type: "done",
     puzzle,

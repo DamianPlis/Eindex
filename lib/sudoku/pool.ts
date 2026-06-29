@@ -31,10 +31,9 @@ let isGenerating = false;
 /** Take a puzzle from the pool. Returns null if empty. */
 export function takeFromPool(difficulty: Difficulty): PoolEntry | null {
   const entry = pool[difficulty].shift() ?? null;
-  console.log(performance.now(), "entry", entry);
+
   // Schedule a refill if it is needed
   if (pool[difficulty].length < POOL_SIZE) {
-    console.log(performance.now(), "refiling");
     scheduleRefill();
   }
   return entry;
@@ -55,13 +54,12 @@ export function initPool(): void {
       e: MessageEvent<PoolEntry & { difficulty: Difficulty }>,
     ) => {
       const { difficulty, puzzle, solution, elapsedMs, finalGivens } = e.data;
-      console.log(e.data);
 
       pool[difficulty].push({ puzzle, solution, elapsedMs, finalGivens });
 
-      console.log(
-        `[pool] ${difficulty}: ${pool[difficulty].length}/${POOL_SIZE} (generated in worker in ${elapsedMs}ms, ${finalGivens} givens)`,
-      );
+      // console.log(
+      //   `[pool] ${difficulty}: ${pool[difficulty].length}/${POOL_SIZE} (generated in worker in ${elapsedMs}ms, ${finalGivens} givens)`,
+      // );
 
       isGenerating = false;
       scheduleRefill();

@@ -63,7 +63,6 @@ export default function SudokuGame({ messages }: Props) {
     // Try the pool first — instant puzzle if available
     const poolEntry = takeFromPool(diff);
     if (poolEntry) {
-      console.log("taking from pool", poolEntry);
       setInitialPuzzle(poolEntry.puzzle);
       setSolution(poolEntry.solution);
       setBoard(cloneBoard(poolEntry.puzzle));
@@ -74,7 +73,6 @@ export default function SudokuGame({ messages }: Props) {
       setGameId((id) => id + 1);
       return;
     }
-    console.log("not taking from pool", poolEntry);
 
     // Pool empty — fall back to async generator with animation
     setIsGenerating(true);
@@ -355,7 +353,7 @@ export default function SudokuGame({ messages }: Props) {
                     isGiven && !isGenerating ? (
                       <span
                         className={s.givenNumber}
-                        style={{ animationDelay: `${(r + c) * 30 + 100}ms` }}
+                        style={{ animationDelay: `${(r + c) * 30 + 200}ms` }}
                       >
                         {val}
                       </span>
