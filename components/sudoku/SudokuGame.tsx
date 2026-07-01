@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 import type { Board, Difficulty } from "@/lib/sudoku/sudoku";
 import {
   cloneBoard,
@@ -9,6 +10,7 @@ import {
 } from "@/lib/sudoku/sudoku";
 import { initPool, takeFromPool } from "@/lib/sudoku/pool";
 import type { AppMessages } from "@/lib/i18n/messages";
+import { Toast } from "@/components/ui/Toast";
 import s from "./Sudoku.module.css";
 
 interface Props {
@@ -19,6 +21,7 @@ type GameStatus = "playing" | "solved" | "error" | null;
 
 export default function SudokuGame({ messages }: Props) {
   const t = messages.sudoku;
+  const router = useRouter();
 
   // ── Game state ──
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
@@ -41,6 +44,13 @@ export default function SudokuGame({ messages }: Props) {
   const [genTimeMs, setGenTimeMs] = useState<number | null>(null);
   const [genGivens, setGenGivens] = useState<number | null>(null);
 
+  // ── Error toast + shake state ──
+  const [showToast, setShowToast] = useState(false);
+  const [isShaking, setIsShaking] = useState(false);
+
+  // ── Congrats modal state ──
+  const [showModal, setShowModal] = useState(false);
+
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const activeGenRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(
     null,
@@ -59,6 +69,9 @@ export default function SudokuGame({ messages }: Props) {
     setSeconds(0);
     setGenTimeMs(null);
     setGenGivens(null);
+    setShowToast(false);
+    setIsShaking(false);
+    setShowModal(false);
 
     // Try the pool first — instant puzzle if available
     const poolEntry = takeFromPool(diff);
@@ -212,10 +225,22 @@ export default function SudokuGame({ messages }: Props) {
     }
 
     setErrorCells(errors);
+
     if (errors.size === 0 && allFilled) {
+      // ── Solved! ──
       setStatus("solved");
+      setShowModal(true);
     } else {
+      // ── Errors ──
       setStatus("error");
+
+      // Re-trigger shake and toast by resetting state briefly
+      setIsShaking(false);
+      setShowToast(false);
+      setTimeout(() => {
+        setIsShaking(true);
+        setShowToast(true);
+      }, 10);
     }
   };
 
@@ -225,6 +250,8 @@ export default function SudokuGame({ messages }: Props) {
     setBoard(cloneBoard(initialPuzzle));
     setStatus(null);
     setErrorCells(new Set());
+    setShowToast(false);
+    setIsShaking(false);
   };
 
   // ── Difficulty change ──
@@ -237,8 +264,8 @@ export default function SudokuGame({ messages }: Props) {
   const candidates = board && showCandidates ? getAllCandidates(board) : null;
 
   // ── Timer formatting ──
-  const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
-  const secs = String(seconds % 60).padStart(2, "0");
+  const fmtMins = String(Math.floor(seconds / 60)).padStart(2, "0");
+  const fmtSecs = String(seconds % 60).padStart(2, "0");
 
   if (!board) {
     return (
@@ -275,11 +302,33 @@ export default function SudokuGame({ messages }: Props) {
         </div>
       </div>
 
+      {/* Bottom actions */}
+      <div className={s.actionButtons}>
+        <button className={s.actionBtn} onClick={checkSolution}>
+          {t.check}
+        </button>
+        <button className={s.resetBtn} onClick={resetBoard}>
+          {t.reset}
+        </button>
+      </div>
+
+      {/* Candidates toggle */}
+      <div className={s.candidatesToggle}>
+        <button
+          className={
+            showCandidates ? s.candidatesToggleBtnActive : s.candidatesToggleBtn
+          }
+          onClick={() => setShowCandidates((v) => !v)}
+        >
+          {showCandidates ? t.hideCandidates : t.showCandidates}
+        </button>
+      </div>
+
       {/* Timer + Gen time */}
       <div className={s.timerBar}>
         <span className={s.timerLabel}>{t.timer}:</span>
         <span>
-          {mins}:{secs}
+          {fmtMins}:{fmtSecs}
         </span>
         {genTimeMs !== null && !isGenerating && (
           <span className={s.genTimeBadge}>
@@ -291,12 +340,11 @@ export default function SudokuGame({ messages }: Props) {
         )}
       </div>
 
-      {/* Status banner */}
-      {status === "solved" && <div className={s.statusSolved}>{t.solved}</div>}
-      {status === "error" && <div className={s.statusError}>{t.hasErrors}</div>}
-
       {/* Grid */}
-      <div className={s.gridWrapper}>
+      <div
+        className={`${s.gridWrapper} ${isShaking ? s.gridShake : ""}`}
+        onAnimationEnd={() => setIsShaking(false)}
+      >
         <div
           key={gameId}
           className={s.grid}
@@ -376,20 +424,8 @@ export default function SudokuGame({ messages }: Props) {
         </div>
       </div>
 
-      {/* Candidates toggle */}
-      <div className={s.candidatesToggle}>
-        <button
-          className={
-            showCandidates ? s.candidatesToggleBtnActive : s.candidatesToggleBtn
-          }
-          onClick={() => setShowCandidates((v) => !v)}
-        >
-          {showCandidates ? t.hideCandidates : t.showCandidates}
-        </button>
-      </div>
-
       {/* Number pad */}
-      <div className={s.numberPad}>
+      {/* <div className={s.numberPad}>
         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
           <button key={n} className={s.numBtn} onClick={() => placeNumber(n)}>
             {n}
@@ -398,23 +434,45 @@ export default function SudokuGame({ messages }: Props) {
         <button className={s.numBtnErase} onClick={eraseCell}>
           ✕
         </button>
-      </div>
+      </div> */}
 
-      {/* Bottom actions */}
-      <div className={s.bottomActions}>
-        <button
-          className={s.primaryActionBtn}
-          onClick={() => startNewGame(difficulty)}
-        >
-          {t.newGame}
-        </button>
-        <button className={s.actionBtn} onClick={checkSolution}>
-          {t.check}
-        </button>
-        <button className={s.actionBtn} onClick={resetBoard}>
-          {t.reset}
-        </button>
-      </div>
+      {/* Error toast */}
+      <Toast
+        message={t.hasErrors}
+        type="error"
+        isVisible={showToast}
+        onClose={() => setShowToast(false)}
+      />
+
+      {/* Congratulations modal */}
+      {showModal && (
+        <div className={s.modalOverlay} onClick={() => setShowModal(false)}>
+          <div className={s.modalCard} onClick={(e) => e.stopPropagation()}>
+            <div className={s.modalEmoji}>🎉</div>
+            <h3 className={s.modalTitle}>{t.congratsTitle}</h3>
+            <p className={s.modalSubtitle}>
+              {t.congratsTime} {fmtMins}:{fmtSecs} · {t[difficulty]}
+            </p>
+            <div className={s.modalActions}>
+              <button
+                className={s.modalPrimaryBtn}
+                onClick={() => {
+                  setShowModal(false);
+                  startNewGame(difficulty);
+                }}
+              >
+                {t.playAgain}
+              </button>
+              <button
+                className={s.modalSecondaryBtn}
+                onClick={() => router.push("/")}
+              >
+                {t.backToApp}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
