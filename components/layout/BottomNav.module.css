@@ -23,7 +23,7 @@
   width: min(620px, 100%);
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 4px;
   padding: 8px;
   border-radius: 999px;
   border: 1px solid var(--border-light);
@@ -43,6 +43,16 @@
   transition: all 0.2s;
   justify-content: center;
   gap: 5px;
+}
+
+.navLink {
+  flex-direction: column;
+  gap: 2px;
+}
+
+.navLabel {
+  font-size: 0.75rem;
+  line-height: 1;
 }
 
 .navLink:hover {

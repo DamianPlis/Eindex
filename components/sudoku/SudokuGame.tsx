@@ -12,6 +12,9 @@ import { initPool, takeFromPool } from "@/lib/sudoku/pool";
 import type { AppMessages } from "@/lib/i18n/messages";
 import { Toast } from "@/components/ui/Toast";
 import s from "./Sudoku.module.css";
+import EraserIcon from "@/icons/ink_eraser_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg";
+import PauseIcon from "@/icons/pause_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg";
+import ResumeIcon from "@/icons/play_arrow_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg";
 
 interface Props {
   messages: AppMessages;
@@ -48,6 +51,9 @@ export default function SudokuGame({ messages }: Props) {
   const [showToast, setShowToast] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
 
+  // ── Pause state ──
+  const [isPaused, setIsPaused] = useState(false);
+
   // ── Congrats modal state ──
   const [showModal, setShowModal] = useState(false);
 
@@ -55,6 +61,7 @@ export default function SudokuGame({ messages }: Props) {
   const activeGenRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(
     null,
   );
+  const numberPadRef = useRef<HTMLDivElement>(null);
 
   // ── New game ──
   const startNewGame = useCallback((diff: Difficulty) => {
@@ -72,6 +79,15 @@ export default function SudokuGame({ messages }: Props) {
     setShowToast(false);
     setIsShaking(false);
     setShowModal(false);
+    setIsPaused(false);
+
+    // Scroll to number pad so it's fully visible on mobile (after a short delay to allow render)
+    setTimeout(() => {
+      numberPadRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }, 150);
 
     // Try the pool first — instant puzzle if available
     const poolEntry = takeFromPool(diff);
@@ -143,7 +159,7 @@ export default function SudokuGame({ messages }: Props) {
 
   // Timer
   useEffect(() => {
-    if (status === "solved" || isGenerating || !board) {
+    if (status === "solved" || isGenerating || !board || isPaused) {
       if (timerRef.current) clearInterval(timerRef.current);
       return;
     }
@@ -151,7 +167,7 @@ export default function SudokuGame({ messages }: Props) {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [status, board, isGenerating]);
+  }, [status, board, isGenerating, isPaused]);
 
   // ── Input handling ──
   const handleCellClick = (r: number, c: number) => {
@@ -330,6 +346,18 @@ export default function SudokuGame({ messages }: Props) {
         <span>
           {fmtMins}:{fmtSecs}
         </span>
+        <button
+          onClick={() => setIsPaused(!isPaused)}
+          className={s.pauseBtn}
+          aria-label={isPaused ? t.resume : t.pause}
+          disabled={isGenerating || status === "solved"}
+        >
+          {isPaused ? (
+            <ResumeIcon width="18" height="18" fill="currentColor" />
+          ) : (
+            <PauseIcon width="18" height="18" fill="currentColor" />
+          )}
+        </button>
         {genTimeMs !== null && !isGenerating && (
           <span className={s.genTimeBadge}>
             {genTimeMs >= 1000
@@ -345,11 +373,30 @@ export default function SudokuGame({ messages }: Props) {
         className={`${s.gridWrapper} ${isShaking ? s.gridShake : ""}`}
         onAnimationEnd={() => setIsShaking(false)}
       >
+        {isPaused && (
+          <div className={s.pausedOverlay}>
+            <div className={s.pausedContent}>
+              <button
+                onClick={() => setIsPaused(false)}
+                className={s.primaryActionBtn}
+              >
+                <ResumeIcon width="48" height="48" fill="currentColor" />
+              </button>
+              <h3 className={s.pausedText}>
+                {t.paused}{" "}
+                <div className="flex items-center justify-center">
+                  <PauseIcon width="24" height="24" fill="currentColor" />
+                </div>
+              </h3>
+            </div>
+          </div>
+        )}
         <div
           key={gameId}
           className={s.grid}
           role="grid"
           aria-label="Sudoku grid"
+          style={{ visibility: isPaused ? "hidden" : "visible" }}
         >
           {board.map((row, r) =>
             row.map((val, c) => {
@@ -425,16 +472,20 @@ export default function SudokuGame({ messages }: Props) {
       </div>
 
       {/* Number pad */}
-      {/* <div className={s.numberPad}>
+      <div className={s.numberPad} ref={numberPadRef}>
         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
           <button key={n} className={s.numBtn} onClick={() => placeNumber(n)}>
             {n}
           </button>
         ))}
-        <button className={s.numBtnErase} onClick={eraseCell}>
-          ✕
+        <button
+          className={s.numBtnErase}
+          onClick={eraseCell}
+          aria-label="Erase"
+        >
+          <EraserIcon fill="currentColor" />
         </button>
-      </div> */}
+      </div>
 
       {/* Error toast */}
       <Toast

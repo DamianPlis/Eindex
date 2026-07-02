@@ -17,10 +17,17 @@ export function Toast({
   duration = 3000,
 }: ToastProps) {
   const [isExiting, setIsExiting] = useState(false);
+  const [prevIsVisible, setPrevIsVisible] = useState(isVisible);
+
+  if (isVisible !== prevIsVisible) {
+    setPrevIsVisible(isVisible);
+    if (isVisible) {
+      setIsExiting(false);
+    }
+  }
 
   useEffect(() => {
     if (isVisible) {
-      setIsExiting(false);
       const timer = setTimeout(() => {
         setIsExiting(true);
         setTimeout(onClose, 280); // Wait for exit animation
