@@ -37,7 +37,8 @@ export default function TopbarProfileMenu({
   const [isOpen, setIsOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
   const btnRef = useRef<HTMLButtonElement | null>(null);
-  const isSettingsActive = pathname === "/settings" || pathname.startsWith("/settings/");
+  const isSettingsActive =
+    pathname === "/settings" || pathname.startsWith("/settings/");
   const initials = getInitials(userLabel);
 
   useEffect(() => {
@@ -96,13 +97,25 @@ export default function TopbarProfileMenu({
           {userLabel}
         </div>
         <Link
-          className={isSettingsActive ? s.topbarProfileItemActive : s.topbarProfileItem}
+          className={
+            isSettingsActive ? s.topbarProfileItemActive : s.topbarProfileItem
+          }
           href={localizePath(locale, "/settings")}
           onClick={() => setIsOpen(false)}
         >
           {messages.settings.title}
         </Link>
-        <LogoutButton uid={uid} className={`${s.topbarProfileItem} ${u.topbarProfileLogout}`} />
+        <Link
+          className={s.topbarProfileItem}
+          href={localizePath(locale, "/sudoku")}
+          onClick={() => setIsOpen(false)}
+        >
+          Sudoku
+        </Link>
+        <LogoutButton
+          uid={uid}
+          className={`${s.topbarProfileItem} ${u.topbarProfileLogout}`}
+        />
       </div>
     </div>
   );
