@@ -278,4 +278,12 @@ export const plMessages = {
     timer: "Czas",
     clues: "wskazówek",
   },
+  mandala: {
+    title: "Mandala dla odpoczynku umysłu",
+    subtitle: "Zatrzymaj się, koloruj i relaksuj",
+    reset: "Wyczyść",
+    download: "Zapisz",
+    colors: "Kolory",
+    newGame: "Nowa mandala",
+  },
 };

@@ -112,6 +112,13 @@ export default function TopbarProfileMenu({
         >
           Sudoku
         </Link>
+        <Link
+          className={s.topbarProfileItem}
+          href={localizePath(locale, "/mandala")}
+          onClick={() => setIsOpen(false)}
+        >
+          Mandala
+        </Link>
         <LogoutButton
           uid={uid}
           className={`${s.topbarProfileItem} ${u.topbarProfileLogout}`}

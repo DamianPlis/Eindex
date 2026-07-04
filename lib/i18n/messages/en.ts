@@ -276,4 +276,12 @@ export const enMessages = {
     timer: "Time",
     clues: "clues",
   },
+  mandala: {
+    title: "Mandala to rest the mind",
+    subtitle: "Pause, color and relax",
+    reset: "Clear",
+    download: "Save",
+    colors: "Colors",
+    newGame: "New Mandala",
+  },
 };

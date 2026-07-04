@@ -279,4 +279,12 @@ export const csMessages = {
     timer: "Čas",
     clues: "vodítek",
   },
+  mandala: {
+    title: "Mandala na odpočinek mysli",
+    subtitle: "Zastav se, vybarvuj a relaxuj",
+    reset: "Vymazat",
+    download: "Uložit",
+    colors: "Barvy",
+    newGame: "Nová Mandala",
+  },
 } satisfies typeof enMessages;
