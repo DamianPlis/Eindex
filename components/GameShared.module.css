@@ -1,0 +1,111 @@
+/* ═══════════════════════════════════════════════════
+   Shared Game Styles (Sudoku & Mandala)
+   ═══════════════════════════════════════════════════ */
+
+/* ── Header ── */
+.header {
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.title {
+  margin: 0 0 4px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  background-clip: text;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-soft);
+}
+
+/* ── Actions Container ── */
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+/* ── Action Buttons ── */
+
+.actionBtn {
+  padding: 8px 14px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 160ms ease;
+  box-shadow: var(--shadow-xs);
+}
+
+.actionBtn:hover {
+  background: var(--primary-alpha-8);
+  border-color: var(--primary-alpha-30);
+  box-shadow: var(--shadow-sm);
+}
+
+.actionBtn:active {
+  transform: scale(0.97);
+}
+
+.resetBtn {
+  padding: 8px 14px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--danger);
+  cursor: pointer;
+  transition: all 160ms ease;
+  box-shadow: var(--shadow-xs);
+}
+
+.resetBtn:hover {
+  background: var(--danger-alpha-10);
+  border-color: var(--danger-alpha-30);
+  color: var(--danger);
+  box-shadow: var(--shadow-sm);
+}
+
+.resetBtn:active {
+  transform: scale(0.97);
+}
+
+/* ── Primary Game Button ── */
+
+.buttonPrimary {
+  padding: 8px 14px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+  transition: all 160ms ease;
+  box-shadow: 0 2px 8px var(--primary-alpha-30);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.buttonPrimary:hover {
+  background: var(--primary-alpha-90);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--primary-alpha-30);
+}
+
+.buttonPrimary:active {
+  transform: scale(0.97);
+}

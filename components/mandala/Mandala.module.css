@@ -6,28 +6,7 @@
   background-color: var(--bg);
 }
 
-.header {
-  padding: 16px;
-  text-align: center;
-  background: var(--nav-bg);
-  border-bottom: 1px solid var(--border-medium);
-  z-index: 10;
-  position: relative;
-  box-shadow: var(--shadow-sm);
-}
-
-.title {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.subtitle {
-  margin: 4px 0 0;
-  font-size: 0.9rem;
-  color: var(--text-soft);
-}
+/* Mandala-specific layout styles */
 
 .gameArea {
   flex: 1;
@@ -108,35 +87,15 @@
   box-shadow: var(--shadow-md);
 }
 
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 24px;
-  justify-content: center;
-}
 
-.actionBtn {
-  padding: 8px 24px;
-  border-radius: 20px;
-  border: none;
-  background: var(--primary);
-  color: var(--text-inverse);
-  font-weight: 500;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
 
-.actionBtn:hover {
-  opacity: 0.9;
-}
-
-.actionBtnSecondary {
-  background: var(--nav-bg);
-  color: var(--text-primary);
-  border: 1px solid var(--border-medium);
-}
-
-.actionBtnSecondary:hover {
-  background: var(--nav-active-bg);
+/* Eraser button: diagonal stripes to distinguish from color swatches */
+.eraserBtn {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--card),
+    var(--card) 3px,
+    var(--border-medium) 3px,
+    var(--border-medium) 6px
+  ) !important;
 }

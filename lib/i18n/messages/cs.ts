@@ -286,5 +286,6 @@ export const csMessages = {
     download: "Uložit",
     colors: "Barvy",
     newGame: "Nová Mandala",
+    eraser: "Guma",
   },
 } satisfies typeof enMessages;

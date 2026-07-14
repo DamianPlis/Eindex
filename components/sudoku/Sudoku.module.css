@@ -9,27 +9,6 @@
   margin: 0 auto;
 }
 
-/* ── Header ── */
-
-.header {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.title {
-  margin: 0 0 4px;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary);
-  background-clip: text;
-}
-
-.subtitle {
-  margin: 0;
-  font-size: 0.875rem;
-  color: var(--text-soft);
-}
-
 /* ── Controls bar ── */
 
 .controls {
@@ -78,49 +57,6 @@
   color: #fff;
 }
 
-/* ── Action buttons ── */
-
-.actionBtn {
-  padding: 8px 14px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  background: var(--card);
-  color: var(--text-primary);
-  cursor: pointer;
-  transition: all 160ms ease;
-  box-shadow: var(--shadow-xs);
-}
-
-.resetBtn {
-  composes: actionBtn;
-  /* background: var(--card); */
-  color: var(--danger);
-  /* border: 1px solid var(--danger-alpha-30); */
-}
-
-.actionBtn:hover {
-  background: var(--primary-alpha-8);
-  border-color: var(--primary-alpha-30);
-  box-shadow: var(--shadow-sm);
-}
-
-.actionBtn:active {
-  transform: scale(0.97);
-}
-
-.primaryActionBtn {
-  composes: actionBtn;
-  background: var(--primary);
-  color: #fff;
-  border-color: var(--primary);
-}
-
-.primaryActionBtn:hover {
-  background: var(--primary-alpha-90);
-  border-color: var(--primary-alpha-90);
-}
 
 /* ── Timer ── */
 

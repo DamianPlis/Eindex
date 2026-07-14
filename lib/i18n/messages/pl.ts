@@ -285,5 +285,6 @@ export const plMessages = {
     download: "Zapisz",
     colors: "Kolory",
     newGame: "Nowa mandala",
+    eraser: "Gumka",
   },
 };

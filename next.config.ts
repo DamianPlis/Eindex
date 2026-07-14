@@ -2,14 +2,15 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   experimental: {
-      serverActions: {
+    serverActions: {
       allowedOrigins: [
-        'localhost:3000',
-        'localhost:3001',
-        'https://bookish-zebra-pjwvxr4p45vv3rjxq-3000.app.github.dev',
-        'bookish-zebra-pjwvxr4p45vv3rjxq-3000.app.github.dev',
+        "localhost:3000",
+        "localhost:3001",
+        "https://bookish-zebra-pjwvxr4p45vv3rjxq-3000.app.github.dev",
+        "bookish-zebra-pjwvxr4p45vv3rjxq-3000.app.github.dev",
       ],
     },
+    inlineCss: true,
   },
   images: {
     remotePatterns: [
@@ -27,8 +28,12 @@ const nextConfig: NextConfig = {
       },
     },
   },
-  allowedDevOrigins: ['192.168.203.228','192.168.1.197', '192.168.68.103',"192.168.203.221"],
-
+  allowedDevOrigins: [
+    "192.168.203.228",
+    "192.168.1.197",
+    "192.168.68.103",
+    "192.168.203.221",
+  ],
 };
 
 export default nextConfig;

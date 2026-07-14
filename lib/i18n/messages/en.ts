@@ -283,5 +283,6 @@ export const enMessages = {
     download: "Save",
     colors: "Colors",
     newGame: "New Mandala",
+    eraser: "Eraser",
   },
 };
