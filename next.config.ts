@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  reactCompiler: true,
   experimental: {
     serverActions: {
       allowedOrigins: [
@@ -13,6 +14,7 @@ const nextConfig: NextConfig = {
     inlineCss: true,
   },
   images: {
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
         protocol: "https",
