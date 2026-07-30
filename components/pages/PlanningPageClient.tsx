@@ -9,14 +9,10 @@ import ArrowRight from "@/icons/keyboard_arrow_right_24dp_000000_FILL0_wght400_G
 import DoubleArrowLeft from "@/icons/keyboard_double_arrow_left_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import DoubleArrowRight from "@/icons/keyboard_double_arrow_right_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import { localizePath } from "@/lib/i18n/routing";
-import {
-  getFixedSlotDisplayName,
-  getSubjectDisplayName,
-} from "@/lib/schedule/labels";
 import type { DaySchedule, Slot, Subject } from "@/lib/schedule/types";
 import { getClientId } from "@/lib/sync/client-id";
 import s from "./PlanningPageClient.module.css";
-import u from "@/components/ui/shared.module.css";
+import { PlanningSlotCard } from "./PlanningSlotCard";
 
 type PlanningPageClientProps = {
   weekStart: string;
@@ -26,28 +22,6 @@ type PlanningPageClientProps = {
   days: DaySchedule[];
   subjects: Subject[];
 };
-
-function safeHexToRgb(hex: string) {
-  let h = (hex || "").trim();
-  if (h.startsWith("#")) h = h.slice(1);
-  if (h.length === 3)
-    h = h
-      .split("")
-      .map((c) => c + c)
-      .join("");
-  if (h.length !== 6) return null;
-  const n = Number.parseInt(h, 16);
-  if (Number.isNaN(n)) return null;
-  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
-}
-
-function contrastForHex(hex: string, fallback = "#000000") {
-  const rgb = safeHexToRgb(hex);
-  if (!rgb) return fallback;
-  const lum =
-    0.2126 * (rgb.r / 255) + 0.7152 * (rgb.g / 255) + 0.0722 * (rgb.b / 255);
-  return lum > 0.6 ? "#000000" : "#ffffff";
-}
 
 function getFallbackDayLabels(isoDateStr: string) {
   return {
@@ -106,6 +80,52 @@ function getWeekOffsetInDays(
     (displayedWeekDate.getTime() - currentWeekDate.getTime()) /
     millisecondsPerDay
   );
+}
+
+function computeNextSubjectOverrides(
+  current: Record<string, string | null>,
+  subjectsBySlot: Record<string, string | null>,
+  pendingUpdates: Record<string, string | null>,
+) {
+  const slotIds = Object.keys(current);
+  if (slotIds.length === 0) return current;
+
+  let changed = false;
+  const next: Record<string, string | null> = { ...current };
+
+  for (const slotId of slotIds) {
+    const hasServerSlot = Object.prototype.hasOwnProperty.call(
+      subjectsBySlot,
+      slotId,
+    );
+    if (!hasServerSlot) {
+      delete next[slotId];
+      delete pendingUpdates[slotId];
+      changed = true;
+      continue;
+    }
+
+    const serverValue = subjectsBySlot[slotId];
+    const hasPending = Object.prototype.hasOwnProperty.call(
+      pendingUpdates,
+      slotId,
+    );
+    const pendingValue = hasPending ? pendingUpdates[slotId] : null;
+
+    if (hasPending && pendingValue === serverValue) {
+      delete next[slotId];
+      delete pendingUpdates[slotId];
+      changed = true;
+      continue;
+    }
+
+    if (!hasPending) {
+      delete next[slotId];
+      changed = true;
+    }
+  }
+
+  return changed ? next : current;
 }
 
 export default function PlanningPageClient({
@@ -217,48 +237,13 @@ export default function PlanningPageClient({
     }
     lastSyncedTopicsRef.current = topics;
 
-    setSubjectOverrides((current) => {
-      const slotIds = Object.keys(current);
-      if (slotIds.length === 0) return current;
-
-      let changed = false;
-      const next: Record<string, string | null> = { ...current };
-      for (const slotId of slotIds) {
-        const hasServerSlot = Object.prototype.hasOwnProperty.call(
-          subjectsBySlot,
-          slotId,
-        );
-        if (!hasServerSlot) {
-          delete next[slotId];
-          delete pendingSubjectUpdatesRef.current[slotId];
-          changed = true;
-          continue;
-        }
-
-        const serverValue = subjectsBySlot[slotId];
-        const hasPending = Object.prototype.hasOwnProperty.call(
-          pendingSubjectUpdatesRef.current,
-          slotId,
-        );
-        const pendingValue = hasPending
-          ? pendingSubjectUpdatesRef.current[slotId]
-          : null;
-
-        if (hasPending && pendingValue === serverValue) {
-          delete next[slotId];
-          delete pendingSubjectUpdatesRef.current[slotId];
-          changed = true;
-          continue;
-        }
-
-        if (!hasPending) {
-          delete next[slotId];
-          changed = true;
-        }
-      }
-
-      return changed ? next : current;
-    });
+    setSubjectOverrides((current) =>
+      computeNextSubjectOverrides(
+        current,
+        subjectsBySlot,
+        pendingSubjectUpdatesRef.current,
+      ),
+    );
   }, [days, weekStart]);
 
   function currentSubjectValue(slot: Slot): string {
@@ -338,11 +323,7 @@ export default function PlanningPageClient({
     });
   }
 
-  function getTopicInputProps(
-    slot: Slot,
-    dayIndex: number,
-    slotIndex: number,
-  ) {
+  function getTopicInputProps(slot: Slot, dayIndex: number, slotIndex: number) {
     return {
       onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
         updateTopicLocal(slot, event.target.value),
@@ -436,12 +417,8 @@ export default function PlanningPageClient({
                 className={isActive ? s.planningDayTabActive : s.planningDayTab}
                 onClick={() => setActiveDayIndex(dayIndex)}
               >
-                <span className={s.planningDayTabName}>
-                  {labels.shortName}
-                </span>
-                <span className={s.planningDayTabDate}>
-                  {labels.shortDate}
-                </span>
+                <span className={s.planningDayTabName}>{labels.shortName}</span>
+                <span className={s.planningDayTabDate}>{labels.shortDate}</span>
               </button>
             );
           })}
@@ -464,98 +441,20 @@ export default function PlanningPageClient({
                 </header>
 
                 <div className={s.slots}>
-                  {day.slots.map((slot, slotIndex) => {
-                    const isFixed = slot.fixed;
-                    const selectedSubject =
-                      !isFixed && currentSubjectValue(slot)
-                        ? subjects.find(
-                            (subject) =>
-                              subject.id === currentSubjectValue(slot),
-                          ) || null
-                        : null;
-                    const slotBackground = isFixed
-                      ? "#ff7fbf"
-                      : selectedSubject?.color || null;
-                    const slotStyle = slotBackground
-                      ? {
-                          background: slotBackground,
-                          color: contrastForHex(slotBackground, "#000000"),
-                        }
-                      : undefined;
-                    const slotTitle = isFixed
-                      ? getFixedSlotDisplayName(slot, messages)
-                      : getSubjectDisplayName(selectedSubject, messages) || "-";
-                    const topicValue = currentTopicValue(slot);
-                    const isFixedTopicSameAsLabel =
-                      isFixed &&
-                      Boolean(topicValue) &&
-                      Boolean(slot.fixedLabel) &&
-                      topicValue.trim().toLowerCase() ===
-                        slot.fixedLabel.trim().toLowerCase();
-                    const displayedFixedTopic = isFixedTopicSameAsLabel
-                      ? ""
-                      : topicValue;
-
-                    return (
-                      <div
-                        key={slot.id}
-                        className={s.slotCard}
-                        style={slotStyle}
-                      >
-                        <div className={s.slotTop}>
-                          <div className={s.slotTitle}>{slotTitle}</div>
-                          <div className={s.slotTime}>{slot.time}</div>
-                        </div>
-
-                        <div className={s.slotBody}>
-                          {!isFixed ? (
-                            <>
-                              <select
-                                className={u.formInput}
-                                value={currentSubjectValue(slot)}
-                                onChange={(event) => {
-                                  const value = event.target.value;
-                                  updateSubject(
-                                    dayIndex,
-                                    slotIndex,
-                                    slot,
-                                    value || null,
-                                  );
-                                }}
-                              >
-                                <option value="">
-                                  - {messages.planning.selectSubject} -
-                                </option>
-                                {subjects.map((subject) => (
-                                  <option key={subject.id} value={subject.id}>
-                                    {getSubjectDisplayName(subject, messages)}
-                                  </option>
-                                ))}
-                              </select>
-
-                              <input
-                                className={u.formInput}
-                                type="text"
-                                value={topicValue}
-                                {...getTopicInputProps(slot, dayIndex, slotIndex)}
-                                placeholder={messages.planning.topicOptional}
-                              />
-                            </>
-                          ) : null}
-
-                          {isFixed && slot.allowTopic ? (
-                            <input
-                              className={u.formInput}
-                              type="text"
-                              value={displayedFixedTopic}
-                              {...getTopicInputProps(slot, dayIndex, slotIndex)}
-                              placeholder={`${messages.planning.topicFor} ${getFixedSlotDisplayName(slot, messages)}`}
-                            />
-                          ) : null}
-                        </div>
-                      </div>
-                    );
-                  })}
+                  {day.slots.map((slot, slotIndex) => (
+                    <PlanningSlotCard
+                      key={slot.id}
+                      slot={slot}
+                      dayIndex={dayIndex}
+                      slotIndex={slotIndex}
+                      subjects={subjects}
+                      messages={messages}
+                      currentSubjectValue={currentSubjectValue(slot)}
+                      currentTopicValue={currentTopicValue(slot)}
+                      updateSubject={updateSubject}
+                      getTopicInputProps={getTopicInputProps}
+                    />
+                  ))}
                 </div>
               </div>
             </article>

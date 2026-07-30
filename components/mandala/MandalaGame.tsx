@@ -56,7 +56,18 @@ interface ViewTransform {
   panY: number;
 }
 
-type Props = { messages: any };
+type Props = {
+  messages: {
+    mandala: {
+      title: string;
+      subtitle: string;
+      newGame: string;
+      reset: string;
+      colors: string;
+      eraser?: string;
+    };
+  };
+};
 
 // ── Helpers ────────────────────────────────────────
 
@@ -311,11 +322,17 @@ function buildRegions(config: MandalaConfig): ClickableRegion[] {
 
 // ── Pinch-to-zoom / pan helpers ────────────────────
 
-function getTouchDistance(t1: { clientX: number; clientY: number }, t2: { clientX: number; clientY: number }): number {
+function getTouchDistance(
+  t1: { clientX: number; clientY: number },
+  t2: { clientX: number; clientY: number },
+): number {
   return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
 }
 
-function getTouchCenter(t1: { clientX: number; clientY: number }, t2: { clientX: number; clientY: number }): { x: number; y: number } {
+function getTouchCenter(
+  t1: { clientX: number; clientY: number },
+  t2: { clientX: number; clientY: number },
+): { x: number; y: number } {
   return { x: (t1.clientX + t2.clientX) / 2, y: (t1.clientY + t2.clientY) / 2 };
 }
 
@@ -325,8 +342,36 @@ export default function MandalaGame({ messages }: Props) {
   const t = messages.mandala;
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [config, setConfig] = useState<MandalaConfig | null>(null);
-  const [coloredPaths, setColoredPaths] = useState<Record<string, string>>({});
+  const [config, setConfig] = useState<MandalaConfig | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const savedCfg = localStorage.getItem("eindex-mandala-config");
+      if (savedCfg) {
+        const parsed = JSON.parse(savedCfg);
+        if (
+          parsed &&
+          Array.isArray(parsed.rings) &&
+          parsed.symmetry &&
+          parsed.centerR
+        ) {
+          return parsed;
+        }
+      }
+    } catch {}
+    return generateConfig();
+  });
+
+  const [coloredPaths, setColoredPaths] = useState<Record<string, string>>(
+    () => {
+      if (typeof window === "undefined") return {};
+      try {
+        const savedClr = localStorage.getItem("eindex-mandala-colors");
+        if (savedClr) return JSON.parse(savedClr);
+      } catch {}
+      return {};
+    },
+  );
+
   const [selectedColor, setSelectedColor] = useState(PALETTE[0]);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -351,29 +396,9 @@ export default function MandalaGame({ messages }: Props) {
     didMove: boolean;
   } | null>(null);
 
-  // Load from localStorage on mount
+  // Set loaded on mount
   useEffect(() => {
-    try {
-      const savedCfg = localStorage.getItem("eindex-mandala-config");
-      const savedClr = localStorage.getItem("eindex-mandala-colors");
-
-      let cfg: MandalaConfig | null = null;
-      if (savedCfg) {
-        const parsed = JSON.parse(savedCfg);
-        if (
-          parsed &&
-          Array.isArray(parsed.rings) &&
-          parsed.symmetry &&
-          parsed.centerR
-        ) {
-          cfg = parsed;
-        }
-      }
-      setConfig(cfg ?? generateConfig());
-      if (savedClr) setColoredPaths(JSON.parse(savedClr));
-    } catch {
-      setConfig(generateConfig());
-    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoaded(true);
   }, []);
 
@@ -453,7 +478,16 @@ export default function MandalaGame({ messages }: Props) {
     }
 
     ctx.restore();
-  }, [config, regions, coloredPaths, getBaseScale, view]);
+  }, [
+    config,
+    regions,
+    coloredPaths,
+    getBaseScale,
+    view.zoom,
+    view.panX,
+    view.panY,
+    isLoaded,
+  ]);
 
   useEffect(() => {
     draw();
@@ -478,7 +512,7 @@ export default function MandalaGame({ messages }: Props) {
 
       return { x: ptX, y: ptY };
     },
-    [config, getBaseScale, view],
+    [config, getBaseScale, view.zoom, view.panX, view.panY],
   );
 
   // Handle click / tap on a shape
@@ -558,7 +592,7 @@ export default function MandalaGame({ messages }: Props) {
         };
       }
     },
-    [view],
+    [view.zoom, view.panX, view.panY],
   );
 
   const handleTouchMove = useCallback(
@@ -647,7 +681,7 @@ export default function MandalaGame({ messages }: Props) {
 
     canvas.addEventListener("wheel", handleWheel, { passive: false });
     return () => canvas.removeEventListener("wheel", handleWheel);
-  }, []);
+  }, [isLoaded]);
 
   const handleReset = () => {
     setColoredPaths({});
