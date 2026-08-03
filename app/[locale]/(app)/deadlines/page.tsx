@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import AddDeadline from "@/components/deadlines/AddDeadline";
 import DeadlinesList from "@/components/deadlines/DeadlinesList";
 import StatsCardSkeleton from "@/components/skeletons/StatsCardSkeleton";
@@ -10,6 +11,17 @@ import { Suspense } from "react";
 import DeadlinesListSkeleton from "@/components/skeletons/DeadlinesListSkeleton";
 import { DeadlinesRefreshProvider } from "@/components/deadlines/DeadlinesRefreshContext";
 import d from "@/components/deadlines/Deadlines.module.css";
+import { generatePageMetadata } from "@/lib/metadata";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  assertLocale(locale);
+  return generatePageMetadata({ page: "deadlines", locale, path: "/deadlines" });
+}
 
 export default async function LocaleDeadlinesPage({
   params,

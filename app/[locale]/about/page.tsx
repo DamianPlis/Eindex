@@ -10,20 +10,16 @@ import RestaurantIcon from "@/icons/restaurant_24dp_999999_FILL0_wght400_GRAD0_o
 import SyncIcon from "@/icons/sync_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import s from "./page.module.css";
 import u from "@/components/ui/shared.module.css";
+import { generatePageMetadata } from "@/lib/metadata";
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  const resolvedParams = await params;
-  assertLocale(resolvedParams.locale);
-  const locale = normalizeAppLocale(resolvedParams.locale);
-  const messages = getMessages(locale);
-  return {
-    title: `${messages.about.title} | Eindex`,
-    description: messages.about.description,
-  };
+  const { locale } = await params;
+  assertLocale(locale);
+  return generatePageMetadata({ page: "about", locale, path: "/about" });
 }
 
 export default async function LocaleAboutPage({

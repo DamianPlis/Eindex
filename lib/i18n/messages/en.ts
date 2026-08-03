@@ -170,7 +170,7 @@ export const enMessages = {
   noscript: {
     eyebrow: "JavaScript Required",
     title: "This app needs JavaScript turned on.",
-    copy: "Eindx uses JavaScript for login, navigation, local storage, and live schedule updates. Turn JavaScript back on in your browser settings, then reload this page.",
+    copy: "Eindex uses JavaScript for login, navigation, local storage, and live schedule updates. Turn JavaScript back on in your browser settings, then reload this page.",
     note: "If JavaScript is already enabled, a privacy extension or browser policy may be blocking scripts for this site.",
     linksTitle: "Optional help links",
     linksCopy:

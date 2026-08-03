@@ -64,7 +64,7 @@ export default function LanguageSection() {
             return (
               <button
                 key={option.locale}
-                className={`${isActive ? s.languageButtonActive : null}${s.languageButton} ${
+                className={`${isActive ? s.languageButtonActive : null} ${s.languageButton} ${
                   isPending && pendingAction === "locale" ? "pending" : ""
                 }`}
                 type="button"

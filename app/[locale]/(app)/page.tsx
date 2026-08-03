@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import StatusPill from "@/components/deadlines/StatusPill";
 import SlotBubble from "@/components/layout/SlotBubble";
@@ -25,6 +26,17 @@ import ScheduleListSkeleton from "@/components/skeletons/ScheduleListSkeleton";
 import a from "@/components/layout/AppShell.module.css";
 import d from "@/components/deadlines/Deadlines.module.css";
 import u from "@/components/ui/shared.module.css";
+import { generatePageMetadata } from "@/lib/metadata";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  assertLocale(locale);
+  return generatePageMetadata({ page: "home", locale });
+}
 
 export default async function LocaleMainPage({
   params,

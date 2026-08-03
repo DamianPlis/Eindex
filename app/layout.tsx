@@ -5,21 +5,10 @@ import { getMessages } from "@/lib/i18n/messages";
 import { getRequestLocale } from "@/lib/i18n/server";
 import NoScriptNotice from "@/components/layout/NoScriptNotice";
 import { getThemeCookie } from "@/lib/settings/theme-cookie";
+import { getRootMetadata } from "@/lib/metadata";
 import "../css/globals.css";
 
-export const metadata: Metadata = {
-  title: "Eindex",
-  description: "Server-first Next.js school planning app",
-  manifest: "/manifest.webmanifest",
-  appleWebApp: {
-    capable: true,
-    title: "Eindex",
-    statusBarStyle: "default",
-  },
-  formatDetection: {
-    telephone: false,
-  },
-};
+export const metadata: Metadata = getRootMetadata();
 
 export const viewport: Viewport = {
   width: "device-width",

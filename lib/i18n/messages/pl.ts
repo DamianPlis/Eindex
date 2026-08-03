@@ -172,7 +172,7 @@ export const plMessages = {
   noscript: {
     eyebrow: "Wymagany JavaScript",
     title: "Ta aplikacja wymaga włączonego języka JavaScript.",
-    copy: "Eindx używa JavaScript do logowania, nawigacji, pamięci lokalnej i aktualizacji planu na żywo. Włącz JavaScript w ustawieniach przeglądarki, a następnie odśwież tę stronę.",
+    copy: "Eindex używa JavaScript do logowania, nawigacji, pamięci lokalnej i aktualizacji planu na żywo. Włącz JavaScript w ustawieniach przeglądarki, a następnie odśwież tę stronę.",
     note: "Jeśli JavaScript jest już włączony, rozszerzenie dbające o prywatność lub polityka przeglądarki może blokować skrypty na tej stronie.",
     linksTitle: "Opcjonalne linki pomocy",
     linksCopy:

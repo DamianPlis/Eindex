@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import PlanningPageClient from "@/components/pages/PlanningPageClient";
 import { buildDaysForWeek, normalizeWeekKey } from "@/lib/schedule/defaults";
 import { getUserState } from "@/lib/schedule/store";
@@ -5,6 +6,17 @@ import { requireSession } from "@/lib/session";
 import { assertLocale } from "@/lib/i18n/server";
 import { Suspense } from "react";
 import PlanningPageSkeleton from "@/components/skeletons/PlanningPageSkeleton";
+import { generatePageMetadata } from "@/lib/metadata";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  assertLocale(locale);
+  return generatePageMetadata({ page: "planning", locale, path: "/planning" });
+}
 
 function shiftWeek(weekISO: string, deltaWeeks: number) {
   const date = new Date(weekISO);

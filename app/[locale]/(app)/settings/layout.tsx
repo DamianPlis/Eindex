@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { SettingsRefreshProvider } from "@/components/settings/SettingsRefreshContext";
 import SettingsProvider from "@/components/settings/SettingsProvider";
 import SettingsNav from "@/components/settings/SettingsNav";
@@ -7,6 +8,17 @@ import { getUserSettings, getUserState } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
 import { Suspense } from "react";
 import s from "@/components/settings/settings.module.css";
+import { generatePageMetadata } from "@/lib/metadata";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  assertLocale(locale);
+  return generatePageMetadata({ page: "settings", locale, path: "/settings" });
+}
 
 export default async function SettingsLayout({
   children,

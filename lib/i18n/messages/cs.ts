@@ -173,7 +173,7 @@ export const csMessages = {
   noscript: {
     eyebrow: "Je vyžadován JavaScript",
     title: "Tato aplikace potřebuje zapnutý JavaScript.",
-    copy: "Eindx používá JavaScript pro přihlášení, navigaci, lokální úložiště a živé aktualizace rozvrhu. Zapněte JavaScript v nastavení prohlížeče a potom tuto stránku obnovte.",
+    copy: "Eindex používá JavaScript pro přihlášení, navigaci, lokální úložiště a živé aktualizace rozvrhu. Zapněte JavaScript v nastavení prohlížeče a potom tuto stránku obnovte.",
     note: "Pokud už je JavaScript zapnutý, může skripty pro tento web blokovat rozšíření pro soukromí nebo zásada prohlížeče.",
     linksTitle: "Volitelné odkazy na pomoc",
     linksCopy:

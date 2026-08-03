@@ -16,7 +16,7 @@ try {
   const messaging = firebase.messaging();
 
   messaging.onBackgroundMessage((payload) => {
-    const title = payload.notification?.title || "Eindx";
+    const title = payload.notification?.title || "Eindex";
     const options = {
       body: payload.notification?.body || "",
       icon: payload.notification?.icon || "/favicon.ico",

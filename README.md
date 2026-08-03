@@ -1,6 +1,6 @@
-# Eindx
+# Eindex
 
-**A server-first Next.js school planning application** built with React 19, Firebase, and internationalization support. Eindx helps students track their weekly schedule, manage homework deadlines, and view school lunch menus — all synced across devices in real-time.
+**A server-first Next.js school planning application** built with React 19, Firebase, and internationalization support. Eindex helps students track their weekly schedule, manage homework deadlines, and view school lunch menus — all synced across devices in real-time.
 
 ---
 

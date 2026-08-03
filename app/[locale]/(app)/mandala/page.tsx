@@ -1,7 +1,19 @@
+import type { Metadata } from "next";
 import { assertLocale } from "@/lib/i18n/server";
 import { getMessages } from "@/lib/i18n/messages";
 import { requireSession } from "@/lib/session";
 import MandalaGame from "@/components/mandala/MandalaGame";
+import { generatePageMetadata } from "@/lib/metadata";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  assertLocale(locale);
+  return generatePageMetadata({ page: "mandala", locale, path: "/mandala" });
+}
 
 export default async function MandalaPage({
   params,
@@ -14,3 +26,4 @@ export default async function MandalaPage({
 
   return <MandalaGame messages={messages} />;
 }
+
