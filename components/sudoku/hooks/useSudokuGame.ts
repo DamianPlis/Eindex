@@ -4,105 +4,131 @@ import {
   cloneBoard,
   getAllCandidates,
   generatePuzzleAsync,
+  validateBoard,
 } from "@/lib/sudoku/sudoku";
 import { initPool, takeFromPool } from "@/lib/sudoku/pool";
+import { useKeyboardNavigation } from "./useKeyboardNavigation";
+import { useGameTimer } from "./useGameTimer";
 
-export type GameStatus = "playing" | "solved" | "error" | null;
+type GameStatus = "playing" | "solved" | "error" | null;
+
+type FeedbackState = { toast: boolean; shaking: boolean; modal: boolean };
+
+const FEEDBACK_CLEAR: FeedbackState = {
+  toast: false,
+  shaking: false,
+  modal: false,
+};
 
 export function useSudokuGame() {
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [initialPuzzle, setInitialPuzzle] = useState<Board | null>(null);
   const [solution, setSolution] = useState<Board | null>(null);
   const [board, setBoard] = useState<Board | null>(null);
-  const [selectedCell, setSelectedCell] = useState<[number, number] | null>(null);
+  const [selectedCell, setSelectedCell] = useState<[number, number] | null>(
+    null,
+  );
   const [showCandidates, setShowCandidates] = useState(false);
   const [status, setStatus] = useState<GameStatus>(null);
   const [errorCells, setErrorCells] = useState<Set<string>>(new Set());
-  const [seconds, setSeconds] = useState(0);
   const [gameId, setGameId] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [checkingCell, setCheckingCell] = useState<[number, number] | null>(null);
+  const [checkingCell, setCheckingCell] = useState<[number, number] | null>(
+    null,
+  );
 
   const [genTimeMs, setGenTimeMs] = useState<number | null>(null);
   const [genGivens, setGenGivens] = useState<number | null>(null);
 
-  const [showToast, setShowToast] = useState(false);
-  const [isShaking, setIsShaking] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [feedback, setFeedback] = useState<FeedbackState>(FEEDBACK_CLEAR);
 
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const activeGenRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(null);
+  const activeGenRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(
+    null,
+  );
 
-  const startNewGame = useCallback((diff: Difficulty) => {
-    if (activeGenRef.current) {
-      cancelAnimationFrame(activeGenRef.current);
-      activeGenRef.current = null;
-    }
+  /* ── Timer ── */
 
-    setSelectedCell(null);
-    setStatus(null);
-    setErrorCells(new Set());
-    setSeconds(0);
-    setGenTimeMs(null);
-    setGenGivens(null);
-    setShowToast(false);
-    setIsShaking(false);
-    setShowModal(false);
-    setIsPaused(false);
+  const timerShouldRun =
+    status !== "solved" && !isGenerating && board !== null;
+  const { seconds, isPaused, setIsPaused, togglePause, resetTimer } =
+    useGameTimer({ shouldRun: timerShouldRun });
 
-    const poolEntry = takeFromPool(diff);
-    if (poolEntry) {
-      setInitialPuzzle(poolEntry.puzzle);
-      setSolution(poolEntry.solution);
-      setBoard(cloneBoard(poolEntry.puzzle));
+  /* ── Game generation ── */
+
+  const applyPuzzle = useCallback(
+    (entry: {
+      puzzle: Board;
+      solution: Board;
+      elapsedMs: number;
+      finalGivens: number;
+    }) => {
+      setInitialPuzzle(entry.puzzle);
+      setSolution(entry.solution);
+      setBoard(cloneBoard(entry.puzzle));
       setIsGenerating(false);
       setCheckingCell(null);
-      setGenTimeMs(poolEntry.elapsedMs);
-      setGenGivens(poolEntry.finalGivens);
+      setGenTimeMs(entry.elapsedMs);
+      setGenGivens(entry.finalGivens);
       setGameId((id) => id + 1);
-      return;
-    }
+    },
+    [],
+  );
 
-    setIsGenerating(true);
-    setCheckingCell(null);
-
-    const gen = generatePuzzleAsync(diff);
-
-    function nextStep() {
-      const startTime = performance.now();
-      let result = gen.next();
-
-      while (!result.done && result.value.type === "progress") {
-        if (performance.now() - startTime > 12) {
-          setBoard(result.value.board);
-          setCheckingCell(result.value.checking);
-          activeGenRef.current = requestAnimationFrame(nextStep);
-          return;
-        }
-        result = gen.next();
+  const startNewGame = useCallback(
+    (diff: Difficulty) => {
+      if (activeGenRef.current) {
+        cancelAnimationFrame(activeGenRef.current);
+        activeGenRef.current = null;
       }
 
-      if (result.done) {
-        setIsGenerating(false);
-        setCheckingCell(null);
+      setSelectedCell(null);
+      setStatus(null);
+      setErrorCells(new Set());
+      setGenTimeMs(null);
+      setGenGivens(null);
+      setFeedback(FEEDBACK_CLEAR);
+      resetTimer();
+
+      const poolEntry = takeFromPool(diff);
+      if (poolEntry) {
+        applyPuzzle(poolEntry);
         return;
       }
 
-      if (result.value.type === "done") {
-        setInitialPuzzle(result.value.puzzle);
-        setSolution(result.value.solution);
-        setBoard(cloneBoard(result.value.puzzle));
-        setIsGenerating(false);
-        setCheckingCell(null);
-        setGenTimeMs(result.value.elapsedMs);
-        setGenGivens(result.value.finalGivens);
-        setGameId((id) => id + 1);
-      }
-    }
+      setIsGenerating(true);
+      setCheckingCell(null);
 
-    nextStep();
-  }, []);
+      const gen = generatePuzzleAsync(diff);
+
+      function nextStep() {
+        const startTime = performance.now();
+        let result = gen.next();
+
+        while (!result.done && result.value.type === "progress") {
+          if (performance.now() - startTime > 12) {
+            setBoard(result.value.board);
+            setCheckingCell(result.value.checking);
+            activeGenRef.current = requestAnimationFrame(nextStep);
+            return;
+          }
+          result = gen.next();
+        }
+
+        if (result.done) {
+          setIsGenerating(false);
+          setCheckingCell(null);
+          return;
+        }
+
+        if (result.value.type === "done") {
+          applyPuzzle(result.value);
+        }
+      }
+
+      nextStep();
+    },
+    [applyPuzzle, resetTimer],
+  );
 
   useEffect(() => {
     startNewGame(difficulty);
@@ -115,23 +141,17 @@ export function useSudokuGame() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (status === "solved" || isGenerating || !board || isPaused) {
-      if (timerRef.current) clearInterval(timerRef.current);
-      return;
-    }
-    timerRef.current = setInterval(() => setSeconds((s) => s + 1), 1000);
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [status, board, isGenerating, isPaused]);
+  /* ── Cell interactions ── */
 
-  const handleCellClick = useCallback((r: number, c: number) => {
-    if (isGenerating) return;
-    if (!initialPuzzle || initialPuzzle[r][c] !== 0) return;
-    setSelectedCell([r, c]);
-    setStatus(null);
-  }, [initialPuzzle, isGenerating]);
+  const handleCellClick = useCallback(
+    (r: number, c: number) => {
+      if (isGenerating) return;
+      if (!initialPuzzle || initialPuzzle[r][c] !== 0) return;
+      setSelectedCell([r, c]);
+      setStatus(null);
+    },
+    [initialPuzzle, isGenerating],
+  );
 
   const placeNumber = useCallback(
     (num: number) => {
@@ -153,58 +173,33 @@ export function useSudokuGame() {
     placeNumber(0);
   }, [placeNumber]);
 
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (isGenerating) return;
-      const num = parseInt(e.key, 10);
-      if (num >= 1 && num <= 9) {
-        placeNumber(num);
-      } else if (e.key === "Backspace" || e.key === "Delete" || e.key === "0") {
-        eraseCell();
-      } else if (e.key === "Escape") {
-        setSelectedCell(null);
-      } else if (selectedCell && board) {
-        let [r, c] = selectedCell;
-        if (e.key === "ArrowUp" && r > 0) r--;
-        else if (e.key === "ArrowDown" && r < 8) r++;
-        else if (e.key === "ArrowLeft" && c > 0) c--;
-        else if (e.key === "ArrowRight" && c < 8) c++;
-        else return;
-        e.preventDefault();
-        setSelectedCell([r, c]);
-      }
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [placeNumber, eraseCell, selectedCell, board, isGenerating]);
+  /* ── Keyboard ── */
+
+  useKeyboardNavigation({
+    placeNumber,
+    eraseCell,
+    selectedCell,
+    setSelectedCell,
+    board,
+    isGenerating,
+  });
+
+  /* ── Check & reset ── */
 
   const checkSolution = useCallback(() => {
     if (!board || !solution) return;
-    const errors = new Set<string>();
-    let allFilled = true;
 
-    for (let r = 0; r < 9; r++) {
-      for (let c = 0; c < 9; c++) {
-        if (board[r][c] === 0) {
-          allFilled = false;
-        } else if (board[r][c] !== solution[r][c]) {
-          errors.add(`${r}-${c}`);
-        }
-      }
-    }
-
+    const { errors, allFilled } = validateBoard(board, solution);
     setErrorCells(errors);
 
     if (errors.size === 0 && allFilled) {
       setStatus("solved");
-      setShowModal(true);
+      setFeedback({ toast: false, shaking: false, modal: true });
     } else {
       setStatus("error");
-      setIsShaking(false);
-      setShowToast(false);
+      setFeedback(FEEDBACK_CLEAR);
       setTimeout(() => {
-        setIsShaking(true);
-        setShowToast(true);
+        setFeedback({ toast: true, shaking: true, modal: false });
       }, 10);
     }
   }, [board, solution]);
@@ -214,18 +209,18 @@ export function useSudokuGame() {
     setBoard(cloneBoard(initialPuzzle));
     setStatus(null);
     setErrorCells(new Set());
-    setShowToast(false);
-    setIsShaking(false);
+    setFeedback(FEEDBACK_CLEAR);
   }, [initialPuzzle]);
 
-  const changeDifficulty = useCallback((diff: Difficulty) => {
-    setDifficulty(diff);
-    startNewGame(diff);
-  }, [startNewGame]);
+  const changeDifficulty = useCallback(
+    (diff: Difficulty) => {
+      setDifficulty(diff);
+      startNewGame(diff);
+    },
+    [startNewGame],
+  );
 
-  const togglePause = useCallback(() => {
-    setIsPaused((p) => !p);
-  }, []);
+  /* ── Derived ── */
 
   const candidates = board && showCandidates ? getAllCandidates(board) : null;
 
@@ -244,15 +239,11 @@ export function useSudokuGame() {
     checkingCell,
     genTimeMs,
     genGivens,
-    showToast,
-    setShowToast,
-    isShaking,
-    setIsShaking,
+    feedback,
+    setFeedback,
     isPaused,
     setIsPaused,
     togglePause,
-    showModal,
-    setShowModal,
     handleCellClick,
     placeNumber,
     eraseCell,

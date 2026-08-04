@@ -6,7 +6,7 @@
 export type Board = number[][];
 export type Difficulty = "easy" | "medium" | "hard";
 
-export const GIVENS: Record<Difficulty, number> = {
+const GIVENS: Record<Difficulty, number> = {
   easy: 38,
   medium: 30,
   hard: 25,
@@ -32,7 +32,7 @@ function isValid(b: Board, row: number, col: number, num: number): boolean {
 
 /* ── Solver ── */
 
-export function solve(board: Board): boolean {
+function solve(board: Board): boolean {
   for (let r = 0; r < 9; r++) {
     for (let c = 0; c < 9; c++) {
       if (board[r][c] !== 0) continue;
@@ -103,43 +103,6 @@ function tryRemoveCell(puzzle: Board, r: number, c: number): boolean {
     return false;
   }
   return true;
-}
-
-/**
- * Generate a puzzle (synchronous, no progress animation).
- */
-export function generatePuzzle(difficulty: Difficulty): {
-  puzzle: Board;
-  solution: Board;
-} {
-  const solution: Board = Array.from({ length: 9 }, () => Array(9).fill(0));
-  fillBoard(solution);
-  const puzzle = cloneBoard(solution);
-
-  const target = GIVENS[difficulty];
-  let filled = 81;
-  const deadline = Date.now() + TIME_CAP;
-
-  for (let pass = 0; pass < 4000 && filled > target; pass++) {
-    //const order = rankCellsForRemoval(puzzle);
-    const order = shuffle(
-      Array.from(
-        { length: 81 },
-        (_, i) => [Math.floor(i / 9), i % 9] as [number, number],
-      ),
-    );
-
-    for (const [r, c] of order) {
-      if (filled <= target || Date.now() > deadline) break;
-      if (tryRemoveCell(puzzle, r, c)) {
-        filled--;
-      }
-    }
-  }
-  // console.log(
-  //   `[sudoku] ${difficulty} generated in ${Date.now() - start}ms — ${filled} givens`,
-  // );
-  return { puzzle, solution };
 }
 
 /**
@@ -263,9 +226,31 @@ export function* generatePuzzleAsync(
   };
 }
 
+/* ── Validation ── */
+
+export function validateBoard(
+  board: Board,
+  solution: Board,
+): { errors: Set<string>; allFilled: boolean } {
+  const errors = new Set<string>();
+  let allFilled = true;
+
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      if (board[r][c] === 0) {
+        allFilled = false;
+      } else if (board[r][c] !== solution[r][c]) {
+        errors.add(`${r}-${c}`);
+      }
+    }
+  }
+
+  return { errors, allFilled };
+}
+
 /* ── Candidates (used by the UI) ── */
 
-export function getCandidates(b: Board, row: number, col: number): Set<number> {
+function getCandidates(b: Board, row: number, col: number): Set<number> {
   if (b[row][col] !== 0) return new Set();
   const s = new Set<number>();
   for (let n = 1; n <= 9; n++) if (isValid(b, row, col, n)) s.add(n);
@@ -274,63 +259,4 @@ export function getCandidates(b: Board, row: number, col: number): Set<number> {
 
 export function getAllCandidates(b: Board): Set<number>[][] {
   return b.map((row, r) => row.map((_, c) => getCandidates(b, r, c)));
-}
-
-/* ── Benchmark ── */
-
-export function runBenchmark(iterations = 1000) {
-  const difficulties: Difficulty[] = ["easy", "medium", "hard"];
-
-  console.log(
-    `Starting benchmark for ${iterations} iterations per difficulty...`,
-  );
-
-  for (const diff of difficulties) {
-    benchmarkDifficulty(diff, iterations);
-  }
-}
-
-function benchmarkDifficulty(diff: Difficulty, iterations: number) {
-  console.log(`\n--- ${diff.toUpperCase()} ---`);
-  const times: number[] = [];
-
-  for (let i = 0; i < iterations; i++) {
-    if (i > 0 && i % 100 === 0) {
-      console.log(
-        `Progress: ${i} / ${iterations} (${((i / iterations) * 100).toFixed(1)}%)`,
-      );
-    }
-
-    const start = Date.now();
-    generatePuzzle(diff);
-    const end = Date.now();
-    times.push(end - start);
-  }
-
-  times.sort((a, b) => a - b);
-
-  const sum = times.reduce((a, b) => a + b, 0);
-  const avg = sum / times.length;
-  const median = times[Math.floor(times.length / 2)];
-
-  // Calculate mode (modulo average)
-  const counts = new Map<number, number>();
-  let mode = times[0];
-  let maxCount = 0;
-
-  for (const t of times) {
-    const c = (counts.get(t) || 0) + 1;
-    counts.set(t, c);
-    if (c > maxCount) {
-      maxCount = c;
-      mode = t;
-    }
-  }
-
-  console.log(`\nResults for ${diff} (${iterations} iterations):`);
-  console.log(`Average: ${avg.toFixed(2)} ms`);
-  console.log(`Median:  ${median} ms`);
-  console.log(`Mode:    ${mode} ms (occurred ${maxCount} times)`);
-  console.log(`Min:     ${times[0]} ms`);
-  console.log(`Max:     ${times[times.length - 1]} ms`);
 }

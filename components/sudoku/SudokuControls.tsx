@@ -3,6 +3,7 @@ import s from "./Sudoku.module.css";
 import shared from "@/components/GameShared.module.css";
 import ResumeIcon from "@/icons/play_arrow_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg";
 import PauseIcon from "@/icons/pause_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg";
+import UiShared from "@/components/ui/shared.module.css";
 import type { AppMessages } from "@/lib/i18n/messages";
 
 interface SudokuControlsProps {
@@ -60,7 +61,7 @@ export function SudokuControls({
       </div>
 
       <div className={s.actionButtons}>
-        <button className={shared.actionBtn} onClick={checkSolution}>
+        <button className={UiShared.actionBtn} onClick={checkSolution}>
           {t.check}
         </button>
         <button className={shared.resetBtn} onClick={resetBoard}>

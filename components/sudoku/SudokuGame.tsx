@@ -21,44 +21,11 @@ export default function SudokuGame({ messages }: Props) {
   const numberPadRef = useRef<HTMLDivElement>(null);
 
   const game = useSudokuGame();
-  const {
-    difficulty,
-    board,
-    initialPuzzle,
-    selectedCell,
-    showCandidates,
-    setShowCandidates,
-    status,
-    errorCells,
-    seconds,
-    gameId,
-    isGenerating,
-    checkingCell,
-    genTimeMs,
-    genGivens,
-    showToast,
-    setShowToast,
-    isShaking,
-    setIsShaking,
-    isPaused,
-    setIsPaused,
-    togglePause,
-    showModal,
-    setShowModal,
-    handleCellClick,
-    placeNumber,
-    eraseCell,
-    checkSolution,
-    resetBoard,
-    changeDifficulty,
-    startNewGame,
-    candidates,
-  } = game;
 
-  const fmtMins = String(Math.floor(seconds / 60)).padStart(2, "0");
-  const fmtSecs = String(seconds % 60).padStart(2, "0");
+  const fmtMins = String(Math.floor(game.seconds / 60)).padStart(2, "0");
+  const fmtSecs = String(game.seconds % 60).padStart(2, "0");
 
-  if (!board) {
+  if (!game.board) {
     return (
       <div className={s.container}>
         <div className={shared.header}>
@@ -74,69 +41,78 @@ export default function SudokuGame({ messages }: Props) {
         <h2 className={shared.title}>{t.title}</h2>
         <p className={shared.subtitle}>{t.subtitle}</p>
       </div>
-      
+
       <div className={s.container}>
         <SudokuControls
-          difficulty={difficulty}
-          showCandidates={showCandidates}
-          seconds={seconds}
-          isPaused={isPaused}
-          isGenerating={isGenerating}
-          status={status}
-          genTimeMs={genTimeMs}
-          genGivens={genGivens}
-          changeDifficulty={changeDifficulty}
-          checkSolution={checkSolution}
-          resetBoard={resetBoard}
-          setShowCandidates={setShowCandidates}
-          togglePause={togglePause}
+          difficulty={game.difficulty}
+          showCandidates={game.showCandidates}
+          seconds={game.seconds}
+          isPaused={game.isPaused}
+          isGenerating={game.isGenerating}
+          status={game.status}
+          genTimeMs={game.genTimeMs}
+          genGivens={game.genGivens}
+          changeDifficulty={game.changeDifficulty}
+          checkSolution={game.checkSolution}
+          resetBoard={game.resetBoard}
+          setShowCandidates={game.setShowCandidates}
+          togglePause={game.togglePause}
           t={t}
         />
 
         <SudokuGrid
-          board={board}
-          initialPuzzle={initialPuzzle}
-          selectedCell={selectedCell}
-          checkingCell={checkingCell}
-          errorCells={errorCells}
-          candidates={candidates}
-          isPaused={isPaused}
-          isGenerating={isGenerating}
-          isShaking={isShaking}
-          gameId={gameId}
-          handleCellClick={handleCellClick}
-          setIsShaking={setIsShaking}
-          setIsPaused={setIsPaused}
+          board={game.board}
+          initialPuzzle={game.initialPuzzle}
+          selectedCell={game.selectedCell}
+          checkingCell={game.checkingCell}
+          errorCells={game.errorCells}
+          candidates={game.candidates}
+          isPaused={game.isPaused}
+          isGenerating={game.isGenerating}
+          isShaking={game.feedback.shaking}
+          gameId={game.gameId}
+          handleCellClick={game.handleCellClick}
+          setIsShaking={(v) =>
+            game.setFeedback((prev) => ({ ...prev, shaking: v }))
+          }
+          setIsPaused={game.setIsPaused}
           t={t}
         />
 
         <SudokuNumberPad
           ref={numberPadRef}
-          placeNumber={placeNumber}
-          eraseCell={eraseCell}
+          placeNumber={game.placeNumber}
+          eraseCell={game.eraseCell}
         />
 
         <Toast
           message={t.hasErrors}
           type="error"
-          isVisible={showToast}
-          onClose={() => setShowToast(false)}
+          isVisible={game.feedback.toast}
+          onClose={() =>
+            game.setFeedback((prev) => ({ ...prev, toast: false }))
+          }
         />
 
-        {showModal && (
-          <div className={s.modalOverlay} onClick={() => setShowModal(false)}>
+        {game.feedback.modal && (
+          <div
+            className={s.modalOverlay}
+            onClick={() =>
+              game.setFeedback((prev) => ({ ...prev, modal: false }))
+            }
+          >
             <div className={s.modalCard} onClick={(e) => e.stopPropagation()}>
               <div className={s.modalEmoji}>🎉</div>
               <h3 className={s.modalTitle}>{t.congratsTitle}</h3>
               <p className={s.modalSubtitle}>
-                {t.congratsTime} {fmtMins}:{fmtSecs} · {t[difficulty]}
+                {t.congratsTime} {fmtMins}:{fmtSecs} · {t[game.difficulty]}
               </p>
               <div className={s.modalActions}>
                 <button
                   className={s.modalPrimaryBtn}
                   onClick={() => {
-                    setShowModal(false);
-                    startNewGame(difficulty);
+                    game.setFeedback((prev) => ({ ...prev, modal: false }));
+                    game.startNewGame(game.difficulty);
                   }}
                 >
                   {t.playAgain}
@@ -155,3 +131,4 @@ export default function SudokuGame({ messages }: Props) {
     </>
   );
 }
+

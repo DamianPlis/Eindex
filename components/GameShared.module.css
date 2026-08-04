@@ -32,31 +32,6 @@
   margin-bottom: 16px;
 }
 
-/* ── Action Buttons ── */
-
-.actionBtn {
-  padding: 8px 14px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  background: var(--card);
-  color: var(--text-primary);
-  cursor: pointer;
-  transition: all 160ms ease;
-  box-shadow: var(--shadow-xs);
-}
-
-.actionBtn:hover {
-  background: var(--primary-alpha-8);
-  border-color: var(--primary-alpha-30);
-  box-shadow: var(--shadow-sm);
-}
-
-.actionBtn:active {
-  transform: scale(0.97);
-}
-
 .resetBtn {
   padding: 8px 14px;
   font-size: 0.8125rem;

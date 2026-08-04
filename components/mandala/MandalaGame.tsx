@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import s from "./Mandala.module.css";
 import shared from "@/components/GameShared.module.css";
+import UiShared from "@/components/ui/shared.module.css";
 
 // Sentinel value for the eraser tool — never stored in localStorage
 const ERASER = "__eraser__";
@@ -712,7 +713,7 @@ export default function MandalaGame({ messages }: Props) {
         <p className={shared.subtitle}>{t.subtitle}</p>
       </header>
       <div className={shared.actions}>
-        <button className={shared.actionBtn} onClick={handleNewGame}>
+        <button className={UiShared.actionBtn} onClick={handleNewGame}>
           {t.newGame}
         </button>
         <button className={shared.resetBtn} onClick={handleReset}>

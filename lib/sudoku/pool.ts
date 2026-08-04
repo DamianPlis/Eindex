@@ -39,11 +39,6 @@ export function takeFromPool(difficulty: Difficulty): PoolEntry | null {
   return entry;
 }
 
-/** How many puzzles are ready for a difficulty */
-export function poolSize(difficulty: Difficulty): number {
-  return pool[difficulty].length;
-}
-
 /** Start filling the pool in the background using a Web Worker */
 export function initPool(): void {
   // Only initialize the worker once, and only on the client side
