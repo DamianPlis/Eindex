@@ -67,6 +67,10 @@
   color: white;
 }
 
+.navLinkActive:hover {
+  background: var(--primary);
+}
+
 .navIcon {
   display: flex;
   align-items: center;

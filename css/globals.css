@@ -106,8 +106,8 @@
   --nav-track-bg: color-mix(in srgb, var(--bubble) 30%, transparent);
 
   /* ── Skeleton shimmer ── */
-  --skeleton-shimmer-start: color-mix(in srgb, var(--text-soft) 18%, transparent);
-  --skeleton-shimmer-middle: color-mix(in srgb, var(--text-soft) 34%, transparent);
+  --skeleton-shimmer-start: color-mix(in srgb, var(--text-soft) 15%, transparent);
+  --skeleton-shimmer-middle: color-mix(in srgb, var(--text-soft) 24%, transparent);
 }
 
 /* ═══════════════════════════════════════════════════

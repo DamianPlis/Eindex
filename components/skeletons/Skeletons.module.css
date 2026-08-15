@@ -10,7 +10,7 @@
       var(--skeleton-shimmer-middle) 50%,
       var(--skeleton-shimmer-start) 100%);
   background-size: 240% 100%;
-  animation: skeletonShimmer 1.3s ease-in-out infinite;
+  animation: skeletonShimmer 5s ease-in-out infinite;
 }
 
 @keyframes skeletonShimmer {

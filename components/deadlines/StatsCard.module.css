@@ -27,6 +27,16 @@
   gap: 4px;
 }
 
+.statsCardTitle {
+  display: flex;
+  gap: 0.5em;
+}
+
+.statsNavTodayContainer {
+  display: flex;
+  align-items: center;
+}
+
 .statsNavArrow {
   width: 28px;
   height: 28px;
@@ -85,7 +95,6 @@
 .statsCardHeaderIcons {
   display: flex;
   gap: 4px;
-  align-items: center;
   flex: 0 0 auto;
 }
 

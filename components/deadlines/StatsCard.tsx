@@ -79,7 +79,21 @@ export default function StatsCard({
     <div className={styles.statsCard}>
       <div className={styles.statsCardHeader}>
         <div className={styles.statsCardTitleNav}>
-          <h3 style={{ margin: 0 }}>{title}</h3>
+          <div className={styles.statsCardTitle}>
+            <h3 style={{ margin: 0 }}>{title}</h3>
+            {offset !== 0 && (
+              <div className={styles.statsNavTodayContainer}>
+                <button
+                  type="button"
+                  className={styles.statsNavToday}
+                  onClick={() => setOffset(0)}
+                  title={messages.common.today}
+                >
+                  {messages.common.today}
+                </button>
+              </div>
+            )}
+          </div>
           <div className={styles.statsCardNav}>
             <button
               type="button"
@@ -122,16 +136,6 @@ export default function StatsCard({
                 <polyline points="9 6 15 12 9 18" />
               </svg>
             </button>
-            {offset !== 0 && (
-              <button
-                type="button"
-                className={styles.statsNavToday}
-                onClick={() => setOffset(0)}
-                title={messages.common.today}
-              >
-                {messages.common.today}
-              </button>
-            )}
           </div>
         </div>
         <div className={styles.statsCardHeaderIcons}>
@@ -169,14 +173,12 @@ export default function StatsCard({
               </option>
             </select>
           </div>
-          <div className="filter-combobox-wrapper">
-            <SubjectsCombobox
-              subjects={state.subjects}
-              subjectGroups={state.subjectGroups}
-              selectedIds={filterIds}
-              onChange={setFilterIds}
-            />
-          </div>
+          <SubjectsCombobox
+            subjects={state.subjects}
+            subjectGroups={state.subjectGroups}
+            selectedIds={filterIds}
+            onChange={setFilterIds}
+          />
         </div>
       </div>
       {filteredStats.length === 0 ? (

@@ -67,8 +67,6 @@ export default function TopbarProfileMenu({
     <div
       ref={rootRef}
       className={isOpen ? s.topbarProfileMenuOpen : s.topbarProfileMenu}
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
       onClick={() => setIsOpen((current) => !current)}
     >
       <button

@@ -118,10 +118,6 @@
   cursor: pointer;
 }
 
-.topbarProfileItem:hover {
-  background: var(--primary-alpha-12);
-}
-
 .topbarProfileItemActive {
   composes: topbarProfileItem;
   color: var(--primary);
