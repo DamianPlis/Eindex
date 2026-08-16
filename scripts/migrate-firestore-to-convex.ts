@@ -10,12 +10,13 @@ import { getFirestore } from "firebase-admin/firestore";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../convex/_generated/api";
 
-const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+const convexUrl = process.argv[2] || process.env.NEXT_PUBLIC_CONVEX_URL;
 if (!convexUrl) {
   console.error("Error: NEXT_PUBLIC_CONVEX_URL environment variable is missing.");
   process.exit(1);
 }
 
+console.log(`Targeting Convex Deployment: ${convexUrl}`);
 const convex = new ConvexHttpClient(convexUrl);
 
 async function callWithRetry<T>(fn: () => Promise<T>, retries = 5, delay = 500): Promise<T> {
