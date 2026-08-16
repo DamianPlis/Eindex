@@ -12,6 +12,7 @@ import { normalizeTheme } from "@/lib/settings/defaults";
 import type { AppSettings } from "@/lib/settings/types";
 import { requireSession } from "@/lib/session";
 import type { ScheduleState, Slot } from "@/lib/schedule/types";
+import { shadowWriteToConvex } from "@/lib/convex/dual-write";
 
 type SlotUpdateInput = {
   weekStart: string;
@@ -37,22 +38,31 @@ async function modifyDeadlineById(
 ) {
   const session = await requireSession();
   const id = String(formData.get("id") || "");
-  if (!id) return;
+  if (!id) return null;
 
-  await updateUserState(session.uid, (state) => {
+  const nextState = await updateUserState(session.uid, (state) => {
     mutate(state, id);
   });
+
+  return { session, id, nextState };
 }
 
 export async function setSlotSubjectAction(
   input: SlotUpdateInput & { subjectId: string | null; writerId?: string },
 ) {
   const session = await requireSession();
+  const now = Date.now();
+  let modifiedSlot: Slot | null = null;
+  let slotDate = input.weekStart;
+
   await updateUserState(
     session.uid,
     (state) => {
       const slot = getSlotForUpdate(state, input);
       if (!slot) return;
+
+      const day = state.weeks[input.weekStart]?.days?.[input.dayIndex];
+      if (day?.date) slotDate = day.date;
 
       if (slot.fixed && slot.fixedLabel.toLowerCase().includes("obed")) {
         slot.subjectId = "lunch";
@@ -60,28 +70,78 @@ export async function setSlotSubjectAction(
         slot.subjectId = null;
       } else {
         slot.subjectId = input.subjectId || null;
-        slot.updatedAt = Date.now();
+        slot.updatedAt = now;
       }
+      modifiedSlot = structuredClone(slot);
     },
     { writerId: input.writerId },
   );
+
+  // Shadow Dual-Write to Convex
+  if (modifiedSlot) {
+    const slot = modifiedSlot as Slot;
+    void shadowWriteToConvex("syncSlotSubject", {
+      firebaseUid: session.uid,
+      weekStart: input.weekStart,
+      date: slotDate,
+      dayIndex: input.dayIndex,
+      slotIndex: input.slotIndex,
+      time: slot.time,
+      fixed: slot.fixed,
+      fixedKey: slot.fixedKey || undefined,
+      fixedLabel: slot.fixedLabel || undefined,
+      allowTopic: slot.allowTopic,
+      subjectId: slot.subjectId || null,
+      updatedAt: now,
+      writerId: input.writerId,
+    });
+  }
 }
 
 export async function setSlotTopicAction(
   input: SlotUpdateInput & { topic: string; writerId?: string },
 ) {
   const session = await requireSession();
+  const now = Date.now();
+  let modifiedSlot: Slot | null = null;
+  let slotDate = input.weekStart;
+
   await updateUserState(
     session.uid,
     (state) => {
       const slot = getSlotForUpdate(state, input);
       if (!slot) return;
       if (!slot.allowTopic && slot.fixed) return;
+
+      const day = state.weeks[input.weekStart]?.days?.[input.dayIndex];
+      if (day?.date) slotDate = day.date;
+
       slot.topic = input.topic || "";
-      slot.updatedAt = Date.now();
+      slot.updatedAt = now;
+      modifiedSlot = structuredClone(slot);
     },
     { writerId: input.writerId },
   );
+
+  // Shadow Dual-Write to Convex
+  if (modifiedSlot) {
+    const slot = modifiedSlot as Slot;
+    void shadowWriteToConvex("syncSlotTopic", {
+      firebaseUid: session.uid,
+      weekStart: input.weekStart,
+      date: slotDate,
+      dayIndex: input.dayIndex,
+      slotIndex: input.slotIndex,
+      time: slot.time,
+      fixed: slot.fixed,
+      fixedKey: slot.fixedKey || undefined,
+      fixedLabel: slot.fixedLabel || undefined,
+      allowTopic: slot.allowTopic,
+      topic: slot.topic || "",
+      updatedAt: now,
+      writerId: input.writerId,
+    });
+  }
 }
 
 export async function addCustomSubjectAction(input: {
@@ -94,6 +154,8 @@ export async function addCustomSubjectAction(input: {
   if (!cleanName) return null;
 
   let createdId = "";
+  const now = Date.now();
+
   await updateUserState(
     session.uid,
     (state) => {
@@ -114,6 +176,19 @@ export async function addCustomSubjectAction(input: {
     },
     { writerId: input.writerId },
   );
+
+  // Shadow Dual-Write to Convex
+  if (createdId) {
+    void shadowWriteToConvex("syncSubject", {
+      firebaseUid: session.uid,
+      slug: createdId,
+      name: cleanName,
+      color: input.color || "#64748b",
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
   return createdId || null;
 }
 
@@ -126,6 +201,7 @@ export async function updateSubjectAction(input: {
   const session = await requireSession();
   const cleanName = input.name.trim();
   if (!cleanName || !input.id) return;
+  const now = Date.now();
 
   await updateUserState(
     session.uid,
@@ -138,6 +214,15 @@ export async function updateSubjectAction(input: {
     },
     { writerId: input.writerId },
   );
+
+  // Shadow Dual-Write to Convex
+  void shadowWriteToConvex("syncSubject", {
+    firebaseUid: session.uid,
+    slug: input.id,
+    name: cleanName,
+    color: input.color,
+    updatedAt: now,
+  });
 }
 
 export async function deleteSubjectAction(input: {
@@ -166,6 +251,12 @@ export async function deleteSubjectAction(input: {
     },
     { writerId: input.writerId },
   );
+
+  // Shadow Dual-Write to Convex
+  void shadowWriteToConvex("syncDeleteSubject", {
+    firebaseUid: session.uid,
+    slug: input.id,
+  });
 }
 
 export async function addSubjectGroupAction(input: {
@@ -176,6 +267,8 @@ export async function addSubjectGroupAction(input: {
 }) {
   const session = await requireSession();
   let createdId = "";
+  const now = Date.now();
+
   await updateUserState(
     session.uid,
     (state) => {
@@ -190,6 +283,19 @@ export async function addSubjectGroupAction(input: {
     },
     { writerId: input.writerId },
   );
+
+  // Shadow Dual-Write to Convex
+  if (createdId) {
+    void shadowWriteToConvex("syncSubjectGroup", {
+      firebaseUid: session.uid,
+      slug: createdId,
+      name: input.name,
+      subjectIds: input.subjectIds,
+      namePreferences: input.namePreferences || undefined,
+      updatedAt: now,
+    });
+  }
+
   return createdId || null;
 }
 
@@ -202,6 +308,8 @@ export async function updateSubjectGroupAction(input: {
 }) {
   const session = await requireSession();
   if (!input.id) return;
+  const now = Date.now();
+
   await updateUserState(
     session.uid,
     (state) => {
@@ -214,6 +322,16 @@ export async function updateSubjectGroupAction(input: {
     },
     { writerId: input.writerId },
   );
+
+  // Shadow Dual-Write to Convex
+  void shadowWriteToConvex("syncSubjectGroup", {
+    firebaseUid: session.uid,
+    slug: input.id,
+    name: input.name,
+    subjectIds: input.subjectIds,
+    namePreferences: input.namePreferences || undefined,
+    updatedAt: now,
+  });
 }
 
 export async function deleteSubjectGroupAction(input: {
@@ -222,6 +340,7 @@ export async function deleteSubjectGroupAction(input: {
 }) {
   const session = await requireSession();
   if (!input.id) return;
+
   await updateUserState(
     session.uid,
     (state) => {
@@ -229,8 +348,13 @@ export async function deleteSubjectGroupAction(input: {
     },
     { writerId: input.writerId },
   );
-}
 
+  // Shadow Dual-Write to Convex
+  void shadowWriteToConvex("syncDeleteSubjectGroup", {
+    firebaseUid: session.uid,
+    slug: input.id,
+  });
+}
 
 export async function updateSettingsAction(
   input: Partial<AppSettings> & {
@@ -238,6 +362,7 @@ export async function updateSettingsAction(
   },
 ) {
   const session = await requireSession();
+  const now = Date.now();
 
   const nextSettings = await updateUserSettings(
     session.uid,
@@ -264,6 +389,16 @@ export async function updateSettingsAction(
     });
   }
 
+  // Shadow Dual-Write to Convex
+  void shadowWriteToConvex("syncUserAndSettings", {
+    firebaseUid: session.uid,
+    theme: nextSettings.theme,
+    locale: nextSettings.locale,
+    useSchoolYear: nextSettings.useSchoolYear,
+    updatedAt: now,
+    writerId: input.writerId,
+  });
+
   return nextSettings;
 }
 
@@ -274,6 +409,8 @@ export async function addDeadlineAction(formData: FormData) {
   const date = String(formData.get("date") || "").trim();
   const id = crypto.randomUUID();
   if (!text || !date) return;
+  const now = Date.now();
+  const status = resolveDeadlineStatus({ date });
 
   await updateUserState(session.uid, (state) => {
     state.deadlines.push({
@@ -281,22 +418,61 @@ export async function addDeadlineAction(formData: FormData) {
       text,
       description,
       date,
-      status: resolveDeadlineStatus({ date }),
+      status,
     });
+  });
+
+  // Shadow Dual-Write to Convex
+  void shadowWriteToConvex("syncDeadline", {
+    firebaseUid: session.uid,
+    deadlineId: id,
+    text,
+    description,
+    date,
+    status,
+    createdAt: now,
+    updatedAt: now,
   });
 }
 
 export async function removeDeadlineAction(formData: FormData) {
-  await modifyDeadlineById(formData, (state, id) => {
+  const res = await modifyDeadlineById(formData, (state, id) => {
     state.deadlines = state.deadlines.filter((item) => item.id !== id);
   });
+
+  // Shadow Dual-Write to Convex
+  if (res) {
+    void shadowWriteToConvex("syncRemoveDeadline", {
+      firebaseUid: res.session.uid,
+      deadlineId: res.id,
+    });
+  }
 }
 
 export async function markAsDoneDeadlineAction(formData: FormData) {
-  await modifyDeadlineById(formData, (state, id) => {
-    state.deadlines = state.deadlines.map((item) =>
-      item.id === id ? { ...item, status: "done" } : item,
-    );
-  });
-}
+  let updatedItem: { text: string; description: string; date: string } | null = null;
 
+  const res = await modifyDeadlineById(formData, (state, id) => {
+    state.deadlines = state.deadlines.map((item) => {
+      if (item.id === id) {
+        updatedItem = { text: item.text, description: item.description, date: item.date };
+        return { ...item, status: "done" };
+      }
+      return item;
+    });
+  });
+
+  // Shadow Dual-Write to Convex
+  if (res && updatedItem) {
+    const item = updatedItem as { text: string; description: string; date: string };
+    void shadowWriteToConvex("syncDeadline", {
+      firebaseUid: res.session.uid,
+      deadlineId: res.id,
+      text: item.text,
+      description: item.description,
+      date: item.date,
+      status: "done",
+      updatedAt: Date.now(),
+    });
+  }
+}

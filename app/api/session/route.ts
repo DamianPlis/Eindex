@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { adminAuth } from "@/lib/firebase/admin";
 import { sessionCookieKeys } from "@/lib/session";
+import { shadowWriteToConvex } from "@/lib/convex/dual-write";
 
 type SessionBody = {
   idToken?: string;
@@ -27,6 +28,23 @@ export async function POST(request: Request) {
       sameSite: "lax",
       path: "/",
       maxAge: SESSION_MAX_AGE_SECONDS,
+    });
+
+    // Shadow Sync on login to ensure user is provisioned in Convex
+    void adminAuth.verifySessionCookie(sessionCookie, true).then((decoded) => {
+      if (decoded?.uid) {
+        void shadowWriteToConvex("syncUserAndSettings", {
+          firebaseUid: decoded.uid,
+          email: (decoded.email as string) || undefined,
+          name: (decoded.name as string) || undefined,
+          image: (decoded.picture as string) || undefined,
+          theme: "light",
+          locale: "cs",
+          useSchoolYear: false,
+        });
+      }
+    }).catch(() => {
+      // noop
     });
 
     return response;
