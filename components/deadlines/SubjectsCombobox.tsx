@@ -7,6 +7,7 @@ import {
   getSubjectDisplayName,
   getSubjectGroupDisplayName,
 } from "@/lib/schedule/labels";
+import { matchesLocaleSearch } from "@/lib/i18n/search";
 import styles from "./SubjectsCombobox.module.css";
 import cardStyles from "./StatsCard.module.css";
 import SearchIcon from "@/icons/search_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
@@ -73,17 +74,14 @@ export default function SubjectsCombobox({
     onChange([]);
   };
 
-  const query = searchQuery.toLowerCase();
-
   const filteredSubjects = subjects.filter((subject) => {
-    const name = getSubjectDisplayName(subject, messages).toLowerCase();
-    return name.includes(query);
+    const name = getSubjectDisplayName(subject, messages);
+    return matchesLocaleSearch(name, searchQuery, locale);
   });
 
   const filteredGroups = subjectGroups.filter((group) => {
-    return getSubjectGroupDisplayName(group, messages, locale)
-      .toLowerCase()
-      .includes(query);
+    const name = getSubjectGroupDisplayName(group, messages, locale);
+    return matchesLocaleSearch(name, searchQuery, locale);
   });
 
   const activeCount = selectedIds.length;
