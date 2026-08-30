@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
+import { ConvexClientProvider } from "@/components/providers/ConvexClientProvider";
 import { UserSyncProvider } from "@/components/i18n/UserSyncProvider";
 import PwaRegistrar from "@/components/pwa/PwaRegistrar";
 import { getMessages } from "@/lib/i18n/messages";
@@ -37,19 +39,27 @@ export default async function RootLayout({
   const messages = getMessages(locale);
 
   return (
-    <html lang={locale} data-theme={cookieTheme ?? undefined} suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_FLASH_SCRIPT }} />
-      </head>
-      <body>
-        <noscript>
-          <NoScriptNotice messages={messages.noscript} />
-        </noscript>
-        <UserSyncProvider locale={locale} messages={messages}>
-          <PwaRegistrar />
-          {children}
-        </UserSyncProvider>
-      </body>
-    </html>
+    <ConvexAuthNextjsServerProvider>
+      <html
+        lang={locale}
+        data-theme={cookieTheme ?? undefined}
+        suppressHydrationWarning
+      >
+        <head>
+          <script dangerouslySetInnerHTML={{ __html: THEME_FLASH_SCRIPT }} />
+        </head>
+        <body>
+          <noscript>
+            <NoScriptNotice messages={messages.noscript} />
+          </noscript>
+          <ConvexClientProvider>
+            <UserSyncProvider locale={locale} messages={messages}>
+              <PwaRegistrar />
+              {children}
+            </UserSyncProvider>
+          </ConvexClientProvider>
+        </body>
+      </html>
+    </ConvexAuthNextjsServerProvider>
   );
 }

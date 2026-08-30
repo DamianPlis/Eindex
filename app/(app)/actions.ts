@@ -2,17 +2,13 @@
 
 import { cookies } from "next/headers";
 import { LOCALE_COOKIE, normalizeAppLocale } from "@/lib/i18n/config";
-import { resolveDeadlineStatus } from "@/lib/schedule/defaults";
-import {
-  ensureWeekExists,
-  updateUserSettings,
-  updateUserState,
-} from "@/lib/schedule/store";
+import { buildDaysForWeek } from "@/lib/schedule/defaults";
 import { normalizeTheme } from "@/lib/settings/defaults";
 import type { AppSettings } from "@/lib/settings/types";
 import { requireSession } from "@/lib/session";
-import type { ScheduleState, Slot } from "@/lib/schedule/types";
-import { shadowWriteToConvex } from "@/lib/convex/dual-write";
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+import { fetchMutation } from "convex/nextjs";
+import { api } from "@/convex/_generated/api";
 
 type SlotUpdateInput = {
   weekStart: string;
@@ -20,128 +16,64 @@ type SlotUpdateInput = {
   slotIndex: number;
 };
 
-/** Resolve a slot reference inside a state draft, creating the week if needed. */
-function getSlotForUpdate(
-  state: ScheduleState,
-  input: SlotUpdateInput,
-): Slot | null {
-  const key = ensureWeekExists(state, input.weekStart);
-  return (
-    state.weeks[key]?.days?.[input.dayIndex]?.slots?.[input.slotIndex] ?? null
-  );
-}
-
-/** Shared helper: look up a deadline by form ID and apply a mutation. */
-async function modifyDeadlineById(
-  formData: FormData,
-  mutate: (state: ScheduleState, id: string) => void,
-) {
-  const session = await requireSession();
-  const id = String(formData.get("id") || "");
-  if (!id) return null;
-
-  const nextState = await updateUserState(session.uid, (state) => {
-    mutate(state, id);
-  });
-
-  return { session, id, nextState };
-}
-
 export async function setSlotSubjectAction(
   input: SlotUpdateInput & { subjectId: string | null; writerId?: string },
 ) {
-  const session = await requireSession();
-  const now = Date.now();
-  let modifiedSlot: Slot | null = null;
-  let slotDate = input.weekStart;
+  await requireSession();
+  const token = await convexAuthNextjsToken();
+  if (!token) throw new Error("Unauthorized");
 
-  await updateUserState(
-    session.uid,
-    (state) => {
-      const slot = getSlotForUpdate(state, input);
-      if (!slot) return;
+  const builtDays = buildDaysForWeek(input.weekStart);
+  const slot = builtDays[input.dayIndex]?.slots?.[input.slotIndex];
+  const date = builtDays[input.dayIndex]?.date || input.weekStart;
 
-      const day = state.weeks[input.weekStart]?.days?.[input.dayIndex];
-      if (day?.date) slotDate = day.date;
-
-      if (slot.fixed && slot.fixedLabel.toLowerCase().includes("obed")) {
-        slot.subjectId = "lunch";
-      } else if (slot.fixed) {
-        slot.subjectId = null;
-      } else {
-        slot.subjectId = input.subjectId || null;
-        slot.updatedAt = now;
-      }
-      modifiedSlot = structuredClone(slot);
-    },
-    { writerId: input.writerId },
-  );
-
-  // Shadow Dual-Write to Convex
-  if (modifiedSlot) {
-    const slot = modifiedSlot as Slot;
-    void shadowWriteToConvex("syncSlotSubject", {
-      firebaseUid: session.uid,
+  await fetchMutation(
+    api.schedule.setSlotSubject,
+    {
       weekStart: input.weekStart,
-      date: slotDate,
+      date,
       dayIndex: input.dayIndex,
       slotIndex: input.slotIndex,
-      time: slot.time,
-      fixed: slot.fixed,
-      fixedKey: slot.fixedKey || undefined,
-      fixedLabel: slot.fixedLabel || undefined,
-      allowTopic: slot.allowTopic,
-      subjectId: slot.subjectId || null,
-      updatedAt: now,
+      time: slot?.time || "08:00-09:00",
+      fixed: Boolean(slot?.fixed),
+      fixedKey: slot?.fixedKey || undefined,
+      fixedLabel: slot?.fixedLabel || undefined,
+      allowTopic: Boolean(slot?.allowTopic),
+      subjectId: input.subjectId || null,
       writerId: input.writerId,
-    });
-  }
+    },
+    { token },
+  );
 }
 
 export async function setSlotTopicAction(
   input: SlotUpdateInput & { topic: string; writerId?: string },
 ) {
-  const session = await requireSession();
-  const now = Date.now();
-  let modifiedSlot: Slot | null = null;
-  let slotDate = input.weekStart;
+  await requireSession();
+  const token = await convexAuthNextjsToken();
+  if (!token) throw new Error("Unauthorized");
 
-  await updateUserState(
-    session.uid,
-    (state) => {
-      const slot = getSlotForUpdate(state, input);
-      if (!slot) return;
-      if (!slot.allowTopic && slot.fixed) return;
+  const builtDays = buildDaysForWeek(input.weekStart);
+  const slot = builtDays[input.dayIndex]?.slots?.[input.slotIndex];
+  const date = builtDays[input.dayIndex]?.date || input.weekStart;
 
-      const day = state.weeks[input.weekStart]?.days?.[input.dayIndex];
-      if (day?.date) slotDate = day.date;
-
-      slot.topic = input.topic || "";
-      slot.updatedAt = now;
-      modifiedSlot = structuredClone(slot);
-    },
-    { writerId: input.writerId },
-  );
-
-  // Shadow Dual-Write to Convex
-  if (modifiedSlot) {
-    const slot = modifiedSlot as Slot;
-    void shadowWriteToConvex("syncSlotTopic", {
-      firebaseUid: session.uid,
+  await fetchMutation(
+    api.schedule.setSlotTopic,
+    {
       weekStart: input.weekStart,
-      date: slotDate,
+      date,
       dayIndex: input.dayIndex,
       slotIndex: input.slotIndex,
-      time: slot.time,
-      fixed: slot.fixed,
-      fixedKey: slot.fixedKey || undefined,
-      fixedLabel: slot.fixedLabel || undefined,
-      allowTopic: slot.allowTopic,
-      topic: slot.topic || "",
-      updatedAt: now,
+      time: slot?.time || "08:00-09:00",
+      fixed: Boolean(slot?.fixed),
+      fixedKey: slot?.fixedKey || undefined,
+      fixedLabel: slot?.fixedLabel || undefined,
+      allowTopic: Boolean(slot?.allowTopic),
+      topic: input.topic || "",
       writerId: input.writerId,
-    });
-  }
+    },
+    { token },
+  );
 }
 
 export async function addCustomSubjectAction(input: {
@@ -149,47 +81,24 @@ export async function addCustomSubjectAction(input: {
   color: string;
   writerId?: string;
 }) {
-  const session = await requireSession();
+  await requireSession();
+  const token = await convexAuthNextjsToken();
+  if (!token) throw new Error("Unauthorized");
+
   const cleanName = input.name.trim();
   if (!cleanName) return null;
 
-  let createdId = "";
-  const now = Date.now();
-
-  await updateUserState(
-    session.uid,
-    (state) => {
-      const baseId =
-        cleanName.toLowerCase().replace(/[^a-z0-9_]+/g, "_") || "custom";
-      let id = baseId;
-      let i = 1;
-      const existing = new Set(state.subjects.map((s) => s.id));
-      while (existing.has(id)) {
-        id = `${baseId}_${i++}`;
-      }
-      state.subjects.push({
-        id,
-        name: cleanName,
-        color: input.color || "#64748b",
-      });
-      createdId = id;
-    },
-    { writerId: input.writerId },
-  );
-
-  // Shadow Dual-Write to Convex
-  if (createdId) {
-    void shadowWriteToConvex("syncSubject", {
-      firebaseUid: session.uid,
-      slug: createdId,
+  const result = await fetchMutation(
+    api.subjects.addSubject,
+    {
       name: cleanName,
       color: input.color || "#64748b",
-      createdAt: now,
-      updatedAt: now,
-    });
-  }
+      writerId: input.writerId,
+    },
+    { token },
+  );
 
-  return createdId || null;
+  return result?.slug || null;
 }
 
 export async function updateSubjectAction(input: {
@@ -198,65 +107,42 @@ export async function updateSubjectAction(input: {
   color: string;
   writerId?: string;
 }) {
-  const session = await requireSession();
+  await requireSession();
+  const token = await convexAuthNextjsToken();
+  if (!token) throw new Error("Unauthorized");
+
   const cleanName = input.name.trim();
   if (!cleanName || !input.id) return;
-  const now = Date.now();
 
-  await updateUserState(
-    session.uid,
-    (state) => {
-      const subject = state.subjects.find((s) => s.id === input.id);
-      if (subject) {
-        subject.name = cleanName;
-        subject.color = input.color || subject.color;
-      }
+  await fetchMutation(
+    api.subjects.updateSubject,
+    {
+      slug: input.id,
+      name: cleanName,
+      color: input.color,
+      writerId: input.writerId,
     },
-    { writerId: input.writerId },
+    { token },
   );
-
-  // Shadow Dual-Write to Convex
-  void shadowWriteToConvex("syncSubject", {
-    firebaseUid: session.uid,
-    slug: input.id,
-    name: cleanName,
-    color: input.color,
-    updatedAt: now,
-  });
 }
 
 export async function deleteSubjectAction(input: {
   id: string;
   writerId?: string;
 }) {
-  const session = await requireSession();
+  await requireSession();
+  const token = await convexAuthNextjsToken();
+  if (!token) throw new Error("Unauthorized");
   if (!input.id) return;
 
-  await updateUserState(
-    session.uid,
-    (state) => {
-      state.subjects = state.subjects.filter((s) => s.id !== input.id);
-      for (const week of Object.values(state.weeks)) {
-        for (const day of week.days) {
-          for (const slot of day.slots) {
-            if (slot.subjectId === input.id) {
-              slot.subjectId = null;
-            }
-          }
-        }
-      }
-      for (const group of state.subjectGroups) {
-        group.subjectIds = group.subjectIds.filter((id) => id !== input.id);
-      }
+  await fetchMutation(
+    api.subjects.deleteSubject,
+    {
+      slug: input.id,
+      writerId: input.writerId,
     },
-    { writerId: input.writerId },
+    { token },
   );
-
-  // Shadow Dual-Write to Convex
-  void shadowWriteToConvex("syncDeleteSubject", {
-    firebaseUid: session.uid,
-    slug: input.id,
-  });
 }
 
 export async function addSubjectGroupAction(input: {
@@ -265,38 +151,22 @@ export async function addSubjectGroupAction(input: {
   namePreferences?: Record<string, string>;
   writerId?: string;
 }) {
-  const session = await requireSession();
-  let createdId = "";
-  const now = Date.now();
+  await requireSession();
+  const token = await convexAuthNextjsToken();
+  if (!token) throw new Error("Unauthorized");
 
-  await updateUserState(
-    session.uid,
-    (state) => {
-      const id = "group_" + crypto.randomUUID().replace(/-/g, "").substring(0, 8);
-      state.subjectGroups.push({
-        id,
-        name: input.name,
-        subjectIds: input.subjectIds,
-        namePreferences: input.namePreferences || undefined,
-      });
-      createdId = id;
-    },
-    { writerId: input.writerId },
-  );
-
-  // Shadow Dual-Write to Convex
-  if (createdId) {
-    void shadowWriteToConvex("syncSubjectGroup", {
-      firebaseUid: session.uid,
-      slug: createdId,
+  const result = await fetchMutation(
+    api.subjects.addSubjectGroup,
+    {
       name: input.name,
       subjectIds: input.subjectIds,
-      namePreferences: input.namePreferences || undefined,
-      updatedAt: now,
-    });
-  }
+      namePreferences: input.namePreferences,
+      writerId: input.writerId,
+    },
+    { token },
+  );
 
-  return createdId || null;
+  return result?.slug || null;
 }
 
 export async function updateSubjectGroupAction(input: {
@@ -306,54 +176,41 @@ export async function updateSubjectGroupAction(input: {
   namePreferences?: Record<string, string>;
   writerId?: string;
 }) {
-  const session = await requireSession();
+  await requireSession();
+  const token = await convexAuthNextjsToken();
+  if (!token) throw new Error("Unauthorized");
   if (!input.id) return;
-  const now = Date.now();
 
-  await updateUserState(
-    session.uid,
-    (state) => {
-      const group = state.subjectGroups.find((g) => g.id === input.id);
-      if (group) {
-        group.name = input.name;
-        group.subjectIds = input.subjectIds;
-        group.namePreferences = input.namePreferences || undefined;
-      }
+  await fetchMutation(
+    api.subjects.updateSubjectGroup,
+    {
+      slug: input.id,
+      name: input.name,
+      subjectIds: input.subjectIds,
+      namePreferences: input.namePreferences,
+      writerId: input.writerId,
     },
-    { writerId: input.writerId },
+    { token },
   );
-
-  // Shadow Dual-Write to Convex
-  void shadowWriteToConvex("syncSubjectGroup", {
-    firebaseUid: session.uid,
-    slug: input.id,
-    name: input.name,
-    subjectIds: input.subjectIds,
-    namePreferences: input.namePreferences || undefined,
-    updatedAt: now,
-  });
 }
 
 export async function deleteSubjectGroupAction(input: {
   id: string;
   writerId?: string;
 }) {
-  const session = await requireSession();
+  await requireSession();
+  const token = await convexAuthNextjsToken();
+  if (!token) throw new Error("Unauthorized");
   if (!input.id) return;
 
-  await updateUserState(
-    session.uid,
-    (state) => {
-      state.subjectGroups = state.subjectGroups.filter((g) => g.id !== input.id);
+  await fetchMutation(
+    api.subjects.deleteSubjectGroup,
+    {
+      slug: input.id,
+      writerId: input.writerId,
     },
-    { writerId: input.writerId },
+    { token },
   );
-
-  // Shadow Dual-Write to Convex
-  void shadowWriteToConvex("syncDeleteSubjectGroup", {
-    firebaseUid: session.uid,
-    slug: input.id,
-  });
 }
 
 export async function updateSettingsAction(
@@ -361,118 +218,92 @@ export async function updateSettingsAction(
     writerId?: string;
   },
 ) {
-  const session = await requireSession();
-  const now = Date.now();
+  await requireSession();
+  const token = await convexAuthNextjsToken();
+  if (!token) throw new Error("Unauthorized");
 
-  const nextSettings = await updateUserSettings(
-    session.uid,
-    (settings) => {
-      if (input.theme !== undefined) {
-        settings.theme = normalizeTheme(input.theme);
-      }
-      if (input.locale !== undefined) {
-        settings.locale = normalizeAppLocale(input.locale);
-      }
-      if (input.useSchoolYear !== undefined) {
-        settings.useSchoolYear = input.useSchoolYear === true;
-      }
-    },
-    { writerId: input.writerId },
-  );
+  const updates: {
+    theme?: "light" | "dark";
+    locale?: "cs" | "en" | "pl";
+    useSchoolYear?: boolean;
+    writerId?: string;
+  } = {};
 
+  if (input.theme !== undefined) {
+    updates.theme = normalizeTheme(input.theme);
+  }
   if (input.locale !== undefined) {
+    updates.locale = normalizeAppLocale(input.locale);
     const cookieStore = await cookies();
-    cookieStore.set(LOCALE_COOKIE, nextSettings.locale, {
+    cookieStore.set(LOCALE_COOKIE, updates.locale, {
       httpOnly: false,
       sameSite: "lax",
       path: "/",
     });
   }
+  if (input.useSchoolYear !== undefined) {
+    updates.useSchoolYear = input.useSchoolYear === true;
+  }
+  if (input.writerId !== undefined) {
+    updates.writerId = input.writerId;
+  }
 
-  // Shadow Dual-Write to Convex
-  void shadowWriteToConvex("syncUserAndSettings", {
-    firebaseUid: session.uid,
-    theme: nextSettings.theme,
-    locale: nextSettings.locale,
-    useSchoolYear: nextSettings.useSchoolYear,
-    updatedAt: now,
-    writerId: input.writerId,
-  });
+  const result = await fetchMutation(
+    api.settings.updateSettings,
+    updates,
+    { token },
+  );
 
-  return nextSettings;
+  return result;
 }
 
 export async function addDeadlineAction(formData: FormData) {
-  const session = await requireSession();
+  await requireSession();
+  const token = await convexAuthNextjsToken();
+  if (!token) throw new Error("Unauthorized");
+
   const text = String(formData.get("text") || "").trim();
   const description = String(formData.get("description") || "").trim();
   const date = String(formData.get("date") || "").trim();
-  const id = crypto.randomUUID();
   if (!text || !date) return;
-  const now = Date.now();
-  const status = resolveDeadlineStatus({ date });
 
-  await updateUserState(session.uid, (state) => {
-    state.deadlines.push({
-      id: id,
+  await fetchMutation(
+    api.deadlines.addDeadline,
+    {
       text,
-      description,
+      description: description || undefined,
       date,
-      status,
-    });
-  });
-
-  // Shadow Dual-Write to Convex
-  void shadowWriteToConvex("syncDeadline", {
-    firebaseUid: session.uid,
-    deadlineId: id,
-    text,
-    description,
-    date,
-    status,
-    createdAt: now,
-    updatedAt: now,
-  });
+    },
+    { token },
+  );
 }
 
 export async function removeDeadlineAction(formData: FormData) {
-  const res = await modifyDeadlineById(formData, (state, id) => {
-    state.deadlines = state.deadlines.filter((item) => item.id !== id);
-  });
+  await requireSession();
+  const token = await convexAuthNextjsToken();
+  if (!token) throw new Error("Unauthorized");
 
-  // Shadow Dual-Write to Convex
-  if (res) {
-    void shadowWriteToConvex("syncRemoveDeadline", {
-      firebaseUid: res.session.uid,
-      deadlineId: res.id,
-    });
-  }
+  const deadlineId = String(formData.get("id") || "").trim();
+  if (!deadlineId) return;
+
+  await fetchMutation(
+    api.deadlines.removeDeadline,
+    { deadlineId },
+    { token },
+  );
 }
 
 export async function markAsDoneDeadlineAction(formData: FormData) {
-  let updatedItem: { text: string; description: string; date: string } | null = null;
+  await requireSession();
+  const token = await convexAuthNextjsToken();
+  if (!token) throw new Error("Unauthorized");
 
-  const res = await modifyDeadlineById(formData, (state, id) => {
-    state.deadlines = state.deadlines.map((item) => {
-      if (item.id === id) {
-        updatedItem = { text: item.text, description: item.description, date: item.date };
-        return { ...item, status: "done" };
-      }
-      return item;
-    });
-  });
+  const deadlineId = String(formData.get("id") || "").trim();
+  if (!deadlineId) return;
 
-  // Shadow Dual-Write to Convex
-  if (res && updatedItem) {
-    const item = updatedItem as { text: string; description: string; date: string };
-    void shadowWriteToConvex("syncDeadline", {
-      firebaseUid: res.session.uid,
-      deadlineId: res.id,
-      text: item.text,
-      description: item.description,
-      date: item.date,
-      status: "done",
-      updatedAt: Date.now(),
-    });
-  }
+  await fetchMutation(
+    api.deadlines.markAsDone,
+    { deadlineId },
+    { token },
+  );
 }

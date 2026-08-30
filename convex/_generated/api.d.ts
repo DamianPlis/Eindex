@@ -17,6 +17,7 @@ import type * as schedule from "../schedule.js";
 import type * as settings from "../settings.js";
 import type * as subjects from "../subjects.js";
 import type * as sync from "../sync.js";
+import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -34,6 +35,7 @@ declare const fullApi: ApiFromModules<{
   settings: typeof settings;
   subjects: typeof subjects;
   sync: typeof sync;
+  users: typeof users;
 }>;
 
 /**

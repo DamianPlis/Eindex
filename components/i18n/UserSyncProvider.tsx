@@ -9,8 +9,8 @@ import {
   useState,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "@/lib/firebase/client";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { getMessages, type AppMessages } from "@/lib/i18n/messages";
 import { getLocaleFromPathname, localizePath } from "@/lib/i18n/routing";
 import { normalizeAppLocale, type AppLocale } from "@/lib/i18n/config";
@@ -36,38 +36,6 @@ type UserSyncProviderProps = LocaleContextValue & {
   uid?: string | null;
 };
 
-function resolveSnapshotLocale(data: unknown): AppLocale | null {
-  if (!data || typeof data !== "object") return null;
-
-  const source = data as {
-    settings?: { locale?: unknown };
-    state?: { settings?: { locale?: unknown } };
-  };
-
-  // Prefer top-level settings; fall back to legacy state.settings
-  const rawLocale = source.settings?.locale ?? source.state?.settings?.locale;
-  if (rawLocale === undefined) return null;
-  return normalizeAppLocale(rawLocale);
-}
-
-/**
- * Extracts the theme from a Firestore user document snapshot.
- * Prefers the top-level settings field; falls back to legacy state.settings.
- */
-function resolveSnapshotTheme(data: unknown): AppTheme | null {
-  if (!data || typeof data !== "object") return null;
-
-  const source = data as {
-    settings?: { theme?: unknown };
-    state?: { settings?: { theme?: unknown } };
-  };
-
-  // Prefer top-level settings; fall back to legacy state.settings
-  const rawTheme = source.settings?.theme ?? source.state?.settings?.theme;
-  if (rawTheme === undefined) return null;
-  return rawTheme === "dark" ? "dark" : "light";
-}
-
 export function UserSyncProvider({
   locale,
   messages,
@@ -85,6 +53,10 @@ export function UserSyncProvider({
     locale: null,
   });
   const lastAppliedThemeRef = useRef<AppTheme | null>(null);
+
+  // Reactive subscription to user settings in Convex
+  const userSettings = useQuery(api.settings.getUserSettings);
+
   const activeLocale =
     uid && livePreference.uid === uid && livePreference.locale
       ? livePreference.locale
@@ -97,48 +69,22 @@ export function UserSyncProvider({
   }, []);
 
   useEffect(() => {
-    if (!uid) return;
+    if (!userSettings) return;
 
-    const unsubscribe = onSnapshot(
-      doc(db, "users", uid),
-      (snapshot) => {
-        if (!snapshot.exists()) return;
-        const data = snapshot.data();
+    if (userSettings.locale) {
+      const nextLocale = normalizeAppLocale(userSettings.locale);
+      setLivePreference((current) =>
+        current.uid === uid && current.locale === nextLocale
+          ? current
+          : { uid: uid || "authenticated", locale: nextLocale },
+      );
+    }
 
-        const nextLocale = resolveSnapshotLocale(data);
-        if (nextLocale) {
-          setLivePreference((current) =>
-            current.uid === uid && current.locale === nextLocale
-              ? current
-              : { uid, locale: nextLocale },
-          );
-        }
-
-        // Sync theme from Firestore → DOM + cookie.
-        // Firestore is the source of truth, but onSnapshot fires immediately
-        // with locally cached data which can be stale (e.g. theme was changed
-        // on this device via a server action, which updates the cookie but
-        // NOT the client-side Firestore cache). Skip cached snapshots that
-        // disagree with the current DOM theme to avoid a flash; only apply
-        // from server-confirmed data.
-        const nextTheme = resolveSnapshotTheme(data);
-        if (nextTheme && nextTheme !== lastAppliedThemeRef.current) {
-          const domTheme = document.documentElement.getAttribute("data-theme");
-          const isStaleCachedTheme =
-            snapshot.metadata.fromCache && nextTheme !== domTheme;
-          if (!isStaleCachedTheme) {
-            lastAppliedThemeRef.current = nextTheme;
-            applyTheme(nextTheme);
-          }
-        }
-      },
-      () => {
-        // noop
-      },
-    );
-
-    return unsubscribe;
-  }, [uid]);
+    if (userSettings.theme && userSettings.theme !== lastAppliedThemeRef.current) {
+      lastAppliedThemeRef.current = userSettings.theme as AppTheme;
+      applyTheme(userSettings.theme as AppTheme);
+    }
+  }, [userSettings, uid]);
 
   useEffect(() => {
     document.documentElement.lang = activeLocale;
@@ -147,11 +93,9 @@ export function UserSyncProvider({
   useEffect(() => {
     if (!pathname) return;
 
-    // Only force-redirect when a live Firestore preference is driving the
-    // locale. Without a uid or live preference the URL is the source of
-    // truth (e.g. the login-page locale switcher).
+    // Only force-redirect when a live preference is driving the locale.
     const hasLivePreference =
-      uid && livePreference.uid === uid && livePreference.locale;
+      livePreference.locale && livePreference.locale !== locale;
     if (!hasLivePreference) return;
 
     const query =
@@ -170,7 +114,7 @@ export function UserSyncProvider({
     return () => {
       window.clearTimeout(timeout);
     };
-  }, [activeLocale, pathname, router, uid, livePreference]);
+  }, [activeLocale, pathname, router, locale, livePreference]);
 
   return (
     <UidSetterContext.Provider value={setUid}>
