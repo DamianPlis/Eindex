@@ -2,21 +2,22 @@
 
 import { useFormStatus } from "react-dom";
 import { useMessages } from "@/components/i18n/UserSyncProvider";
-import { removeDeadlineAction } from "@/app/(app)/actions";
-import { useDeadlinesRefresh } from "@/components/deadlines/DeadlinesRefreshContext";
+import { useDeadlineActions } from "./DeadlineToastProvider";
 import RemoveIcon from "@/icons/close_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import s from "./Deadlines.module.css";
 import u from "@/components/ui/shared.module.css";
 
-function RemoveButton() {
+function RemoveButton({ id }: { id: string }) {
+  const { pendingIds } = useDeadlineActions();
   const messages = useMessages();
   const formStatus = useFormStatus();
-  const { pending } = formStatus;
+  const pending = formStatus.pending || pendingIds.has(id);
 
   return (
     <button
       className={`${s.removeButton} ${pending ? u.pending : ""}`}
       title={messages.deadlines.actions.remove}
+      aria-label={messages.deadlines.actions.remove}
       type="submit"
       disabled={pending}
       aria-busy={pending}
@@ -32,16 +33,15 @@ function RemoveButton() {
 }
 
 function RemoveDeadline({ deadline }: { deadline: { id: string } }) {
-  const { refreshDeadlines } = useDeadlinesRefresh();
+  const { perform } = useDeadlineActions();
   return (
     <form
-      action={async (formData) => {
-        await removeDeadlineAction(formData);
-        refreshDeadlines();
+      action={async () => {
+        await perform("remove", deadline.id);
       }}
     >
       <input type="hidden" name="id" value={deadline.id} />
-      <RemoveButton />
+      <RemoveButton id={deadline.id} />
     </form>
   );
 }

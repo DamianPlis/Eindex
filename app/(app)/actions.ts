@@ -13,6 +13,7 @@ import type { AppSettings } from "@/lib/settings/types";
 import { requireSession } from "@/lib/session";
 import type { ScheduleState, Slot } from "@/lib/schedule/types";
 import { shadowWriteToConvex } from "@/lib/convex/dual-write";
+import { restoreDeadline, type DeadlineUndo } from "@/lib/schedule/deadline-undo";
 
 type SlotUpdateInput = {
   weekStart: string;
@@ -436,25 +437,37 @@ export async function addDeadlineAction(formData: FormData) {
 }
 
 export async function removeDeadlineAction(formData: FormData) {
+  let undo: DeadlineUndo | null = null;
   const res = await modifyDeadlineById(formData, (state, id) => {
+    // Firestore can retry the transaction; capture only the committed attempt.
+    undo = null;
+    const index = state.deadlines.findIndex((item) => item.id === id);
+    if (index < 0) return;
+    undo = { kind: "remove", deadline: { ...state.deadlines[index] }, index, uid: "" };
     state.deadlines = state.deadlines.filter((item) => item.id !== id);
   });
 
   // Shadow Dual-Write to Convex
-  if (res) {
-    void shadowWriteToConvex("syncRemoveDeadline", {
+  if (res && undo) {
+    await shadowWriteToConvex("syncRemoveDeadline", {
       firebaseUid: res.session.uid,
       deadlineId: res.id,
     });
+    return { ...(undo as DeadlineUndo), uid: res.session.uid };
   }
+  return null;
 }
 
 export async function markAsDoneDeadlineAction(formData: FormData) {
+  let undo: DeadlineUndo | null = null;
   let updatedItem: { text: string; description: string; date: string } | null = null;
 
   const res = await modifyDeadlineById(formData, (state, id) => {
-    state.deadlines = state.deadlines.map((item) => {
-      if (item.id === id) {
+    undo = null;
+    updatedItem = null;
+    state.deadlines = state.deadlines.map((item, index) => {
+      if (item.id === id && item.status !== "done") {
+        undo = { kind: "done", deadline: { ...item }, index, uid: "" };
         updatedItem = { text: item.text, description: item.description, date: item.date };
         return { ...item, status: "done" };
       }
@@ -465,7 +478,7 @@ export async function markAsDoneDeadlineAction(formData: FormData) {
   // Shadow Dual-Write to Convex
   if (res && updatedItem) {
     const item = updatedItem as { text: string; description: string; date: string };
-    void shadowWriteToConvex("syncDeadline", {
+    await shadowWriteToConvex("syncDeadline", {
       firebaseUid: res.session.uid,
       deadlineId: res.id,
       text: item.text,
@@ -475,4 +488,23 @@ export async function markAsDoneDeadlineAction(formData: FormData) {
       updatedAt: Date.now(),
     });
   }
+  return res && undo ? { ...(undo as DeadlineUndo), uid: res.session.uid } : null;
+}
+
+export async function undoDeadlineAction(undo: DeadlineUndo) {
+  const session = await requireSession();
+  if (!undo || undo.uid !== session.uid) throw new Error("Invalid deadline undo");
+  const next = await updateUserState(session.uid, (state) => {
+    restoreDeadline(state.deadlines, undo);
+  });
+  const item = next.deadlines.find((deadline) => deadline.id === undo.deadline.id)!;
+  await shadowWriteToConvex("syncDeadline", {
+    firebaseUid: session.uid,
+    deadlineId: item.id,
+    text: item.text,
+    description: item.description,
+    date: item.date,
+    status: item.status,
+    updatedAt: Date.now(),
+  });
 }

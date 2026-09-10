@@ -149,6 +149,17 @@ export const plMessages = {
       done: "Ukończone",
       upcoming: "Nadchodzące",
     },
+    toast: {
+      notifications: "Powiadomienia",
+      removed: "Termin usunięty",
+      done: "Termin oznaczony jako ukończony",
+      restored: "Termin przywrócony",
+      undo: "Cofnij",
+      undoing: "Przywracanie…",
+      dismiss: "Zamknij powiadomienie",
+      actionFailed: "Nie udało się zapisać zmiany. Spróbuj ponownie.",
+      undoFailed: "Nie udało się cofnąć zmiany. Spróbuj ponownie.",
+    },
     actions: {
       markDone: "Oznacz jako ukończone",
       remove: "Usuń termin",

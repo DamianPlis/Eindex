@@ -12,6 +12,7 @@ import DeadlinesListSkeleton from "@/components/skeletons/DeadlinesListSkeleton"
 import { DeadlinesRefreshProvider } from "@/components/deadlines/DeadlinesRefreshContext";
 import d from "@/components/deadlines/Deadlines.module.css";
 import { generatePageMetadata } from "@/lib/metadata";
+import { DeadlineToastProvider } from "@/components/deadlines/DeadlineToastProvider";
 
 export async function generateMetadata({
   params,
@@ -20,7 +21,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   assertLocale(locale);
-  return generatePageMetadata({ page: "deadlines", locale, path: "/deadlines" });
+  return generatePageMetadata({
+    page: "deadlines",
+    locale,
+    path: "/deadlines",
+  });
 }
 
 export default async function LocaleDeadlinesPage({
@@ -28,32 +33,35 @@ export default async function LocaleDeadlinesPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
+  const session = await requireSession();
   const locale = assertLocale((await params).locale);
   const messages = getMessages(locale);
 
   return (
     <div className={d.deadlinesContainer}>
-      <DeadlinesRefreshProvider>
-        <div className={d.flexBetween}>
-          <h2 className={d.deadlinesTitle}>{messages.deadlines.title}</h2>
-          <AddDeadline />
+      <DeadlineToastProvider key={session.uid}>
+        <DeadlinesRefreshProvider>
+          <div className={d.flexBetween}>
+            <h2 className={d.deadlinesTitle}>{messages.deadlines.title}</h2>
+            <AddDeadline />
+          </div>
+
+          {/* Stream the deadlines list */}
+          <Suspense fallback={<DeadlinesListSkeleton />}>
+            <DeadlinesListContainer />
+          </Suspense>
+        </DeadlinesRefreshProvider>
+
+        <h2 className={d.deadlinesTitle}>
+          {messages.deadlines.statistics.statistics}
+        </h2>
+        <div className={d.statsContainer}>
+          {/* Stream the stats cards */}
+          <Suspense fallback={<StatsCardSkeleton />}>
+            <StatsCards />
+          </Suspense>
         </div>
-
-        {/* Stream the deadlines list */}
-        <Suspense fallback={<DeadlinesListSkeleton />}>
-          <DeadlinesListContainer />
-        </Suspense>
-      </DeadlinesRefreshProvider>
-
-      <h2 className={d.deadlinesTitle}>
-        {messages.deadlines.statistics.statistics}
-      </h2>
-      <div className={d.statsContainer}>
-        {/* Stream the stats cards */}
-        <Suspense fallback={<StatsCardSkeleton />}>
-          <StatsCards />
-        </Suspense>
-      </div>
+      </DeadlineToastProvider>
     </div>
   );
 }

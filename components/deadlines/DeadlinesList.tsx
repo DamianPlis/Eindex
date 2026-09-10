@@ -69,7 +69,7 @@ export default function DeadlinesList({ deadlines }: { deadlines: DeadlineItem[]
               </span>
               <div className={s.deadlineActions}>
                 <StatusPill status={deadline.status} />
-                <MarkDeadlineDone deadline={deadline} />
+                {deadline.status !== "done" ? <MarkDeadlineDone deadline={deadline} /> : null}
                 <RemoveDeadline deadline={deadline} />
               </div>
             </li>

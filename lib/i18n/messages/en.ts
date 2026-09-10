@@ -148,6 +148,17 @@ export const enMessages = {
       done: "Done",
       upcoming: "Upcoming",
     },
+    toast: {
+      notifications: "Notifications",
+      removed: "Deadline removed",
+      done: "Deadline marked as done",
+      restored: "Deadline restored",
+      undo: "Undo",
+      undoing: "Undoing…",
+      dismiss: "Dismiss notification",
+      actionFailed: "Couldn’t save the change. Please try again.",
+      undoFailed: "Couldn’t undo. Please try again.",
+    },
     actions: {
       markDone: "Mark deadline as done",
       remove: "Remove deadline",

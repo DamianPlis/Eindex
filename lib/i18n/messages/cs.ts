@@ -150,6 +150,17 @@ export const csMessages = {
       done: "Hotovo",
       upcoming: "Nadcházející",
     },
+    toast: {
+      notifications: "Oznámení",
+      removed: "Úkol odstraněn",
+      done: "Úkol označen jako hotový",
+      restored: "Úkol obnoven",
+      undo: "Vrátit zpět",
+      undoing: "Obnovování…",
+      dismiss: "Zavřít oznámení",
+      actionFailed: "Změnu se nepodařilo uložit. Zkuste to znovu.",
+      undoFailed: "Změnu se nepodařilo vrátit. Zkuste to znovu.",
+    },
     actions: {
       markDone: "Označit úkol jako hotový",
       remove: "Odstranit úkol",
