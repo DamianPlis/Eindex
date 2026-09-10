@@ -6,7 +6,6 @@ import SettingsLink from "@/components/layout/SettingsLink";
 import TopbarProfileMenu from "@/components/layout/TopbarProfileMenu";
 import ThemeRootSync from "@/components/settings/ThemeRootSync";
 import UidSync from "@/components/i18n/UidSync";
-import { DeadlineToastProvider } from "@/components/deadlines/DeadlineToastProvider";
 import { assertLocale } from "@/lib/i18n/server";
 import { getThemeCookie } from "@/lib/settings/theme-cookie";
 import s from "@/components/layout/AppShell.module.css";

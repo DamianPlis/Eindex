@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import StatusPill from "@/components/deadlines/StatusPill";
+import ArrowLeft from "@/icons/keyboard_arrow_left_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import Calendar from "@/icons/calendar_month_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import { getMessages } from "@/lib/i18n/messages";
 import { localizePath } from "@/lib/i18n/routing";
 import { assertLocale } from "@/lib/i18n/server";
@@ -9,8 +11,6 @@ import { formatDeadlineRelativeLabel } from "@/lib/schedule/selectors";
 import { getUserState } from "@/lib/schedule/store";
 import { getSession, requireSession } from "@/lib/session";
 import dp from "@/app/[locale]/(app)/deadlines/DeadlinesPage.module.css";
-import d from "@/components/deadlines/Deadlines.module.css";
-import u from "@/components/ui/shared.module.css";
 import { generatePageMetadata } from "@/lib/metadata";
 
 export async function generateMetadata({
@@ -29,7 +29,8 @@ export async function generateMetadata({
     const item = state.deadlines.find((d) => d.id === id);
     if (item) {
       customTitle = item.text;
-      customDescription = item.description || `Termín odevzdání úkolu: ${item.date}`;
+      customDescription =
+        item.description || `Termín odevzdání úkolu: ${item.date}`;
     }
   }
 
@@ -71,27 +72,66 @@ export default async function LocaleDeadlineDetailPage({
       ? messages.deadlines.homePage
       : messages.deadlines.deadlinesPage;
 
+  const dueDate = new Date(`${item.date}T12:00:00`);
+  const formattedDate = Number.isNaN(dueDate.getTime())
+    ? item.date
+    : new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(dueDate);
+
   return (
-    <div className={`${dp.detailContainer} ${u.container}`}>
-      <StatusPill status={item.status} />
-      <h2 className={dp.detailTitle}>{item.text}</h2>
-      <p className={dp.detailDue}>
-        {messages.deadlines.due}: {item.date}
-      </p>
-      <div className={`${d.reminderRelativeDate} ${dp.detailRelativeDate}`}>
-        {formatDeadlineRelativeLabel(item.date, locale)}
-      </div>
-      {item.description ? (
-        <div className={dp.detailDescriptionBlock}>
-          <p className={dp.detailDescriptionLabel}>
-            {messages.deadlines.description}
-          </p>
-          <p className={dp.detailDescriptionText}>{item.description}</p>
-        </div>
-      ) : null}
-      <Link href={backHref} className={u.inlineLink}>
-        {messages.deadlines.backTo} {backLabel}
+    <div className={dp.detailContainer}>
+      <Link href={backHref} className={dp.backLink}>
+        <ArrowLeft
+          width={20}
+          height={20}
+          fill="currentColor"
+          aria-hidden="true"
+        />
+        <span>
+          {messages.deadlines.backTo} {backLabel}
+        </span>
       </Link>
+      <article className={dp.detailCard} aria-labelledby="deadline-title">
+        <header className={dp.detailHeader}>
+          <div className={dp.detailHeading}>
+            <div className={dp.detailMeta}>
+              <StatusPill status={item.status} />
+            </div>
+            <h1 id="deadline-title" className={dp.detailTitle}>
+              {item.text}
+            </h1>
+          </div>
+          <div className={dp.detailDuePanel}>
+            <span className={dp.detailDueIcon}>
+              <Calendar
+                width={22}
+                height={22}
+                fill="currentColor"
+                aria-hidden="true"
+              />
+            </span>
+            <div className={dp.detailDueContent}>
+              <p className={dp.detailDueLabel}>{messages.deadlines.due}</p>
+              <time className={dp.detailDue} dateTime={item.date}>
+                {formattedDate}
+              </time>
+              <p className={dp.detailRelativeDate}>
+                {formatDeadlineRelativeLabel(item.date, locale)}
+              </p>
+            </div>
+          </div>
+        </header>
+        {item.description ? (
+          <section
+            className={dp.detailDescriptionBlock}
+            aria-labelledby="deadline-description"
+          >
+            <h2 id="deadline-description" className={dp.detailDescriptionLabel}>
+              {messages.deadlines.description}
+            </h2>
+            <p className={dp.detailDescriptionText}>{item.description}</p>
+          </section>
+        ) : null}
+      </article>
     </div>
   );
 }
