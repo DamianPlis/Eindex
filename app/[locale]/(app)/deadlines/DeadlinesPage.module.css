@@ -19,7 +19,9 @@
   transition: color 160ms ease, background-color 160ms ease;
 }
 
-.backLink svg { flex-shrink: 0; }
+.backLink svg {
+  flex-shrink: 0;
+}
 
 .backLink:hover {
   color: var(--accent-strong);
@@ -37,6 +39,9 @@
   border-radius: 20px;
   box-shadow: var(--shadow-container);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
 }
 
 .detailHeader {
@@ -44,11 +49,13 @@
   grid-template-columns: minmax(0, 1fr) minmax(240px, 280px);
   align-items: start;
   gap: 32px;
-  padding: 32px;
+  padding: 32px 32px 4px;
 }
 
 .detailHeading,
-.detailDueContent { min-width: 0; }
+.detailDueContent {
+  min-width: 0;
+}
 
 .detailMeta {
   display: flex;
@@ -58,20 +65,11 @@
   margin-bottom: 16px;
 }
 
-.detailEyebrow {
-  color: var(--text-soft);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .detailTitle {
   margin: 0;
   font-size: clamp(1.5rem, 3vw, 2rem);
   line-height: 1.25;
   font-weight: 750;
-  letter-spacing: -0.025em;
   overflow-wrap: anywhere;
 }
 
@@ -118,36 +116,46 @@
 }
 
 .detailDescriptionBlock {
-  padding: 28px 32px 32px;
-  border-top: 1px solid var(--border-light);
+  padding: 4px 32px 32px;
 }
 
 .detailDescriptionLabel {
   margin: 0 0 12px;
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 700;
 }
 
 .detailDescriptionText {
   max-width: 72ch;
   margin: 0;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   line-height: 1.8;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
 @media (max-width: 640px) {
-  .detailContainer { padding: 16px; }
-  .backLink { margin-bottom: 12px; }
+  .detailContainer {
+    padding: 16px;
+  }
+
+  .backLink {
+    margin-bottom: 12px;
+  }
+
   .detailHeader {
     grid-template-columns: minmax(0, 1fr);
     gap: 24px;
     padding: 24px 20px;
   }
-  .detailDescriptionBlock { padding: 24px 20px; }
+
+  .detailDescriptionBlock {
+    padding: 24px 20px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .backLink { transition: none; }
+  .backLink {
+    transition: none;
+  }
 }
