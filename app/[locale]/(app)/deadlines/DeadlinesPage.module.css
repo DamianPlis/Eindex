@@ -149,9 +149,6 @@
     padding: 24px 20px;
   }
 
-  .detailDescriptionBlock {
-    padding: 24px 20px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
