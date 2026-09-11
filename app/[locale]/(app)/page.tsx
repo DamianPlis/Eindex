@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import ArrowRightIcon from "@/icons/arrow_right_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import CalendarIcon from "@/icons/calendar_month_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import CheckIcon from "@/icons/check_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import StatusPill from "@/components/deadlines/StatusPill";
 import SlotBubble from "@/components/layout/SlotBubble";
 import { localizePath } from "@/lib/i18n/routing";
@@ -14,7 +17,7 @@ import {
   getTodayISO,
   getTomorrowISO,
   pickTodaySchedule,
-  splitDeadlines,
+  selectDashboardDeadlines,
 } from "@/lib/schedule/selectors";
 import { getCachedUserState, getUserState } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
@@ -86,7 +89,6 @@ export default async function LocaleMainPage({
           locale={locale}
           messages={messages}
           selectedISO={selectedISO}
-          isToday={isToday}
         />
       </Suspense>
 
@@ -117,52 +119,89 @@ async function RemindersContainer({
   locale,
   messages,
   selectedISO,
-  isToday,
 }: {
   uid: string;
   locale: AppLocale;
   messages: ReturnType<typeof getMessages>;
   selectedISO: string;
-  isToday: boolean;
 }) {
   const state = await getUserState(uid);
-  const deadlines = splitDeadlines(state.deadlines, selectedISO);
+  const deadlineSelection = selectDashboardDeadlines(
+    state.deadlines,
+    selectedISO,
+  );
+  const isAttentionMode = deadlineSelection.mode === "attention";
+  const panelTitle = isAttentionMode
+    ? messages.home.attentionTitle
+    : messages.home.upcomingTitle;
 
   return (
-    <>
-      <div className={d.remindersSection}>
-        {deadlines.length > 0 ? (
-          deadlines.map((item) => (
-            <div key={item.id} className={d.reminderCard}>
-              <div className={d.reminderContent}>
-                <div>
+    <section
+      className={d.remindersPanel}
+      aria-labelledby="dashboard-deadlines-title"
+    >
+      <header className={d.remindersHeader}>
+        <div className={d.remindersHeadingGroup}>
+          <span className={d.remindersIcon} aria-hidden="true">
+            <CalendarIcon fill="currentColor" />
+          </span>
+          <div>
+            <p className={d.remindersEyebrow}>
+              {messages.home.deadlinesOverview}
+            </p>
+            <h3 id="dashboard-deadlines-title" className={d.remindersTitle}>
+              {deadlineSelection.mode === "empty"
+                ? messages.home.allClearTitle
+                : panelTitle}
+            </h3>
+          </div>
+        </div>
+        <Link
+          className={d.remindersViewAll}
+          href={localizePath(locale, "/deadlines")}
+        >
+          <span>{messages.home.viewAllDeadlines}</span>
+          <ArrowRightIcon fill="currentColor" aria-hidden="true" />
+        </Link>
+      </header>
+
+      {deadlineSelection.mode === "empty" ? (
+        <div className={d.remindersEmptyState}>
+          <span className={d.remindersEmptyIcon} aria-hidden="true">
+            <CheckIcon fill="currentColor" />
+          </span>
+          <p>{messages.home.allClearDescription}</p>
+        </div>
+      ) : (
+        <ul>
+          {deadlineSelection.items.map((item) => (
+            <li key={item.id}>
+              <div className={d.deadlineItem}>
+                <span className={d.reminderBody}>
                   <Link
-                    className={u.inlineLink}
                     href={localizePath(
                       locale,
                       `/deadlines/${item.id}?redirect=main`,
                     )}
+                    className={u.inlineLink}
                   >
                     {item.text}
                   </Link>
-                  <div className={d.reminderDate}>{item.date}</div>
-                  <div className={d.reminderRelativeDate}>
-                    {formatDeadlineRelativeLabel(item.date, locale)}
-                  </div>
-                </div>
+                  <span className={d.reminderTiming}>
+                    <time dateTime={item.date}>{item.date}</time>
+                    <span aria-hidden="true">·</span>
+                    <span>
+                      {formatDeadlineRelativeLabel(item.date, locale)}
+                    </span>
+                  </span>
+                </span>
                 <StatusPill status={item.status} />
               </div>
-            </div>
-          ))
-        ) : (
-          <div className={d.emptyState}>
-            {isToday
-              ? messages.home.noDeadlinesForToday
-              : messages.home.noDeadlinesForTomorrow}
-          </div>
-        )}
-      </div>
-    </>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 
@@ -202,7 +241,11 @@ async function ScheduleListContainer({
             slot.subjectId === "lunch" ||
             slot.fixedKey === "lunch" ||
             /obed|lunch/i.test(slot.fixedLabel || "");
-          const lunchText = isLunch ? (lunchPerDay[selectedDateISO] || messages.home.menuUnavailable || "Menu unavailable") : "";
+          const lunchText = isLunch
+            ? lunchPerDay[selectedDateISO] ||
+              messages.home.menuUnavailable ||
+              "Menu unavailable"
+            : "";
           const title = slot.fixed
             ? getFixedSlotDisplayName(slot, messages)
             : getSubjectDisplayName(subject, messages) || slot.topic || "-";

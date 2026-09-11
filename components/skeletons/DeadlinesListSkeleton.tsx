@@ -2,7 +2,7 @@ import SkeletonLine from "./SkeletonLine";
 import SkeletonListItems from "./SkeletonListItems";
 import sk from "./Skeletons.module.css";
 
-export default function DealinesListSkeleton() {
+export default function DeadlinesListSkeleton() {
   return (
     <>
       <div className={sk.deadlinesSkeletonToggle}>
