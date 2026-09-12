@@ -19,7 +19,7 @@ export default function RemindersListSkeleton() {
         {Array.from({ length: 3 }).map((_, index) => (
           <li key={index}>
             <div className={d.deadlineItem}>
-              <div className={d.reminderBody}>
+              <div className={d.deadlineBody}>
                 <SkeletonLine className={`${sk.textLineLg} ${sk.noMargin}`} />
                 <SkeletonLine className={`${sk.textLineSm} ${sk.noMargin}`} />
               </div>

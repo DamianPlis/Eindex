@@ -14,7 +14,11 @@ import DeadlinesListSkeleton from "@/components/skeletons/DeadlinesListSkeleton"
 import s from "./Deadlines.module.css";
 import u from "@/components/ui/shared.module.css";
 
-export default function DeadlinesList({ deadlines }: { deadlines: DeadlineItem[] }) {
+export default function DeadlinesList({
+  deadlines,
+}: {
+  deadlines: DeadlineItem[];
+}) {
   const locale = useAppLocale();
   const messages = useMessages();
   const { isRefreshing } = useDeadlinesRefresh();
@@ -55,21 +59,26 @@ export default function DeadlinesList({ deadlines }: { deadlines: DeadlineItem[]
         {visibleDeadlines.map((deadline) => {
           return (
             <li key={deadline.id} className={s.deadlineItem}>
-              <span>
+              <span className={s.deadlineBody}>
                 <Link
                   className={u.inlineLink}
                   href={localizePath(locale, `/deadlines/${deadline.id}`)}
                 >
                   {deadline.text}
-                </Link>{" "}
-                - {deadline.date}
-                <div className={s.reminderRelativeDate}>
-                  {formatDeadlineRelativeLabel(deadline.date, locale)}
-                </div>
+                </Link>
+                <span className={s.deadlineTiming}>
+                  <time dateTime={deadline.date}>{deadline.date}</time>
+                  <span aria-hidden="true">·</span>
+                  <span>
+                    {formatDeadlineRelativeLabel(deadline.date, locale)}
+                  </span>
+                </span>
               </span>
               <div className={s.deadlineActions}>
                 <StatusPill status={deadline.status} />
-                {deadline.status !== "done" ? <MarkDeadlineDone deadline={deadline} /> : null}
+                {deadline.status !== "done" ? (
+                  <MarkDeadlineDone deadline={deadline} />
+                ) : null}
                 <RemoveDeadline deadline={deadline} />
               </div>
             </li>

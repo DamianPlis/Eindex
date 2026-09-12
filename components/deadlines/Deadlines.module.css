@@ -252,14 +252,15 @@
   outline-offset: 2px;
 }
 
-.reminderBody {
+.deadlineBody {
   display: flex;
+  min-width: 0;
   flex: 1;
   flex-direction: column;
   gap: 5px;
 }
 
-.reminderTiming {
+.deadlineTiming {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -269,12 +270,8 @@
   line-height: 1.2;
 }
 
-.reminderTiming time {
+.deadlineTiming time {
   font-variant-numeric: tabular-nums;
-}
-
-.reminderRelativeDate {
-  color: var(--muted);
 }
 
 .remindersEmptyState {

@@ -177,7 +177,7 @@ async function RemindersContainer({
           {deadlineSelection.items.map((item) => (
             <li key={item.id}>
               <div className={d.deadlineItem}>
-                <span className={d.reminderBody}>
+                <span className={d.deadlineBody}>
                   <Link
                     href={localizePath(
                       locale,
@@ -187,7 +187,7 @@ async function RemindersContainer({
                   >
                     {item.text}
                   </Link>
-                  <span className={d.reminderTiming}>
+                  <span className={d.deadlineTiming}>
                     <time dateTime={item.date}>{item.date}</time>
                     <span aria-hidden="true">·</span>
                     <span>
