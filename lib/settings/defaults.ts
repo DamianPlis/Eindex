@@ -5,6 +5,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   theme: "light",
   locale: DEFAULT_LOCALE,
   useSchoolYear: false,
+  planningSubjectSort: "count-desc",
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -15,6 +16,14 @@ export function normalizeTheme(value: unknown): AppTheme {
   return value === "dark" ? "dark" : "light";
 }
 
+export function normalizePlanningSubjectSort(
+  value: unknown,
+): AppSettings["planningSubjectSort"] {
+  return value === "count-asc" || value === "name-asc" || value === "name-desc"
+    ? value
+    : "count-desc";
+}
+
 export function normalizeSettings(raw: unknown): AppSettings {
   if (!isRecord(raw)) return { ...DEFAULT_SETTINGS };
 
@@ -22,6 +31,6 @@ export function normalizeSettings(raw: unknown): AppSettings {
     theme: normalizeTheme(raw.theme),
     locale: normalizeAppLocale(raw.locale),
     useSchoolYear: raw.useSchoolYear === true,
+    planningSubjectSort: normalizePlanningSubjectSort(raw.planningSubjectSort),
   };
 }
-

@@ -2,6 +2,13 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 import { authTables } from "@convex-dev/auth/server";
 
+export const planningSubjectSortValidator = v.union(
+  v.literal("count-desc"),
+  v.literal("count-asc"),
+  v.literal("name-asc"),
+  v.literal("name-desc"),
+);
+
 export default defineSchema({
   // Authentication tables provided by @convex-dev/auth (users, authSessions, authAccounts, etc.)
   ...authTables,
@@ -33,6 +40,7 @@ export default defineSchema({
     theme: v.union(v.literal("light"), v.literal("dark")),
     locale: v.union(v.literal("cs"), v.literal("en"), v.literal("pl")),
     useSchoolYear: v.boolean(),
+    planningSubjectSort: v.optional(planningSubjectSortValidator),
     updatedAt: v.number(),
     lastWriter: v.optional(v.string()),
   })

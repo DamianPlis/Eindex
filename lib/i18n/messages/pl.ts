@@ -43,6 +43,13 @@ export const plMessages = {
       "Nie udało się zapisać języka. Spróbuj ponownie później.",
     languageAlreadyActive: "Język polski jest już aktywny.",
     subjects: "Przedmioty",
+    subjectSort: "Kolejność przedmiotów w planowaniu",
+    subjectSortDescription:
+      "Wybierz sposób sortowania przedmiotów w menu wyboru podczas wypełniania planu zajęć.",
+    mostUsed: "Najczęściej używane",
+    leastUsed: "Najrzadziej używane",
+    subjectSortSaveError:
+      "Nie udało się zapisać kolejności przedmiotów. Spróbuj ponownie później.",
     statisticsSection: "Statystyki",
     useSchoolYear: "Użyj roku szkolnego",
     useSchoolYearDescription:

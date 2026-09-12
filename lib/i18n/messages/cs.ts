@@ -44,6 +44,13 @@ export const csMessages = {
     languageSaveError: "Jazyk se nepodařilo uložit. Zkuste to prosím později.",
     languageAlreadyActive: "Čeština je již aktivní.",
     subjects: "Předměty",
+    subjectSort: "Řazení předmětů v plánování",
+    subjectSortDescription:
+      "Vyberte, jak mají být třízené předměty ve výběru při vyplňování rozvrhu.",
+    mostUsed: "Nejpoužívanější",
+    leastUsed: "Nejméně používané",
+    subjectSortSaveError:
+      "Řazení předmětů se nepodařilo uložit. Zkuste to prosím později.",
     statisticsSection: "Statistiky",
     useSchoolYear: "Používat školní rok",
     useSchoolYearDescription:

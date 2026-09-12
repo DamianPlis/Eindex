@@ -28,7 +28,8 @@ import { getClientId } from "@/lib/sync/client-id";
 import type { AppLocale } from "@/lib/i18n/config";
 import { useSettingsRefresh } from "@/components/settings/SettingsRefreshContext";
 
-type PendingAction = "theme" | "locale" | "schoolYear" | null;
+type PendingAction =
+  "theme" | "locale" | "schoolYear" | "planningSubjectSort" | null;
 
 type SettingsContextValue = {
   settings: AppSettings;
@@ -41,6 +42,9 @@ type SettingsContextValue = {
   handleThemeSelect: (theme: AppTheme) => void;
   handleLocaleChange: (locale: AppLocale) => void;
   handleSchoolYearToggle: (checked: boolean) => void;
+  handlePlanningSubjectSortChange: (
+    sort: AppSettings["planningSubjectSort"],
+  ) => void;
   handleAddSubject: () => void;
   handleUpdateSubject: (id: string) => void;
   handleDeleteSubject: (id: string) => void;
@@ -196,6 +200,32 @@ export default function SettingsProvider({
     });
   }
 
+  function handlePlanningSubjectSortChange(
+    planningSubjectSort: AppSettings["planningSubjectSort"],
+  ) {
+    if (planningSubjectSort === settings.planningSubjectSort) return;
+    const previousSettings = settings;
+    setSettings({ ...settings, planningSubjectSort });
+    setPendingAction("planningSubjectSort");
+    setErrorMessage("");
+    startTransition(async () => {
+      try {
+        setSettings(
+          await updateSettingsAction({
+            planningSubjectSort,
+            writerId: clientIdRef.current,
+          }),
+        );
+        refreshSettings();
+      } catch {
+        setSettings(previousSettings);
+        setErrorMessage(messages.settings.subjectSortSaveError);
+      } finally {
+        setPendingAction(null);
+      }
+    });
+  }
+
   function handleAddSubject() {
     setCustomModalOpen(true);
   }
@@ -307,6 +337,7 @@ export default function SettingsProvider({
         handleThemeSelect,
         handleLocaleChange,
         handleSchoolYearToggle,
+        handlePlanningSubjectSortChange,
         handleAddSubject,
         handleUpdateSubject,
         handleDeleteSubject,

@@ -1,5 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { planningSubjectSortValidator } from "./schema";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const getUserSettings = query({
@@ -21,9 +22,10 @@ export const updateSettings = mutation({
   args: {
     theme: v.optional(v.union(v.literal("light"), v.literal("dark"))),
     locale: v.optional(
-      v.union(v.literal("cs"), v.literal("en"), v.literal("pl"))
+      v.union(v.literal("cs"), v.literal("en"), v.literal("pl")),
     ),
     useSchoolYear: v.optional(v.boolean()),
+    planningSubjectSort: v.optional(planningSubjectSortValidator),
     writerId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -44,6 +46,8 @@ export const updateSettings = mutation({
       if (args.useSchoolYear !== undefined)
         updates.useSchoolYear = args.useSchoolYear;
       if (args.writerId !== undefined) updates.lastWriter = args.writerId;
+      if (args.planningSubjectSort !== undefined)
+        updates.planningSubjectSort = args.planningSubjectSort;
 
       await ctx.db.patch(existing._id, updates);
       return { ...existing, ...updates };
@@ -54,6 +58,7 @@ export const updateSettings = mutation({
       theme: args.theme ?? ("light" as const),
       locale: args.locale ?? ("cs" as const),
       useSchoolYear: args.useSchoolYear ?? false,
+      planningSubjectSort: args.planningSubjectSort ?? "count-desc",
       updatedAt: now,
       lastWriter: args.writerId,
     };

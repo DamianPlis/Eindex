@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import PlanningPageClient from "@/components/pages/PlanningPageClient";
 import { buildDaysForWeek, normalizeWeekKey } from "@/lib/schedule/defaults";
-import { getUserState } from "@/lib/schedule/store";
+import { getUserSettings, getUserState } from "@/lib/schedule/store";
+import { sortPlanningSubjects } from "@/lib/schedule/stats";
+import { getMessages } from "@/lib/i18n/messages";
+import type { AppLocale } from "@/lib/i18n/config";
 import { requireSession } from "@/lib/session";
 import { assertLocale } from "@/lib/i18n/server";
 import { Suspense } from "react";
@@ -31,26 +34,33 @@ export default async function LocalePlanningPage({
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ week?: string }>;
 }) {
-  assertLocale((await params).locale);
+  const locale = assertLocale((await params).locale);
   const query = await searchParams;
   const weekStart = normalizeWeekKey(query.week);
 
   return (
     <Suspense key={`planning-${weekStart}`} fallback={<PlanningPageSkeleton />}>
-      <PlanningPageContent weekStart={weekStart} />
+      <PlanningPageContent weekStart={weekStart} locale={locale} />
     </Suspense>
   );
 }
 
-async function PlanningPageContent({ weekStart }: { weekStart: string }) {
+async function PlanningPageContent({
+  weekStart,
+  locale,
+}: {
+  weekStart: string;
+  locale: AppLocale;
+}) {
   const session = await requireSession();
-  const state = await getUserState(session.uid);
+  const [state, settings] = await Promise.all([
+    getUserState(session.uid),
+    getUserSettings(session.uid),
+  ]);
   const week = state.weeks[weekStart] || {
     weekStart,
     days: buildDaysForWeek(weekStart),
   };
-
-
 
   return (
     <PlanningPageClient
@@ -59,7 +69,13 @@ async function PlanningPageContent({ weekStart }: { weekStart: string }) {
       prevWeek={shiftWeek(weekStart, -1)}
       nextWeek={shiftWeek(weekStart, 1)}
       days={week.days}
-      subjects={state.subjects}
+      subjects={sortPlanningSubjects(
+        state.subjects,
+        state,
+        locale,
+        settings.planningSubjectSort,
+        getMessages(locale),
+      )}
     />
   );
 }

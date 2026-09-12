@@ -174,6 +174,21 @@ export default function PlanningPageClient({
 }: PlanningPageClientProps) {
   const locale = useAppLocale();
   const messages = useMessages();
+  // Keep the opening order across server refreshes. New subjects join at the end.
+  const [subjectOrder, setSubjectOrder] = useState(() =>
+    subjects.map((subject) => subject.id),
+  );
+  const knownIds = new Set(subjectOrder);
+  const addedIds = subjects
+    .filter((subject) => !knownIds.has(subject.id))
+    .map((subject) => subject.id);
+  if (addedIds.length > 0) setSubjectOrder([...subjectOrder, ...addedIds]);
+  const subjectsById = new Map(
+    subjects.map((subject) => [subject.id, subject]),
+  );
+  const stableSubjects = subjectOrder
+    .map((id) => subjectsById.get(id))
+    .filter((subject): subject is Subject => Boolean(subject));
   const containerRef = useRef<HTMLDivElement | null>(null);
   const pendingSubjectUpdatesRef = useRef<Record<string, string | null>>({});
   const lastSyncedTopicsRef = useRef<Record<string, string>>({});
@@ -492,7 +507,7 @@ export default function PlanningPageClient({
                       slot={slot}
                       dayIndex={dayIndex}
                       slotIndex={slotIndex}
-                      subjects={subjects}
+                      subjects={stableSubjects}
                       messages={messages}
                       currentSubjectValue={currentSubjectValue(slot)}
                       currentTopicValue={currentTopicValue(slot)}

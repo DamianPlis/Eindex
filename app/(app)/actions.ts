@@ -8,7 +8,10 @@ import {
   updateUserSettings,
   updateUserState,
 } from "@/lib/schedule/store";
-import { normalizeTheme } from "@/lib/settings/defaults";
+import {
+  normalizePlanningSubjectSort,
+  normalizeTheme,
+} from "@/lib/settings/defaults";
 import type { AppSettings } from "@/lib/settings/types";
 import { requireSession } from "@/lib/session";
 import type { ScheduleState, Slot } from "@/lib/schedule/types";
@@ -377,6 +380,11 @@ export async function updateSettingsAction(
       if (input.useSchoolYear !== undefined) {
         settings.useSchoolYear = input.useSchoolYear === true;
       }
+      if (input.planningSubjectSort !== undefined) {
+        settings.planningSubjectSort = normalizePlanningSubjectSort(
+          input.planningSubjectSort,
+        );
+      }
     },
     { writerId: input.writerId },
   );
@@ -396,6 +404,7 @@ export async function updateSettingsAction(
     theme: nextSettings.theme,
     locale: nextSettings.locale,
     useSchoolYear: nextSettings.useSchoolYear,
+    planningSubjectSort: nextSettings.planningSubjectSort,
     updatedAt: now,
     writerId: input.writerId,
   });

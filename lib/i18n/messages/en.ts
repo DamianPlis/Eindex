@@ -42,6 +42,12 @@ export const enMessages = {
     languageSaveError: "Could not save your language. Try again later.",
     languageAlreadyActive: "English is already active.",
     subjects: "Subjects",
+    subjectSort: "Subject order in Planning",
+    subjectSortDescription:
+      "Choose how subjects will be sorted in the selection menu when you are filling in your timetable",
+    mostUsed: "Most used",
+    leastUsed: "Least used",
+    subjectSortSaveError: "Could not save the subject order. Try again later.",
     statisticsSection: "Statistics",
     useSchoolYear: "Use school year",
     useSchoolYearDescription:

@@ -1,5 +1,6 @@
 import { mutation, type MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
+import { planningSubjectSortValidator } from "./schema";
 import type { Id } from "./_generated/dataModel";
 
 /**
@@ -62,6 +63,7 @@ export const syncUserAndSettings = mutation({
     theme: v.union(v.literal("light"), v.literal("dark")),
     locale: v.union(v.literal("cs"), v.literal("en"), v.literal("pl")),
     useSchoolYear: v.boolean(),
+    planningSubjectSort: v.optional(planningSubjectSortValidator),
     writerId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -71,7 +73,7 @@ export const syncUserAndSettings = mutation({
       args.email,
       args.name,
       args.image,
-      args.createdAt
+      args.createdAt,
     );
 
     const existingSettings = await ctx.db
@@ -86,6 +88,10 @@ export const syncUserAndSettings = mutation({
         theme: args.theme,
         locale: args.locale,
         useSchoolYear: args.useSchoolYear,
+        planningSubjectSort:
+          args.planningSubjectSort ??
+          existingSettings.planningSubjectSort ??
+          "count-desc",
         updatedAt: now,
         lastWriter: args.writerId,
       });
@@ -97,6 +103,7 @@ export const syncUserAndSettings = mutation({
       theme: args.theme,
       locale: args.locale,
       useSchoolYear: args.useSchoolYear,
+      planningSubjectSort: args.planningSubjectSort ?? "count-desc",
       updatedAt: now,
       lastWriter: args.writerId,
     });
