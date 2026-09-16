@@ -13,7 +13,6 @@ import type * as dashboard from "../dashboard.js";
 import type * as deadlines from "../deadlines.js";
 import type * as http from "../http.js";
 import type * as lunches from "../lunches.js";
-import type * as migrateUsers from "../../scripts/migrateUsers.js";
 import type * as schedule from "../schedule.js";
 import type * as settings from "../settings.js";
 import type * as subjects from "../subjects.js";
@@ -32,7 +31,6 @@ declare const fullApi: ApiFromModules<{
   deadlines: typeof deadlines;
   http: typeof http;
   lunches: typeof lunches;
-  migrateUsers: typeof migrateUsers;
   schedule: typeof schedule;
   settings: typeof settings;
   subjects: typeof subjects;

@@ -1,5 +1,4 @@
 import { mutation } from "../convex/_generated/server";
-import { v } from "convex/values";
 
 /**
  * Reconciles legacy users with newly created Convex Auth users:

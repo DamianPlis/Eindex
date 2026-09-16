@@ -1,5 +1,28 @@
 # Eindex
 
+## Convex migration: local authentication
+
+The current login flow uses **Convex Auth with Google**. The Firebase sections
+below describe the earlier architecture and migration dependencies.
+
+Run `npm run dev` to sync the development Convex backend, then start Next.js
+and keep both watching for changes. For separate terminals, use
+`npm run dev:backend` and `npm run dev:frontend`.
+
+Your `.env.local` must select the same development deployment in
+`CONVEX_DEPLOYMENT`, `NEXT_PUBLIC_CONVEX_URL` (the `.convex.cloud` URL), and
+`NEXT_PUBLIC_CONVEX_SITE_URL` (the `.convex.site` URL). On that Convex deployment,
+configure `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `JWT_PRIVATE_KEY`, `JWKS`, and
+`SITE_URL` (`http://localhost:3000` for local development). Google must allow
+`https://<deployment>.convex.site/api/auth/callback/google` as a redirect URI;
+use the full site hostname, including the region when present.
+
+If login reports `NoAuthProvider` with **no providers configured**, confirm the
+deployment URLs match and run `npx convex dev --once` to push
+`convex/auth.config.ts`. Starting Next.js alone does not deploy this file, and
+clearing cookies cannot register a missing backend token provider. See the
+[Convex Auth setup](https://labs.convex.dev/auth/setup/manual).
+
 **A server-first Next.js school planning application** built with React 19, Firebase, and internationalization support. Eindex helps students track their weekly schedule, manage homework deadlines, and view school lunch menus — all synced across devices in real-time.
 
 ---
