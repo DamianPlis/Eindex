@@ -4,22 +4,35 @@ import * as path from "path";
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
-import { applicationDefault, cert, getApps, initializeApp, type ServiceAccount } from "firebase-admin/app";
+import {
+  applicationDefault,
+  cert,
+  getApps,
+  initializeApp,
+  type ServiceAccount,
+} from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
-import { ConvexHttpClient } from "convex/browser";
-import { api } from "../convex/_generated/api";
+import { migrationClient } from "./convex-admin";
+import { normalizePlanningSubjectSort } from "../lib/settings/defaults";
+import { internal } from "../convex/_generated/api";
 
 const convexUrl = process.argv[2] || process.env.NEXT_PUBLIC_CONVEX_URL;
 if (!convexUrl) {
-  console.error("Error: NEXT_PUBLIC_CONVEX_URL environment variable is missing.");
+  console.error(
+    "Error: NEXT_PUBLIC_CONVEX_URL environment variable is missing.",
+  );
   process.exit(1);
 }
 
 console.log(`Targeting Convex Deployment: ${convexUrl}`);
-const convex = new ConvexHttpClient(convexUrl);
+const convex = migrationClient(convexUrl);
 
-async function callWithRetry<T>(fn: () => Promise<T>, retries = 5, delay = 500): Promise<T> {
+async function callWithRetry<T>(
+  fn: () => Promise<T>,
+  retries = 5,
+  delay = 500,
+): Promise<T> {
   try {
     return await fn();
   } catch (err) {
@@ -32,7 +45,10 @@ async function callWithRetry<T>(fn: () => Promise<T>, retries = 5, delay = 500):
 
 function cleanEnv(value: string | undefined): string {
   if (!value) return "";
-  return value.trim().replace(/^['"]|['"]$/g, "").replace(/,$/, "");
+  return value
+    .trim()
+    .replace(/^['"]|['"]$/g, "")
+    .replace(/,$/, "");
 }
 
 function toMillis(value: unknown): number {
@@ -59,13 +75,18 @@ function loadServiceAccountFromEnv(): ServiceAccount | null {
       }
       return parsed;
     } catch {
-      throw new Error("FIREBASE_ADMIN_CREDENTIALS is set but is not valid JSON.");
+      throw new Error(
+        "FIREBASE_ADMIN_CREDENTIALS is set but is not valid JSON.",
+      );
     }
   }
 
   const projectId = cleanEnv(process.env.FIREBASE_PROJECT_ID);
   const clientEmail = cleanEnv(process.env.FIREBASE_CLIENT_EMAIL);
-  const privateKey = cleanEnv(process.env.FIREBASE_PRIVATE_KEY).replace(/\\n/g, "\n");
+  const privateKey = cleanEnv(process.env.FIREBASE_PRIVATE_KEY).replace(
+    /\\n/g,
+    "\n",
+  );
 
   if (projectId && clientEmail && privateKey) {
     return {
@@ -122,10 +143,13 @@ async function migrateAllUsers() {
     const firestoreUpdatedAt = toMillis(data.updatedAt);
     const firestoreCreatedAt = toMillis(data.createdAt);
 
-    const realUserCreatedAt = authCreatedAt || firestoreCreatedAt || firestoreUpdatedAt || Date.now();
+    const realUserCreatedAt =
+      authCreatedAt || firestoreCreatedAt || firestoreUpdatedAt || Date.now();
     const realUserUpdatedAt = firestoreUpdatedAt || realUserCreatedAt;
 
-    console.log(`\nMigrating user: ${firebaseUid} (created: ${new Date(realUserCreatedAt).toISOString()})...`);
+    console.log(
+      `\nMigrating user: ${firebaseUid} (created: ${new Date(realUserCreatedAt).toISOString()})...`,
+    );
 
     // 1. Sync User & Settings with real createdAt & updatedAt
     const rawSettings = data.settings || data.state?.settings || {};
@@ -136,7 +160,7 @@ async function migrateAllUsers() {
     const useSchoolYear = rawSettings.useSchoolYear === true;
 
     await callWithRetry(() =>
-      convex.mutation(api.sync.syncUserAndSettings, {
+      convex.call(internal.sync.syncUserAndSettings, {
         firebaseUid,
         email: authUser?.email || undefined,
         name: authUser?.displayName || undefined,
@@ -146,7 +170,10 @@ async function migrateAllUsers() {
         theme,
         locale,
         useSchoolYear,
-      })
+        planningSubjectSort: normalizePlanningSubjectSort(
+          rawSettings.planningSubjectSort,
+        ),
+      }),
     );
 
     // 2. Sync Subjects
@@ -158,7 +185,7 @@ async function migrateAllUsers() {
       const subjCreatedAt = toMillis(s.createdAt) || realUserCreatedAt;
 
       await callWithRetry(() =>
-        convex.mutation(api.sync.syncSubject, {
+        convex.call(internal.sync.syncSubject, {
           firebaseUid,
           slug: s.id,
           name: s.name,
@@ -166,7 +193,7 @@ async function migrateAllUsers() {
           order: i,
           createdAt: subjCreatedAt,
           updatedAt: subjUpdatedAt,
-        })
+        }),
       );
       totalSubjects++;
     }
@@ -179,7 +206,7 @@ async function migrateAllUsers() {
       const groupUpdatedAt = toMillis(g.updatedAt) || realUserUpdatedAt;
 
       await callWithRetry(() =>
-        convex.mutation(api.sync.syncSubjectGroup, {
+        convex.call(internal.sync.syncSubjectGroup, {
           firebaseUid,
           slug: g.id,
           name: g.name,
@@ -187,7 +214,7 @@ async function migrateAllUsers() {
           namePreferences: g.namePreferences || undefined,
           order: i,
           updatedAt: groupUpdatedAt,
-        })
+        }),
       );
       totalGroups++;
     }
@@ -204,7 +231,7 @@ async function migrateAllUsers() {
       const deadlineUpdatedAt = toMillis(d.updatedAt) || realUserUpdatedAt;
 
       await callWithRetry(() =>
-        convex.mutation(api.sync.syncDeadline, {
+        convex.call(internal.sync.syncDeadline, {
           firebaseUid,
           deadlineId: d.id,
           text: d.text,
@@ -213,13 +240,18 @@ async function migrateAllUsers() {
           status,
           createdAt: deadlineCreatedAt,
           updatedAt: deadlineUpdatedAt,
-        })
+        }),
       );
       totalDeadlines++;
     }
 
     // 5. Sync Weeks & Slots with real timestamps (Batched)
-    const weeks = (data.state?.weeks || {}) as Record<string, { days?: Array<{ date?: string; slots?: Array<Record<string, unknown>> }> }>;
+    const weeks = (data.state?.weeks || {}) as Record<
+      string,
+      {
+        days?: Array<{ date?: string; slots?: Array<Record<string, unknown>> }>;
+      }
+    >;
     const userSlots: Array<{
       weekStart: string;
       date: string;
@@ -227,7 +259,13 @@ async function migrateAllUsers() {
       slotIndex: number;
       time: string;
       fixed: boolean;
-      fixedKey?: "morningCircle" | "currentEvents" | "lunch" | "tutor" | "pe" | "assembly";
+      fixedKey?:
+        | "morningCircle"
+        | "currentEvents"
+        | "lunch"
+        | "tutor"
+        | "pe"
+        | "assembly";
       fixedLabel?: string;
       allowTopic: boolean;
       subjectId: string | null;
@@ -258,7 +296,13 @@ async function migrateAllUsers() {
             "pe",
             "assembly",
           ].includes(String(slot.fixedKey))
-            ? (slot.fixedKey as "morningCircle" | "currentEvents" | "lunch" | "tutor" | "pe" | "assembly")
+            ? (slot.fixedKey as
+                | "morningCircle"
+                | "currentEvents"
+                | "lunch"
+                | "tutor"
+                | "pe"
+                | "assembly")
             : undefined;
 
           userSlots.push({
@@ -269,9 +313,11 @@ async function migrateAllUsers() {
             time: typeof slot.time === "string" ? slot.time : "08:00-09:00",
             fixed: Boolean(slot.fixed),
             fixedKey,
-            fixedLabel: typeof slot.fixedLabel === "string" ? slot.fixedLabel : undefined,
+            fixedLabel:
+              typeof slot.fixedLabel === "string" ? slot.fixedLabel : undefined,
             allowTopic: Boolean(slot.allowTopic),
-            subjectId: typeof slot.subjectId === "string" ? slot.subjectId : null,
+            subjectId:
+              typeof slot.subjectId === "string" ? slot.subjectId : null,
             topic: typeof slot.topic === "string" ? slot.topic : "",
             updatedAt: slotUpdatedAt,
           });
@@ -284,16 +330,18 @@ async function migrateAllUsers() {
     for (let i = 0; i < userSlots.length; i += BATCH_SIZE) {
       const chunk = userSlots.slice(i, i + BATCH_SIZE);
       await callWithRetry(() =>
-        convex.mutation(api.sync.syncSlotsBatch, {
+        convex.call(internal.sync.syncSlotsBatch, {
           firebaseUid,
           slots: chunk,
-        })
+        }),
       );
       totalSlots += chunk.length;
     }
 
     migratedUsers++;
-    console.log(`✓ User ${firebaseUid} successfully migrated (${userSlots.length} slots, real createdAt preserved).`);
+    console.log(
+      `✓ User ${firebaseUid} successfully migrated (${userSlots.length} slots, real createdAt preserved).`,
+    );
   }
 
   console.log("\n================ MIGRATION SUMMARY ================");

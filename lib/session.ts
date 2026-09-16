@@ -1,9 +1,10 @@
 import "server-only";
 
 import { cache } from "react";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { adminAuth } from "@/lib/firebase/admin";
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+import { fetchMutation, fetchQuery } from "convex/nextjs";
+import { api } from "@/convex/_generated/api";
 
 export type UserSession = {
   uid: string;
@@ -12,30 +13,25 @@ export type UserSession = {
   photoUrl?: string;
 };
 
-const SESSION_COOKIE = "eindx_session";
-
 /**
- * Retrieves the current user session from the signed session cookie.
- * Verifies the cookie using Firebase Admin Auth.
+ * Retrieves the current user session from the Convex Auth JWT token.
  *
  * @returns The verified UserSession object, or null if no session is active or valid.
  */
 export const getSession = cache(async (): Promise<UserSession | null> => {
-  const cookieStore = await cookies();
-  const sessionCookie = cookieStore.get(SESSION_COOKIE)?.value || "";
-  if (!sessionCookie) return null;
+  const token = await convexAuthNextjsToken();
+  if (!token) return null;
 
-  try {
-    const decoded = await adminAuth.verifySessionCookie(sessionCookie, true);
-    return {
-      uid: decoded.uid,
-      name: (decoded.name as string) || (decoded.email as string) || "User",
-      email: (decoded.email as string) || "",
-      photoUrl: (decoded.picture as string) || "",
-    };
-  } catch {
-    return null;
-  }
+  const user = await fetchQuery(api.users.viewer, {}, { token });
+  if (!user) return null;
+  await fetchMutation(api.users.ensureInitialized, {}, { token });
+
+  return {
+    uid: user._id,
+    name: user.name || user.email || "User",
+    email: user.email || "",
+    photoUrl: user.image || "",
+  };
 });
 
 /**
@@ -48,7 +44,3 @@ export async function requireSession(): Promise<UserSession> {
   if (!session) redirect("/login");
   return session;
 }
-
-export const sessionCookieKeys = {
-  session: SESSION_COOKIE,
-} as const;

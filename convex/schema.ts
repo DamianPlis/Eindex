@@ -43,8 +43,7 @@ export default defineSchema({
     planningSubjectSort: v.optional(planningSubjectSortValidator),
     updatedAt: v.number(),
     lastWriter: v.optional(v.string()),
-  })
-    .index("by_user", ["userId"]),
+  }).index("by_user", ["userId"]),
 
   /**
    * Subjects
@@ -73,14 +72,15 @@ export default defineSchema({
     slug: v.string(), // e.g. "languages", "group_123"
     name: v.union(
       v.string(),
-      v.record(v.string(), v.string()) // Localized name map: { cs: "Jazyky", en: "Languages", pl: "Języki" }
+      v.record(v.string(), v.string()), // Localized name map: { cs: "Jazyky", en: "Languages", pl: "Języki" }
     ),
     subjectIds: v.array(v.string()), // Array of subject slugs
     namePreferences: v.optional(v.record(v.string(), v.string())),
     order: v.optional(v.number()),
     updatedAt: v.number(),
   })
-    .index("by_user", ["userId"]),
+    .index("by_user", ["userId"])
+    .index("by_user_slug", ["userId", "slug"]),
 
   /**
    * Schedule Slots (Normalized Granular Model)
@@ -101,8 +101,8 @@ export default defineSchema({
         v.literal("lunch"),
         v.literal("tutor"),
         v.literal("pe"),
-        v.literal("assembly")
-      )
+        v.literal("assembly"),
+      ),
     ),
     fixedLabel: v.optional(v.string()),
     allowTopic: v.boolean(),
@@ -118,7 +118,12 @@ export default defineSchema({
     // 2. Used by Dashboard to fetch today's/tomorrow's 5-8 slots:
     .index("by_user_date", ["userId", "date"])
     // 3. Used for O(1) single-slot updates:
-    .index("by_user_slot_coord", ["userId", "weekStart", "dayIndex", "slotIndex"])
+    .index("by_user_slot_coord", [
+      "userId",
+      "weekStart",
+      "dayIndex",
+      "slotIndex",
+    ])
     // 4. Used for fast statistics aggregation without table scanning:
     .index("by_user_subject", ["userId", "subjectId"]),
 
@@ -136,14 +141,35 @@ export default defineSchema({
       v.literal("upcoming"),
       v.literal("today"),
       v.literal("expired"),
-      v.literal("done")
+      v.literal("done"),
     ),
     createdAt: v.number(),
     updatedAt: v.number(),
+    order: v.optional(v.number()),
   })
     .index("by_user", ["userId"])
+    .index("by_user_deadlineId", ["userId", "deadlineId"])
     .index("by_user_date", ["userId", "date"])
     .index("by_user_status", ["userId", "status"]),
+
+  deadlineUndos: defineTable({
+    userId: v.id("users"),
+    kind: v.union(v.literal("remove"), v.literal("done")),
+    deadlineId: v.string(),
+    text: v.string(),
+    description: v.string(),
+    date: v.string(),
+    status: v.union(
+      v.literal("upcoming"),
+      v.literal("today"),
+      v.literal("expired"),
+      v.literal("done"),
+    ),
+    originalCreatedAt: v.number(),
+    order: v.number(),
+    used: v.boolean(),
+    expiresAt: v.number(),
+  }).index("by_user", ["userId"]),
 
   /**
    * School Lunches (Shared Canteen Table)
@@ -154,6 +180,5 @@ export default defineSchema({
     date: v.string(), // ISO Date (YYYY-MM-DD)
     menuText: v.string(),
     fetchedAt: v.number(),
-  })
-    .index("by_canteen_date", ["canteenId", "date"]),
+  }).index("by_canteen_date", ["canteenId", "date"]),
 });

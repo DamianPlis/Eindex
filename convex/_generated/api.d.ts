@@ -9,14 +9,18 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as authUser from "../authUser.js";
 import type * as dashboard from "../dashboard.js";
 import type * as deadlines from "../deadlines.js";
 import type * as http from "../http.js";
 import type * as lunches from "../lunches.js";
+import type * as migrations from "../migrations.js";
+import type * as model from "../model.js";
 import type * as schedule from "../schedule.js";
 import type * as settings from "../settings.js";
 import type * as subjects from "../subjects.js";
 import type * as sync from "../sync.js";
+import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -26,14 +30,18 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  authUser: typeof authUser;
   dashboard: typeof dashboard;
   deadlines: typeof deadlines;
   http: typeof http;
   lunches: typeof lunches;
+  migrations: typeof migrations;
+  model: typeof model;
   schedule: typeof schedule;
   settings: typeof settings;
   subjects: typeof subjects;
   sync: typeof sync;
+  users: typeof users;
 }>;
 
 /**

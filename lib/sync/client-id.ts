@@ -1,11 +1,12 @@
 "use client";
 
-const CLIENT_ID_KEY = "eindx:client_id";
+// Each tab needs its own writer ID so another tab's updates are not ignored.
+let clientId = "";
 
 /**
  * Generates a fallback client identifier using the current timestamp and a random string.
  * Used when crypto.randomUUID is not available.
- * 
+ *
  * @returns A unique string starting with "client_".
  */
 function createFallbackId() {
@@ -13,21 +14,19 @@ function createFallbackId() {
 }
 
 /**
- * Retrieves the client ID from localStorage, generating and saving a new one if it doesn't exist.
+ * Retrieves a stable identifier for this tab's lifetime.
  * Returns an empty string on the server side.
- * 
+ *
  * @returns The unique client identifier.
  */
 export function getClientId(): string {
   if (typeof window === "undefined") return "";
-  const existing = window.localStorage.getItem(CLIENT_ID_KEY);
-  if (existing) return existing;
+  if (clientId) return clientId;
 
-  const generated =
+  clientId =
     typeof window.crypto !== "undefined" && "randomUUID" in window.crypto
       ? window.crypto.randomUUID()
       : createFallbackId();
 
-  window.localStorage.setItem(CLIENT_ID_KEY, generated);
-  return generated;
+  return clientId;
 }

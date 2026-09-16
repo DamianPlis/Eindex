@@ -60,8 +60,17 @@ type SettingsContextValue = {
   customModalOpen: boolean;
   subjectPendingDelete: Subject | null;
   setSubjectPendingDelete: (subject: Subject | null) => void;
-  handleAddSubjectGroup: (name: Record<string, string>, subjectIds: string[], namePreferences?: Record<string, string>) => void;
-  handleUpdateSubjectGroup: (id: string, name: Record<string, string>, subjectIds: string[], namePreferences?: Record<string, string>) => void;
+  handleAddSubjectGroup: (
+    name: Record<string, string>,
+    subjectIds: string[],
+    namePreferences?: Record<string, string>,
+  ) => void;
+  handleUpdateSubjectGroup: (
+    id: string,
+    name: Record<string, string>,
+    subjectIds: string[],
+    namePreferences?: Record<string, string>,
+  ) => void;
   handleDeleteSubjectGroup: (id: string) => void;
 };
 
@@ -113,6 +122,13 @@ export default function SettingsProvider({
   useEffect(() => {
     setSettings(initialSettings);
   }, [initialSettings]);
+
+  useEffect(() => {
+    setSubjects(initialSubjects);
+  }, [initialSubjects]);
+  useEffect(() => {
+    setSubjectGroups(initialSubjectGroups);
+  }, [initialSubjectGroups]);
 
   useEffect(() => {
     applyTheme(settings.theme);
@@ -285,7 +301,11 @@ export default function SettingsProvider({
     });
   }
 
-  function handleAddSubjectGroup(name: Record<string, string>, subjectIds: string[], namePreferences?: Record<string, string>) {
+  function handleAddSubjectGroup(
+    name: Record<string, string>,
+    subjectIds: string[],
+    namePreferences?: Record<string, string>,
+  ) {
     startTransition(async () => {
       const id = await addSubjectGroupAction({
         name,
@@ -294,13 +314,21 @@ export default function SettingsProvider({
         writerId: clientIdRef.current,
       });
       if (id) {
-        setSubjectGroups((prev) => [...prev, { id, name, subjectIds, namePreferences }]);
+        setSubjectGroups((prev) => [
+          ...prev,
+          { id, name, subjectIds, namePreferences },
+        ]);
       }
       refreshSettings();
     });
   }
 
-  function handleUpdateSubjectGroup(id: string, name: Record<string, string>, subjectIds: string[], namePreferences?: Record<string, string>) {
+  function handleUpdateSubjectGroup(
+    id: string,
+    name: Record<string, string>,
+    subjectIds: string[],
+    namePreferences?: Record<string, string>,
+  ) {
     startTransition(async () => {
       await updateSubjectGroupAction({
         id,
@@ -310,7 +338,9 @@ export default function SettingsProvider({
         writerId: clientIdRef.current,
       });
       setSubjectGroups((prev) =>
-        prev.map((g) => (g.id === id ? { id, name, subjectIds, namePreferences } : g)),
+        prev.map((g) =>
+          g.id === id ? { id, name, subjectIds, namePreferences } : g,
+        ),
       );
       refreshSettings();
     });

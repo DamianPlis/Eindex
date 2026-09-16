@@ -1,4 +1,4 @@
-import { mutation, type MutationCtx } from "./_generated/server";
+import { internalMutation, type MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { planningSubjectSortValidator } from "./schema";
 import type { Id } from "./_generated/dataModel";
@@ -12,13 +12,14 @@ async function getOrCreateUserByFirebaseUid(
   email?: string,
   name?: string,
   image?: string,
-  createdAt?: number
+  createdAt?: number,
 ): Promise<Id<"users">> {
   const existing = await ctx.db
     .query("users")
     .withIndex("by_firebase_uid", (q) => q.eq("firebaseUid", firebaseUid))
     .first();
 
+  email = email?.trim().toLowerCase();
   const now = createdAt || Date.now();
 
   if (existing) {
@@ -28,7 +29,10 @@ async function getOrCreateUserByFirebaseUid(
       name?: string;
       image?: string;
     } = {};
-    if (createdAt && (!existing.createdAt || existing.createdAt !== createdAt)) {
+    if (
+      createdAt &&
+      (!existing.createdAt || existing.createdAt !== createdAt)
+    ) {
       updates.createdAt = createdAt;
     }
     if (email && existing.email !== email) updates.email = email;
@@ -52,7 +56,11 @@ async function getOrCreateUserByFirebaseUid(
   return id;
 }
 
-export const syncUserAndSettings = mutation({
+export const syncUserAndSettings = internalMutation({
+  returns: v.object({
+    userId: v.id("users"),
+    settingsId: v.id("userSettings"),
+  }),
   args: {
     firebaseUid: v.string(),
     email: v.optional(v.string()),
@@ -112,7 +120,8 @@ export const syncUserAndSettings = mutation({
   },
 });
 
-export const syncSlotSubject = mutation({
+export const syncSlotSubject = internalMutation({
+  returns: v.id("scheduleSlots"),
   args: {
     firebaseUid: v.string(),
     weekStart: v.string(),
@@ -128,8 +137,8 @@ export const syncSlotSubject = mutation({
         v.literal("lunch"),
         v.literal("tutor"),
         v.literal("pe"),
-        v.literal("assembly")
-      )
+        v.literal("assembly"),
+      ),
     ),
     fixedLabel: v.optional(v.string()),
     allowTopic: v.boolean(),
@@ -147,7 +156,7 @@ export const syncSlotSubject = mutation({
           .eq("userId", userId)
           .eq("weekStart", args.weekStart)
           .eq("dayIndex", args.dayIndex)
-          .eq("slotIndex", args.slotIndex)
+          .eq("slotIndex", args.slotIndex),
       )
       .first();
 
@@ -181,7 +190,8 @@ export const syncSlotSubject = mutation({
   },
 });
 
-export const syncSlotTopic = mutation({
+export const syncSlotTopic = internalMutation({
+  returns: v.id("scheduleSlots"),
   args: {
     firebaseUid: v.string(),
     weekStart: v.string(),
@@ -197,8 +207,8 @@ export const syncSlotTopic = mutation({
         v.literal("lunch"),
         v.literal("tutor"),
         v.literal("pe"),
-        v.literal("assembly")
-      )
+        v.literal("assembly"),
+      ),
     ),
     fixedLabel: v.optional(v.string()),
     allowTopic: v.boolean(),
@@ -216,7 +226,7 @@ export const syncSlotTopic = mutation({
           .eq("userId", userId)
           .eq("weekStart", args.weekStart)
           .eq("dayIndex", args.dayIndex)
-          .eq("slotIndex", args.slotIndex)
+          .eq("slotIndex", args.slotIndex),
       )
       .first();
 
@@ -250,7 +260,8 @@ export const syncSlotTopic = mutation({
   },
 });
 
-export const syncSlotsBatch = mutation({
+export const syncSlotsBatch = internalMutation({
+  returns: v.object({ count: v.number() }),
   args: {
     firebaseUid: v.string(),
     slots: v.array(
@@ -268,15 +279,15 @@ export const syncSlotsBatch = mutation({
             v.literal("lunch"),
             v.literal("tutor"),
             v.literal("pe"),
-            v.literal("assembly")
-          )
+            v.literal("assembly"),
+          ),
         ),
         fixedLabel: v.optional(v.string()),
         allowTopic: v.boolean(),
         subjectId: v.optional(v.union(v.string(), v.null())),
         topic: v.string(),
         updatedAt: v.optional(v.number()),
-      })
+      }),
     ),
   },
   handler: async (ctx, args) => {
@@ -292,7 +303,7 @@ export const syncSlotsBatch = mutation({
             .eq("userId", userId)
             .eq("weekStart", slot.weekStart)
             .eq("dayIndex", slot.dayIndex)
-            .eq("slotIndex", slot.slotIndex)
+            .eq("slotIndex", slot.slotIndex),
         )
         .first();
 
@@ -325,7 +336,8 @@ export const syncSlotsBatch = mutation({
   },
 });
 
-export const syncDeadline = mutation({
+export const syncDeadline = internalMutation({
+  returns: v.id("deadlines"),
   args: {
     firebaseUid: v.string(),
     deadlineId: v.string(),
@@ -336,7 +348,7 @@ export const syncDeadline = mutation({
       v.literal("upcoming"),
       v.literal("today"),
       v.literal("expired"),
-      v.literal("done")
+      v.literal("done"),
     ),
     createdAt: v.optional(v.number()),
     updatedAt: v.optional(v.number()),
@@ -346,8 +358,9 @@ export const syncDeadline = mutation({
 
     const existing = await ctx.db
       .query("deadlines")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .filter((q) => q.eq(q.field("deadlineId"), args.deadlineId))
+      .withIndex("by_user_deadlineId", (q) =>
+        q.eq("userId", userId).eq("deadlineId", args.deadlineId),
+      )
       .first();
 
     const now = args.updatedAt || Date.now();
@@ -377,7 +390,8 @@ export const syncDeadline = mutation({
   },
 });
 
-export const syncSubject = mutation({
+export const syncSubject = internalMutation({
+  returns: v.id("subjects"),
   args: {
     firebaseUid: v.string(),
     slug: v.string(),
@@ -393,7 +407,7 @@ export const syncSubject = mutation({
     const existing = await ctx.db
       .query("subjects")
       .withIndex("by_user_slug", (q) =>
-        q.eq("userId", userId).eq("slug", args.slug)
+        q.eq("userId", userId).eq("slug", args.slug),
       )
       .first();
 
@@ -422,7 +436,8 @@ export const syncSubject = mutation({
   },
 });
 
-export const syncSubjectGroup = mutation({
+export const syncSubjectGroup = internalMutation({
+  returns: v.id("subjectGroups"),
   args: {
     firebaseUid: v.string(),
     slug: v.string(),
@@ -437,8 +452,9 @@ export const syncSubjectGroup = mutation({
 
     const existing = await ctx.db
       .query("subjectGroups")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .filter((q) => q.eq(q.field("slug"), args.slug))
+      .withIndex("by_user_slug", (q) =>
+        q.eq("userId", userId).eq("slug", args.slug),
+      )
       .first();
 
     const now = args.updatedAt || Date.now();
@@ -466,7 +482,8 @@ export const syncSubjectGroup = mutation({
   },
 });
 
-export const syncRemoveDeadline = mutation({
+export const syncRemoveDeadline = internalMutation({
+  returns: v.object({ success: v.boolean() }),
   args: {
     firebaseUid: v.string(),
     deadlineId: v.string(),
@@ -476,8 +493,9 @@ export const syncRemoveDeadline = mutation({
 
     const existing = await ctx.db
       .query("deadlines")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .filter((q) => q.eq(q.field("deadlineId"), args.deadlineId))
+      .withIndex("by_user_deadlineId", (q) =>
+        q.eq("userId", userId).eq("deadlineId", args.deadlineId),
+      )
       .first();
 
     if (existing) {
@@ -487,7 +505,8 @@ export const syncRemoveDeadline = mutation({
   },
 });
 
-export const syncDeleteSubject = mutation({
+export const syncDeleteSubject = internalMutation({
+  returns: v.object({ success: v.boolean() }),
   args: {
     firebaseUid: v.string(),
     slug: v.string(),
@@ -498,7 +517,7 @@ export const syncDeleteSubject = mutation({
     const existing = await ctx.db
       .query("subjects")
       .withIndex("by_user_slug", (q) =>
-        q.eq("userId", userId).eq("slug", args.slug)
+        q.eq("userId", userId).eq("slug", args.slug),
       )
       .first();
 
@@ -510,7 +529,7 @@ export const syncDeleteSubject = mutation({
     const slots = await ctx.db
       .query("scheduleSlots")
       .withIndex("by_user_subject", (q) =>
-        q.eq("userId", userId).eq("subjectId", args.slug)
+        q.eq("userId", userId).eq("subjectId", args.slug),
       )
       .collect();
 
@@ -525,7 +544,8 @@ export const syncDeleteSubject = mutation({
   },
 });
 
-export const syncDeleteSubjectGroup = mutation({
+export const syncDeleteSubjectGroup = internalMutation({
+  returns: v.object({ success: v.boolean() }),
   args: {
     firebaseUid: v.string(),
     slug: v.string(),
@@ -535,8 +555,9 @@ export const syncDeleteSubjectGroup = mutation({
 
     const existing = await ctx.db
       .query("subjectGroups")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .filter((q) => q.eq(q.field("slug"), args.slug))
+      .withIndex("by_user_slug", (q) =>
+        q.eq("userId", userId).eq("slug", args.slug),
+      )
       .first();
 
     if (existing) {
