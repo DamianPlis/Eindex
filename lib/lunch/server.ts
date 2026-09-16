@@ -6,7 +6,7 @@ import { unstable_cache } from "next/cache";
 /**
  * Normalizes text by converting non-breaking spaces to spaces, consolidating
  * multiple consecutive spaces, and trimming whitespace.
- * 
+ *
  * @param text - The raw text string.
  * @returns The normalized string.
  */
@@ -19,7 +19,7 @@ function normalizeText(text: string): string {
 
 /**
  * Removes diacritics (accents) from a given string.
- * 
+ *
  * @param text - The text string to strip.
  * @returns The stripped string.
  */
@@ -29,7 +29,7 @@ function stripDiacritics(text: string): string {
 
 /**
  * Parses a date string in format "DD. MM. YYYY" to an ISO-8601 string (YYYY-MM-DD).
- * 
+ *
  * @param label - The raw date label string.
  * @returns The ISO date string or null if not matchable.
  */
@@ -44,7 +44,7 @@ function parseDateToISO(label: string): string | null {
 
 /**
  * Checks if the given label denotes a soup.
- * 
+ *
  * @param label - The food label.
  * @returns True if it refers to soup, false otherwise.
  */
@@ -55,7 +55,7 @@ function isSoupLabel(label: string): boolean {
 
 /**
  * Checks if the given label denotes a main course/dish.
- * 
+ *
  * @param label - The food label.
  * @returns True if it refers to a main course, false otherwise.
  */
@@ -71,7 +71,7 @@ function isMainCourseLabel(label: string): boolean {
 
 /**
  * Finds the index of the first comma in the text that is not enclosed inside brackets [].
- * 
+ *
  * @param text - The text to search.
  * @returns The index of the comma, or -1 if not found.
  */
@@ -88,7 +88,7 @@ function findCommaOutsideBrackets(text: string): number {
 
 /**
  * Cleans the meal text by removing the soup label if it is prefixed before a comma.
- * 
+ *
  * @param text - The raw meal text.
  * @returns The cleaned meal text.
  */
@@ -100,17 +100,22 @@ function removeLeadingSoup(text: string): string {
   const firstPart = cleaned.slice(0, commaIndex);
   if (!isSoupLabel(firstPart)) return cleaned;
 
-  return cleaned.slice(commaIndex + 1).replace(/^[,;.\s-]+/, "").trim();
+  return cleaned
+    .slice(commaIndex + 1)
+    .replace(/^[,;.\s-]+/, "")
+    .trim();
 }
 
 /**
  * Picks the most appropriate meal from a list of items, prioritizing main courses.
- * 
+ *
  * @param items - List of item objects containing type and text.
  * @returns The picked and cleaned meal name string.
  */
 function pickMeal(items: Array<{ type: string; text: string }>): string {
-  const mainCourse = items.find((item) => isMainCourseLabel(item.type) && !isSoupLabel(item.type));
+  const mainCourse = items.find(
+    (item) => isMainCourseLabel(item.type) && !isSoupLabel(item.type),
+  );
   if (mainCourse) return removeLeadingSoup(mainCourse.text);
 
   const nonSoup = items.find((item) => !isSoupLabel(item.type));
@@ -121,7 +126,7 @@ function pickMeal(items: Array<{ type: string; text: string }>): string {
 
 /**
  * Extracts lunch menu details per day from raw HTML content.
- * 
+ *
  * @param html - The HTML response content from the lunch provider.
  * @returns A mapping of ISO date strings to meal descriptions.
  */
@@ -137,8 +142,10 @@ function extractPerDay(html: string): Record<string, string> {
     const partNodes = $(dayEl).find(".castDne").toArray();
     const chosenPart =
       partNodes.find((partEl) => {
-        const headerText = normalizeText($(partEl).find(".hlavicka").first().text());
-        return stripDiacritics(headerText).toLowerCase().includes("radlick");
+        const headerText = normalizeText(
+          $(partEl).find(".hlavicka").first().text(),
+        );
+        return stripDiacritics(headerText).toLowerCase().includes("bitovsk");
       }) || partNodes[0];
 
     if (!chosenPart) {
@@ -150,13 +157,18 @@ function extractPerDay(html: string): Record<string, string> {
     $(chosenPart)
       .find(".menuJidla")
       .each((_, menuEl) => {
-        $(menuEl).find(".row")
-        .each((_, itemEl) => {
-          const type = normalizeText($(itemEl).find(".popiskaJidla").first().text());
-          const text = normalizeText($(itemEl).find(".textJidla").first().text());
-          if (!text) return;
-          items.push({ type, text });
-        });
+        $(menuEl)
+          .find(".row")
+          .each((_, itemEl) => {
+            const type = normalizeText(
+              $(itemEl).find(".popiskaJidla").first().text(),
+            );
+            const text = normalizeText(
+              $(itemEl).find(".textJidla").first().text(),
+            );
+            if (!text) return;
+            items.push({ type, text });
+          });
       });
 
     const pickedMeal = pickMeal(items);
@@ -188,7 +200,7 @@ const fetchMenuHtml = unstable_cache(
 /**
  * Fetches the raw HTML menu from the jidelna.cz provider and parses it
  * to return a mapping of daily ISO date keys to meal name strings.
- * 
+ *
  * @returns A promise resolving to the menu mapping object.
  */
 export async function getLunchPerDay(): Promise<Record<string, string>> {
