@@ -3,7 +3,7 @@ import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
-import { fetchQuery } from "convex/nextjs";
+import { fetchMutation, fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 
 export type UserSession = {
@@ -22,19 +22,16 @@ export const getSession = cache(async (): Promise<UserSession | null> => {
   const token = await convexAuthNextjsToken();
   if (!token) return null;
 
-  try {
-    const user = await fetchQuery(api.users.viewer, {}, { token });
-    if (!user) return null;
+  const user = await fetchQuery(api.users.viewer, {}, { token });
+  if (!user) return null;
+  await fetchMutation(api.users.ensureInitialized, {}, { token });
 
-    return {
-      uid: user._id,
-      name: user.name || user.email || "User",
-      email: user.email || "",
-      photoUrl: user.image || "",
-    };
-  } catch {
-    return null;
-  }
+  return {
+    uid: user._id,
+    name: user.name || user.email || "User",
+    email: user.email || "",
+    photoUrl: user.image || "",
+  };
 });
 
 /**

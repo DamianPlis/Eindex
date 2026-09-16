@@ -1,34 +1,158 @@
-/* ═══════════════════════════════════════════════════
-   Deadlines Page — page-level layout
-   ═══════════════════════════════════════════════════ */
+﻿.detailContainer {
+  width: 100%;
+  max-width: 1040px;
+  margin-inline: auto;
+  padding: 20px;
+}
 
-.detailContainer {
-  margin: 16px;
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  margin-bottom: 16px;
+  padding: 8px 12px 8px 6px;
+  border-radius: var(--radius-sm);
+  color: var(--text-soft);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: color 160ms ease, background-color 160ms ease;
+}
+
+.backLink svg {
+  flex-shrink: 0;
+}
+
+.backLink:hover {
+  color: var(--accent-strong);
+  background: var(--primary-alpha-8);
+}
+
+.backLink:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 3px;
+}
+
+.detailCard {
+  background: var(--card);
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  box-shadow: var(--shadow-container);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+}
+
+.detailHeader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 280px);
+  align-items: start;
+  gap: 32px;
+  padding: 32px 32px 4px;
+}
+
+.detailHeading,
+.detailDueContent {
+  min-width: 0;
+}
+
+.detailMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .detailTitle {
-  margin-bottom: 8px;
-  font-size: 1.5rem;
-  font-weight: 700;
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  line-height: 1.25;
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+
+.detailDuePanel {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 18px;
+  background: var(--bubble);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+}
+
+.detailDueIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 40px;
+  height: 40px;
+  background: var(--primary-alpha-10);
+  color: var(--accent-strong);
+  border-radius: var(--radius-sm);
+}
+
+.detailDueLabel {
+  margin: 0 0 6px;
+  color: var(--text-soft);
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .detailDue {
-  margin-bottom: 0;
+  display: block;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
 .detailRelativeDate {
-  margin-bottom: 1em;
+  margin: 4px 0 0;
+  color: var(--text-soft);
+  font-size: 0.8125rem;
 }
 
 .detailDescriptionBlock {
-  margin-bottom: 1em;
+  padding: 4px 32px 32px;
 }
 
 .detailDescriptionLabel {
-  margin-bottom: 6px;
+  margin: 0 0 12px;
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .detailDescriptionText {
+  max-width: 72ch;
   margin: 0;
+  font-size: 1rem;
+  line-height: 1.8;
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .detailContainer {
+    padding: 16px;
+  }
+
+  .backLink {
+    margin-bottom: 12px;
+  }
+
+  .detailHeader {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    padding: 24px 20px;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backLink {
+    transition: none;
+  }
 }

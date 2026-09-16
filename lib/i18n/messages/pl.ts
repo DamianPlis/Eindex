@@ -43,6 +43,13 @@ export const plMessages = {
       "Nie udało się zapisać języka. Spróbuj ponownie później.",
     languageAlreadyActive: "Język polski jest już aktywny.",
     subjects: "Przedmioty",
+    subjectSort: "Kolejność przedmiotów w planowaniu",
+    subjectSortDescription:
+      "Wybierz sposób sortowania przedmiotów w menu wyboru podczas wypełniania planu zajęć.",
+    mostUsed: "Najczęściej używane",
+    leastUsed: "Najrzadziej używane",
+    subjectSortSaveError:
+      "Nie udało się zapisać kolejności przedmiotów. Spróbuj ponownie później.",
     statisticsSection: "Statystyki",
     useSchoolYear: "Użyj roku szkolnego",
     useSchoolYearDescription:
@@ -71,6 +78,14 @@ export const plMessages = {
   home: {
     today: "Dzisiaj",
     tomorrow: "Jutro",
+    deadlinesOverview: "Terminy",
+    attentionTitle: "Wymaga uwagi",
+    attentionDescription: "Dzisiejsze i zaległe zadania.",
+    upcomingTitle: "Najbliższe",
+    upcomingDescription: "Nic pilnego — oto kolejne terminy.",
+    viewAllDeadlines: "Zobacz wszystkie",
+    allClearTitle: "Wszystko gotowe",
+    allClearDescription: "Nie masz żadnych niezakończonych terminów.",
     noDeadlinesForToday: "Brak terminów na dzisiaj",
     noScheduleForToday: "Brak planu na dzisiaj.",
     noDeadlinesForTomorrow: "Brak terminów na jutro",
@@ -148,6 +163,17 @@ export const plMessages = {
       expired: "Po terminie",
       done: "Ukończone",
       upcoming: "Nadchodzące",
+    },
+    toast: {
+      notifications: "Powiadomienia",
+      removed: "Termin usunięty",
+      done: "Termin oznaczony jako ukończony",
+      restored: "Termin przywrócony",
+      undo: "Cofnij",
+      undoing: "Przywracanie…",
+      dismiss: "Zamknij powiadomienie",
+      actionFailed: "Nie udało się zapisać zmiany. Spróbuj ponownie.",
+      undoFailed: "Nie udało się cofnąć zmiany. Spróbuj ponownie.",
     },
     actions: {
       markDone: "Oznacz jako ukończone",

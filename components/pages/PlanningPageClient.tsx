@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, useTransition } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { setSlotSubjectAction, setSlotTopicAction } from "@/app/(app)/actions";
 import { useAppLocale, useMessages } from "@/components/i18n/UserSyncProvider";
 import ArrowLeft from "@/icons/keyboard_arrow_left_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
@@ -22,6 +28,36 @@ type PlanningPageClientProps = {
   days: DaySchedule[];
   subjects: Subject[];
 };
+
+const MOBILE_PLANNING_MEDIA_QUERY = "(max-width: 899px)";
+
+function getCurrentPlanningDayIndex(dayCount: number) {
+  const mondayBasedDayIndex = new Date().getDay() - 1;
+  return mondayBasedDayIndex >= 0 && mondayBasedDayIndex < dayCount
+    ? mondayBasedDayIndex
+    : 0;
+}
+
+function scrollToDayHorizontally(
+  container: HTMLDivElement,
+  dayIndex: number,
+  behavior: ScrollBehavior,
+) {
+  const day = container.children.item(dayIndex);
+  if (!day) return false;
+
+  const containerRect = container.getBoundingClientRect();
+  const dayRect = day.getBoundingClientRect();
+  const left = container.scrollLeft + dayRect.left - containerRect.left;
+
+  try {
+    container.scrollTo({ left, behavior });
+  } catch {
+    container.scrollLeft = left;
+  }
+
+  return true;
+}
 
 function getFallbackDayLabels(isoDateStr: string) {
   return {
@@ -138,12 +174,27 @@ export default function PlanningPageClient({
 }: PlanningPageClientProps) {
   const locale = useAppLocale();
   const messages = useMessages();
-  const planningRootRef = useRef<HTMLDivElement | null>(null);
+  // Keep the opening order across server refreshes. New subjects join at the end.
+  const [subjectOrder, setSubjectOrder] = useState(() =>
+    subjects.map((subject) => subject.id),
+  );
+  const knownIds = new Set(subjectOrder);
+  const addedIds = subjects
+    .filter((subject) => !knownIds.has(subject.id))
+    .map((subject) => subject.id);
+  if (addedIds.length > 0) setSubjectOrder([...subjectOrder, ...addedIds]);
+  const subjectsById = new Map(
+    subjects.map((subject) => [subject.id, subject]),
+  );
+  const stableSubjects = subjectOrder
+    .map((id) => subjectsById.get(id))
+    .filter((subject): subject is Subject => Boolean(subject));
   const containerRef = useRef<HTMLDivElement | null>(null);
   const pendingSubjectUpdatesRef = useRef<Record<string, string | null>>({});
   const lastSyncedTopicsRef = useRef<Record<string, string>>({});
   const clientIdRef = useRef("");
   const isActiveDayIndexTriggeredByObserver = useRef(false);
+  const shouldSkipNextActiveDayScroll = useRef(false);
   const activeDayIndexRef = useRef(0);
   const [, startTransition] = useTransition();
 
@@ -170,26 +221,35 @@ export default function PlanningPageClient({
     activeDayIndexRef.current = activeDayIndex;
   }, [activeDayIndex]);
 
+  useLayoutEffect(() => {
+    if (!window.matchMedia(MOBILE_PLANNING_MEDIA_QUERY).matches) return;
+
+    const container = containerRef.current;
+    if (!container || days.length === 0) return;
+
+    const currentDayIndex = getCurrentPlanningDayIndex(days.length);
+    if (!scrollToDayHorizontally(container, currentDayIndex, "auto")) return;
+
+    activeDayIndexRef.current = currentDayIndex;
+    shouldSkipNextActiveDayScroll.current = true;
+    setActiveDayIndex(currentDayIndex);
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [days.length, weekStart]);
+
   useEffect(() => {
-    const planningRoot = planningRootRef.current;
-    if (!planningRoot) return;
+    if (!window.matchMedia(MOBILE_PLANNING_MEDIA_QUERY).matches) return;
+    if (shouldSkipNextActiveDayScroll.current) {
+      shouldSkipNextActiveDayScroll.current = false;
+      return;
+    }
+
     const container = containerRef.current;
     if (!container) return;
-    const child = container.children.item(activeDayIndex);
-    if (!child) return;
     if (isActiveDayIndexTriggeredByObserver.current) {
       isActiveDayIndexTriggeredByObserver.current = false;
       return;
     }
-    try {
-      child.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "nearest",
-      });
-    } catch {
-      container.scrollLeft = activeDayIndex * container.clientWidth;
-    }
+    scrollToDayHorizontally(container, activeDayIndex, "smooth");
   }, [activeDayIndex, weekStart]);
 
   useEffect(() => {
@@ -338,7 +398,7 @@ export default function PlanningPageClient({
   }
 
   return (
-    <div ref={planningRootRef} className={s.planningRoot} aria-live="polite">
+    <div className={s.planningRoot} aria-live="polite">
       <div className={s.planningInner}>
         <div
           className={s.controls}
@@ -447,7 +507,7 @@ export default function PlanningPageClient({
                       slot={slot}
                       dayIndex={dayIndex}
                       slotIndex={slotIndex}
-                      subjects={subjects}
+                      subjects={stableSubjects}
                       messages={messages}
                       currentSubjectValue={currentSubjectValue(slot)}
                       currentTopicValue={currentTopicValue(slot)}

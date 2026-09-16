@@ -5,10 +5,12 @@
 .skeletonLine {
   display: block;
   border-radius: 999px;
-  background: linear-gradient(90deg,
-      var(--skeleton-shimmer-start) 0%,
-      var(--skeleton-shimmer-middle) 50%,
-      var(--skeleton-shimmer-start) 100%);
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-shimmer-start) 0%,
+    var(--skeleton-shimmer-middle) 50%,
+    var(--skeleton-shimmer-start) 100%
+  );
   background-size: 240% 100%;
   animation: skeletonShimmer 5s ease-in-out infinite;
 }
@@ -23,6 +25,34 @@
   }
 }
 
+/* ── Dashboard deadlines panel skeleton ── */
+
+.remindersSkeletonIcon {
+  composes: skeletonLine;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+}
+
+.remindersSkeletonEyebrow {
+  composes: skeletonLine;
+  width: 62px;
+  height: 8px;
+  margin-bottom: 6px;
+}
+
+.remindersSkeletonTitle {
+  composes: skeletonLine;
+  width: 126px;
+  height: 15px;
+}
+
+.remindersSkeletonViewAll {
+  composes: skeletonLine;
+  width: 76px;
+  height: 36px;
+}
+
 /* ── Deadlines skeleton ── */
 
 .deadlinesSkeletonToggle {
@@ -35,15 +65,6 @@
   composes: skeletonLine;
   width: 170px;
   height: 34px;
-}
-
-.deadlinesSkeletonItem {
-  gap: 14px;
-}
-
-.deadlinesSkeletonText {
-  flex: 1;
-  min-width: 0;
 }
 
 .textLineLg {
@@ -86,10 +107,6 @@
 
 .scheduleSkeletonTextContainer {
   min-width: min(440px, 95%);
-}
-
-.deadlinesSkeletonActions {
-  gap: 8px;
 }
 
 .skeletonPill {
@@ -226,24 +243,6 @@
   align-items: center;
   gap: 0.75em;
   flex: 1;
-}
-
-/* ── Spacer utilities for skeletons ── */
-
-.mb1 {
-  margin-bottom: 4px;
-}
-
-.mb2 {
-  margin-bottom: 8px;
-}
-
-.mb4 {
-  margin-bottom: 16px;
-}
-
-.mb6 {
-  margin-bottom: 24px;
 }
 
 .noMargin {

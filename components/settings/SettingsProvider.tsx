@@ -28,7 +28,8 @@ import { getClientId } from "@/lib/sync/client-id";
 import type { AppLocale } from "@/lib/i18n/config";
 import { useSettingsRefresh } from "@/components/settings/SettingsRefreshContext";
 
-type PendingAction = "theme" | "locale" | "schoolYear" | null;
+type PendingAction =
+  "theme" | "locale" | "schoolYear" | "planningSubjectSort" | null;
 
 type SettingsContextValue = {
   settings: AppSettings;
@@ -41,6 +42,9 @@ type SettingsContextValue = {
   handleThemeSelect: (theme: AppTheme) => void;
   handleLocaleChange: (locale: AppLocale) => void;
   handleSchoolYearToggle: (checked: boolean) => void;
+  handlePlanningSubjectSortChange: (
+    sort: AppSettings["planningSubjectSort"],
+  ) => void;
   handleAddSubject: () => void;
   handleUpdateSubject: (id: string) => void;
   handleDeleteSubject: (id: string) => void;
@@ -56,8 +60,17 @@ type SettingsContextValue = {
   customModalOpen: boolean;
   subjectPendingDelete: Subject | null;
   setSubjectPendingDelete: (subject: Subject | null) => void;
-  handleAddSubjectGroup: (name: Record<string, string>, subjectIds: string[], namePreferences?: Record<string, string>) => void;
-  handleUpdateSubjectGroup: (id: string, name: Record<string, string>, subjectIds: string[], namePreferences?: Record<string, string>) => void;
+  handleAddSubjectGroup: (
+    name: Record<string, string>,
+    subjectIds: string[],
+    namePreferences?: Record<string, string>,
+  ) => void;
+  handleUpdateSubjectGroup: (
+    id: string,
+    name: Record<string, string>,
+    subjectIds: string[],
+    namePreferences?: Record<string, string>,
+  ) => void;
   handleDeleteSubjectGroup: (id: string) => void;
 };
 
@@ -109,6 +122,13 @@ export default function SettingsProvider({
   useEffect(() => {
     setSettings(initialSettings);
   }, [initialSettings]);
+
+  useEffect(() => {
+    setSubjects(initialSubjects);
+  }, [initialSubjects]);
+  useEffect(() => {
+    setSubjectGroups(initialSubjectGroups);
+  }, [initialSubjectGroups]);
 
   useEffect(() => {
     applyTheme(settings.theme);
@@ -196,6 +216,32 @@ export default function SettingsProvider({
     });
   }
 
+  function handlePlanningSubjectSortChange(
+    planningSubjectSort: AppSettings["planningSubjectSort"],
+  ) {
+    if (planningSubjectSort === settings.planningSubjectSort) return;
+    const previousSettings = settings;
+    setSettings({ ...settings, planningSubjectSort });
+    setPendingAction("planningSubjectSort");
+    setErrorMessage("");
+    startTransition(async () => {
+      try {
+        setSettings(
+          await updateSettingsAction({
+            planningSubjectSort,
+            writerId: clientIdRef.current,
+          }),
+        );
+        refreshSettings();
+      } catch {
+        setSettings(previousSettings);
+        setErrorMessage(messages.settings.subjectSortSaveError);
+      } finally {
+        setPendingAction(null);
+      }
+    });
+  }
+
   function handleAddSubject() {
     setCustomModalOpen(true);
   }
@@ -255,7 +301,11 @@ export default function SettingsProvider({
     });
   }
 
-  function handleAddSubjectGroup(name: Record<string, string>, subjectIds: string[], namePreferences?: Record<string, string>) {
+  function handleAddSubjectGroup(
+    name: Record<string, string>,
+    subjectIds: string[],
+    namePreferences?: Record<string, string>,
+  ) {
     startTransition(async () => {
       const id = await addSubjectGroupAction({
         name,
@@ -264,13 +314,21 @@ export default function SettingsProvider({
         writerId: clientIdRef.current,
       });
       if (id) {
-        setSubjectGroups((prev) => [...prev, { id, name, subjectIds, namePreferences }]);
+        setSubjectGroups((prev) => [
+          ...prev,
+          { id, name, subjectIds, namePreferences },
+        ]);
       }
       refreshSettings();
     });
   }
 
-  function handleUpdateSubjectGroup(id: string, name: Record<string, string>, subjectIds: string[], namePreferences?: Record<string, string>) {
+  function handleUpdateSubjectGroup(
+    id: string,
+    name: Record<string, string>,
+    subjectIds: string[],
+    namePreferences?: Record<string, string>,
+  ) {
     startTransition(async () => {
       await updateSubjectGroupAction({
         id,
@@ -280,7 +338,9 @@ export default function SettingsProvider({
         writerId: clientIdRef.current,
       });
       setSubjectGroups((prev) =>
-        prev.map((g) => (g.id === id ? { id, name, subjectIds, namePreferences } : g)),
+        prev.map((g) =>
+          g.id === id ? { id, name, subjectIds, namePreferences } : g,
+        ),
       );
       refreshSettings();
     });
@@ -307,6 +367,7 @@ export default function SettingsProvider({
         handleThemeSelect,
         handleLocaleChange,
         handleSchoolYearToggle,
+        handlePlanningSubjectSortChange,
         handleAddSubject,
         handleUpdateSubject,
         handleDeleteSubject,

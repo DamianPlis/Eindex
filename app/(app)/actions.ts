@@ -2,8 +2,13 @@
 
 import { cookies } from "next/headers";
 import { LOCALE_COOKIE, normalizeAppLocale } from "@/lib/i18n/config";
-import { buildDaysForWeek } from "@/lib/schedule/defaults";
-import { normalizeTheme } from "@/lib/settings/defaults";
+import {
+  normalizeTheme,
+  normalizeSettings,
+  normalizePlanningSubjectSort,
+} from "@/lib/settings/defaults";
+import type { DeadlineUndo } from "@/lib/schedule/deadline-undo";
+import type { Id } from "@/convex/_generated/dataModel";
 import type { AppSettings } from "@/lib/settings/types";
 import { requireSession } from "@/lib/session";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
@@ -23,22 +28,12 @@ export async function setSlotSubjectAction(
   const token = await convexAuthNextjsToken();
   if (!token) throw new Error("Unauthorized");
 
-  const builtDays = buildDaysForWeek(input.weekStart);
-  const slot = builtDays[input.dayIndex]?.slots?.[input.slotIndex];
-  const date = builtDays[input.dayIndex]?.date || input.weekStart;
-
   await fetchMutation(
     api.schedule.setSlotSubject,
     {
       weekStart: input.weekStart,
-      date,
       dayIndex: input.dayIndex,
       slotIndex: input.slotIndex,
-      time: slot?.time || "08:00-09:00",
-      fixed: Boolean(slot?.fixed),
-      fixedKey: slot?.fixedKey || undefined,
-      fixedLabel: slot?.fixedLabel || undefined,
-      allowTopic: Boolean(slot?.allowTopic),
       subjectId: input.subjectId || null,
       writerId: input.writerId,
     },
@@ -53,22 +48,12 @@ export async function setSlotTopicAction(
   const token = await convexAuthNextjsToken();
   if (!token) throw new Error("Unauthorized");
 
-  const builtDays = buildDaysForWeek(input.weekStart);
-  const slot = builtDays[input.dayIndex]?.slots?.[input.slotIndex];
-  const date = builtDays[input.dayIndex]?.date || input.weekStart;
-
   await fetchMutation(
     api.schedule.setSlotTopic,
     {
       weekStart: input.weekStart,
-      date,
       dayIndex: input.dayIndex,
       slotIndex: input.slotIndex,
-      time: slot?.time || "08:00-09:00",
-      fixed: Boolean(slot?.fixed),
-      fixedKey: slot?.fixedKey || undefined,
-      fixedLabel: slot?.fixedLabel || undefined,
-      allowTopic: Boolean(slot?.allowTopic),
       topic: input.topic || "",
       writerId: input.writerId,
     },
@@ -226,6 +211,7 @@ export async function updateSettingsAction(
     theme?: "light" | "dark";
     locale?: "cs" | "en" | "pl";
     useSchoolYear?: boolean;
+    planningSubjectSort?: AppSettings["planningSubjectSort"];
     writerId?: string;
   } = {};
 
@@ -247,14 +233,17 @@ export async function updateSettingsAction(
   if (input.writerId !== undefined) {
     updates.writerId = input.writerId;
   }
+  if (input.planningSubjectSort !== undefined) {
+    updates.planningSubjectSort = normalizePlanningSubjectSort(
+      input.planningSubjectSort,
+    );
+  }
 
-  const result = await fetchMutation(
-    api.settings.updateSettings,
-    updates,
-    { token },
-  );
+  const result = await fetchMutation(api.settings.updateSettings, updates, {
+    token,
+  });
 
-  return result;
+  return normalizeSettings(result);
 }
 
 export async function addDeadlineAction(formData: FormData) {
@@ -284,9 +273,9 @@ export async function removeDeadlineAction(formData: FormData) {
   if (!token) throw new Error("Unauthorized");
 
   const deadlineId = String(formData.get("id") || "").trim();
-  if (!deadlineId) return;
+  if (!deadlineId) return null;
 
-  await fetchMutation(
+  return await fetchMutation(
     api.deadlines.removeDeadline,
     { deadlineId },
     { token },
@@ -299,11 +288,24 @@ export async function markAsDoneDeadlineAction(formData: FormData) {
   if (!token) throw new Error("Unauthorized");
 
   const deadlineId = String(formData.get("id") || "").trim();
-  if (!deadlineId) return;
+  if (!deadlineId) return null;
 
-  await fetchMutation(
+  return await fetchMutation(
     api.deadlines.markAsDone,
     { deadlineId },
+    { token },
+  );
+}
+
+export async function undoDeadlineAction(undo: DeadlineUndo) {
+  const session = await requireSession();
+  const token = await convexAuthNextjsToken();
+  if (!token) throw new Error("Unauthorized");
+  if (!undo || undo.uid !== session.uid || !undo.receiptId)
+    throw new Error("Invalid deadline undo");
+  await fetchMutation(
+    api.deadlines.undoDeadline,
+    { receiptId: undo.receiptId as Id<"deadlineUndos"> },
     { token },
   );
 }

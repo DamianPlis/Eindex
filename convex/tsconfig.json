@@ -10,7 +10,8 @@
     "moduleResolution": "Bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": { "@/*": ["../*"] }
   },
-  "include": ["./**/*", "../scripts/migrateUsers.ts"]
+  "include": ["./**/*"]
 }

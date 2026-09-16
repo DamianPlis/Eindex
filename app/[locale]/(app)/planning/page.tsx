@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import PlanningPageClient from "@/components/pages/PlanningPageClient";
 import { buildDaysForWeek, normalizeWeekKey } from "@/lib/schedule/defaults";
+import { getUserSettings, getUserState } from "@/lib/schedule/store";
+import { sortPlanningSubjects } from "@/lib/schedule/stats";
+import { getMessages } from "@/lib/i18n/messages";
+import type { AppLocale } from "@/lib/i18n/config";
 import { requireSession } from "@/lib/session";
 import { assertLocale } from "@/lib/i18n/server";
 import { Suspense } from "react";
 import PlanningPageSkeleton from "@/components/skeletons/PlanningPageSkeleton";
 import { generatePageMetadata } from "@/lib/metadata";
-import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
-import { fetchQuery } from "convex/nextjs";
-import { api } from "@/convex/_generated/api";
 
 export async function generateMetadata({
   params,
@@ -33,45 +34,33 @@ export default async function LocalePlanningPage({
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ week?: string }>;
 }) {
-  assertLocale((await params).locale);
+  const locale = assertLocale((await params).locale);
   const query = await searchParams;
   const weekStart = normalizeWeekKey(query.week);
 
   return (
     <Suspense key={`planning-${weekStart}`} fallback={<PlanningPageSkeleton />}>
-      <PlanningPageContent weekStart={weekStart} />
+      <PlanningPageContent weekStart={weekStart} locale={locale} />
     </Suspense>
   );
 }
 
-async function PlanningPageContent({ weekStart }: { weekStart: string }) {
-  await requireSession();
-  const token = await convexAuthNextjsToken();
-  const [weekData, subjects] = await Promise.all([
-    fetchQuery(
-      api.schedule.getWeekSchedule,
-      { weekStart },
-      { token: token || undefined },
-    ),
-    fetchQuery(api.subjects.getSubjects, {}, { token: token || undefined }),
+async function PlanningPageContent({
+  weekStart,
+  locale,
+}: {
+  weekStart: string;
+  locale: AppLocale;
+}) {
+  const session = await requireSession();
+  const [state, settings] = await Promise.all([
+    getUserState(session.uid),
+    getUserSettings(session.uid),
   ]);
-
-  const builtDays = buildDaysForWeek(weekStart);
-  if (weekData && weekData.slots) {
-    for (const slot of weekData.slots) {
-      if (builtDays[slot.dayIndex]?.slots?.[slot.slotIndex]) {
-        const target = builtDays[slot.dayIndex].slots[slot.slotIndex];
-        target.subjectId = slot.subjectId || null;
-        target.topic = slot.topic || "";
-        target.updatedAt = slot.updatedAt || 0;
-      }
-    }
-  }
-
-  const mappedSubjects =
-    subjects && subjects.length > 0
-      ? subjects.map((s) => ({ id: s.slug, name: s.name, color: s.color }))
-      : [];
+  const week = state.weeks[weekStart] || {
+    weekStart,
+    days: buildDaysForWeek(weekStart),
+  };
 
   return (
     <PlanningPageClient
@@ -79,8 +68,14 @@ async function PlanningPageContent({ weekStart }: { weekStart: string }) {
       currentWeekStart={normalizeWeekKey()}
       prevWeek={shiftWeek(weekStart, -1)}
       nextWeek={shiftWeek(weekStart, 1)}
-      days={builtDays}
-      subjects={mappedSubjects}
+      days={week.days}
+      subjects={sortPlanningSubjects(
+        state.subjects,
+        state,
+        locale,
+        settings.planningSubjectSort,
+        getMessages(locale),
+      )}
     />
   );
 }

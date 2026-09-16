@@ -1,7 +1,9 @@
-import { mutation, query } from "./_generated/server";
+import { internalMutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import schema from "./schema";
 
 export const getLunchForDate = query({
+  returns: v.union(schema.doc("schoolLunches"), v.null()),
   args: {
     canteenId: v.string(),
     date: v.string(), // YYYY-MM-DD
@@ -10,13 +12,14 @@ export const getLunchForDate = query({
     return await ctx.db
       .query("schoolLunches")
       .withIndex("by_canteen_date", (q) =>
-        q.eq("canteenId", args.canteenId).eq("date", args.date)
+        q.eq("canteenId", args.canteenId).eq("date", args.date),
       )
       .first();
   },
 });
 
 export const getLunchesForWeek = query({
+  returns: v.record(v.string(), v.string()),
   args: {
     canteenId: v.string(),
     dates: v.array(v.string()), // array of YYYY-MM-DD strings
@@ -28,7 +31,7 @@ export const getLunchesForWeek = query({
       const entry = await ctx.db
         .query("schoolLunches")
         .withIndex("by_canteen_date", (q) =>
-          q.eq("canteenId", args.canteenId).eq("date", date)
+          q.eq("canteenId", args.canteenId).eq("date", date),
         )
         .first();
 
@@ -41,7 +44,8 @@ export const getLunchesForWeek = query({
   },
 });
 
-export const upsertLunch = mutation({
+export const upsertLunch = internalMutation({
+  returns: v.id("schoolLunches"),
   args: {
     canteenId: v.string(),
     date: v.string(), // YYYY-MM-DD
@@ -51,7 +55,7 @@ export const upsertLunch = mutation({
     const existing = await ctx.db
       .query("schoolLunches")
       .withIndex("by_canteen_date", (q) =>
-        q.eq("canteenId", args.canteenId).eq("date", args.date)
+        q.eq("canteenId", args.canteenId).eq("date", args.date),
       )
       .first();
 

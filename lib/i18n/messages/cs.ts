@@ -44,6 +44,13 @@ export const csMessages = {
     languageSaveError: "Jazyk se nepodařilo uložit. Zkuste to prosím později.",
     languageAlreadyActive: "Čeština je již aktivní.",
     subjects: "Předměty",
+    subjectSort: "Řazení předmětů v plánování",
+    subjectSortDescription:
+      "Vyberte, jak mají být třízené předměty ve výběru při vyplňování rozvrhu.",
+    mostUsed: "Nejpoužívanější",
+    leastUsed: "Nejméně používané",
+    subjectSortSaveError:
+      "Řazení předmětů se nepodařilo uložit. Zkuste to prosím později.",
     statisticsSection: "Statistiky",
     useSchoolYear: "Používat školní rok",
     useSchoolYearDescription:
@@ -72,6 +79,14 @@ export const csMessages = {
   home: {
     today: "Dnes",
     tomorrow: "Zítra",
+    deadlinesOverview: "Úkoly",
+    attentionTitle: "Vyžaduje pozornost",
+    attentionDescription: "Dnešní a nesplněné úkoly po termínu.",
+    upcomingTitle: "Co tě čeká",
+    upcomingDescription: "Nic nehoří — tady jsou nejbližší úkoly.",
+    viewAllDeadlines: "Zobrazit vše",
+    allClearTitle: "Všechno hotovo",
+    allClearDescription: "Nemáš žádné nesplněné úkoly.",
     noDeadlinesForToday: "Na dnešek nejsou žádné úkoly",
     noScheduleForToday: "Na dnešek není žádný rozvrh.",
     noDeadlinesForTomorrow: "Na zítřek nejsou žádné úkoly",
@@ -149,6 +164,17 @@ export const csMessages = {
       expired: "Po termínu",
       done: "Hotovo",
       upcoming: "Nadcházející",
+    },
+    toast: {
+      notifications: "Oznámení",
+      removed: "Úkol odstraněn",
+      done: "Úkol označen jako hotový",
+      restored: "Úkol obnoven",
+      undo: "Vrátit zpět",
+      undoing: "Obnovování…",
+      dismiss: "Zavřít oznámení",
+      actionFailed: "Změnu se nepodařilo uložit. Zkuste to znovu.",
+      undoFailed: "Změnu se nepodařilo vrátit. Zkuste to znovu.",
     },
     actions: {
       markDone: "Označit úkol jako hotový",

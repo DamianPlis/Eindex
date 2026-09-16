@@ -11,19 +11,18 @@ type SkeletonListItemsProps = {
 /**
  * Shared skeleton list items used by both DeadlinesListSkeleton and RemindersListSkeleton.
  */
-export default function SkeletonListItems({ extraActions }: SkeletonListItemsProps) {
+export default function SkeletonListItems({
+  extraActions,
+}: SkeletonListItemsProps) {
   return (
     <ul className={d.deadlinesList}>
       {Array.from({ length: 3 }).map((_, index) => (
-        <li
-          key={`deadline-skeleton-${index}`}
-          className={`${d.deadlineItem} ${sk.deadlinesSkeletonItem}`}
-        >
-          <div className={sk.deadlinesSkeletonText}>
-            <SkeletonLine className={sk.textLineLg} />
-            <SkeletonLine className={sk.textLineSm} />
+        <li key={`deadline-skeleton-${index}`} className={d.deadlineItem}>
+          <div className={d.deadlineBody}>
+            <SkeletonLine className={`${sk.textLineLg} ${sk.noMargin}`} />
+            <SkeletonLine className={`${sk.textLineSm} ${sk.noMargin}`} />
           </div>
-          <div className={`${d.deadlineActions} ${sk.deadlinesSkeletonActions}`}>
+          <div className={d.deadlineActions}>
             <SkeletonLine className={sk.skeletonPill} />
             {extraActions}
           </div>

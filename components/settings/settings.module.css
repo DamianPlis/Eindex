@@ -268,15 +268,15 @@
   transition: transform 200ms ease;
 }
 
-.toggleSwitch input:checked+.toggleTrack {
+.toggleSwitch input:checked + .toggleTrack {
   background: var(--primary);
 }
 
-.toggleSwitch input:checked+.toggleTrack::after {
+.toggleSwitch input:checked + .toggleTrack::after {
   transform: translateX(20px);
 }
 
-.toggleSwitch input:disabled+.toggleTrack {
+.toggleSwitch input:disabled + .toggleTrack {
   opacity: 0.5;
   cursor: default;
 }
@@ -354,6 +354,20 @@
 
 .subjectInput:focus {
   outline: 2px solid var(--primary);
+}
+
+.subjectSortDescription {
+  composes: toggleDescription;
+  margin: 0;
+  max-width: 65ch;
+}
+
+.subjectSortSelect {
+  composes: subjectInput;
+  flex: none;
+  width: 100%;
+  min-width: 0;
+  background: var(--bubble);
 }
 
 .subjectColorDot {

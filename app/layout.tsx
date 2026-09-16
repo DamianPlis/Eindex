@@ -31,7 +31,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Only cookie reads — no Firebase Admin, no Firestore, no network calls.
+  // Cookie preferences prevent theme and locale flashes before hydration.
   const [cookieTheme, locale] = await Promise.all([
     getThemeCookie(),
     getRequestLocale(),
