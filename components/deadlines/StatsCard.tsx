@@ -17,6 +17,7 @@ import {
 } from "@/lib/schedule/stats";
 import SortIcon from "@/icons/sort_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import SubjectsCombobox from "@/components/deadlines/SubjectsCombobox";
+import { useStatsPeriodSwipe } from "./useStatsPeriodSwipe";
 import styles from "./StatsCard.module.css";
 
 interface StatsCardProps {
@@ -35,6 +36,9 @@ export default function StatsCard({
   const [sortBy, setSortBy] = useState<SortOption>("count-desc");
   const [filterIds, setFilterIds] = useState<FilterOption>([]);
   const [offset, setOffset] = useState(0);
+  const { cardRef, contentRef } = useStatsPeriodSwipe((direction) =>
+    setOffset((previous) => previous + direction),
+  );
 
   const isSchoolYearPeriod = period === "year" && useSchoolYear;
 
@@ -76,11 +80,13 @@ export default function StatsCard({
   );
 
   return (
-    <div className={styles.statsCard}>
+    <div ref={cardRef} className={styles.statsCard}>
       <div className={styles.statsCardHeader}>
         <div className={styles.statsCardTitleNav}>
           <div className={styles.statsCardTitle}>
-            <h3 style={{ margin: 0 }}>{title}</h3>
+            <h3 style={{ margin: 0 }} aria-live="polite" aria-atomic="true">
+              {title}
+            </h3>
             {offset !== 0 && (
               <div className={styles.statsNavTodayContainer}>
                 <button
@@ -98,7 +104,7 @@ export default function StatsCard({
             <button
               type="button"
               className={styles.statsNavArrow}
-              onClick={() => setOffset((prev) => prev - 1)}
+              onClick={() => setOffset((previous) => previous - 1)}
               aria-label={messages.deadlines.statistics.previous}
               title={messages.deadlines.statistics.previous}
             >
@@ -119,7 +125,7 @@ export default function StatsCard({
             <button
               type="button"
               className={styles.statsNavArrow}
-              onClick={() => setOffset((prev) => prev + 1)}
+              onClick={() => setOffset((previous) => previous + 1)}
               aria-label={messages.deadlines.statistics.next}
               title={messages.deadlines.statistics.next}
             >
@@ -138,7 +144,7 @@ export default function StatsCard({
             </button>
           </div>
         </div>
-        <div className={styles.statsCardHeaderIcons}>
+        <div className={styles.statsCardHeaderIcons} data-swipe-ignore>
           <div className="sort-icon-wrapper" style={{ position: "relative" }}>
             <SortIcon
               alt="Sort stats"
@@ -181,26 +187,36 @@ export default function StatsCard({
           />
         </div>
       </div>
-      {filteredStats.length === 0 ? (
-        <p>{messages.deadlines.noData}</p>
-      ) : (
-        <ul>
-          {filteredStats.map(
-            ({ subjectId, count }: { subjectId: string; count: number }) => (
-              <li
-                key={subjectId}
-                className={styles.statsEntry}
-                style={{
-                  backgroundColor: `${state.subjects.find((s) => s.id === subjectId)?.color || "#000000"}55`,
-                }}
-              >
-                {subjectMap.get(subjectId) || subjectId}: {count}{" "}
-                {messages.deadlines.statistics.times}
-              </li>
-            ),
+      <div className={styles.statsViewport}>
+        <div ref={contentRef} className={styles.statsContent}>
+          {filteredStats.length === 0 ? (
+            <p>{messages.deadlines.noData}</p>
+          ) : (
+            <ul>
+              {filteredStats.map(
+                ({
+                  subjectId,
+                  count,
+                }: {
+                  subjectId: string;
+                  count: number;
+                }) => (
+                  <li
+                    key={subjectId}
+                    className={styles.statsEntry}
+                    style={{
+                      backgroundColor: `${state.subjects.find((s) => s.id === subjectId)?.color || "#000000"}55`,
+                    }}
+                  >
+                    {subjectMap.get(subjectId) || subjectId}: {count}{" "}
+                    {messages.deadlines.statistics.times}
+                  </li>
+                ),
+              )}
+            </ul>
           )}
-        </ul>
-      )}
+        </div>
+      </div>
     </div>
   );
 }

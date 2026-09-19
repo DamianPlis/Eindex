@@ -2,6 +2,18 @@
   padding: 15px;
   border-radius: 16px;
   background: var(--bubble);
+  touch-action: pan-y pinch-zoom;
+}
+
+.statsViewport {
+  overflow: hidden;
+  min-height: 56px;
+}
+
+.statsContent {
+  display: flow-root;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .statsCardHeader {
@@ -14,6 +26,8 @@
 }
 
 .statsCardTitleNav {
+  user-select: none;
+  -webkit-user-select: none;
   display: flex;
   flex-direction: column;
   gap: 6px;
