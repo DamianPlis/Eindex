@@ -15,7 +15,12 @@ export function useStatsPeriodSwipe(onStep: (direction: number) => void) {
     const content = contentRef.current;
     if (!card || !content) return;
 
-    let start: { x: number; y: number; id: number } | null = null;
+    let start: {
+      x: number;
+      y: number;
+      id: number;
+      horizontal: boolean;
+    } | null = null;
     let wheelDistance = 0;
     let wheelCommitted = false;
     let wheelTimer: ReturnType<typeof setTimeout>;
@@ -50,7 +55,12 @@ export function useStatsPeriodSwipe(onStep: (direction: number) => void) {
     function down(event: PointerEvent) {
       if (!event.isPrimary) return cancel();
       if (event.button !== 0 || isControl(event)) return;
-      start = { x: event.clientX, y: event.clientY, id: event.pointerId };
+      start = {
+        x: event.clientX,
+        y: event.clientY,
+        id: event.pointerId,
+        horizontal: false,
+      };
       card!.setPointerCapture(event.pointerId);
     }
 
@@ -58,13 +68,18 @@ export function useStatsPeriodSwipe(onStep: (direction: number) => void) {
       if (!start || start.id !== event.pointerId) return;
       const dx = event.clientX - start.x;
       const dy = event.clientY - start.y;
-      if (Math.abs(dy) > Math.max(10, Math.abs(dx))) return cancel();
+      if (!start.horizontal) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) < 10) return;
+        if (Math.abs(dy) >= Math.abs(dx)) return cancel();
+        // Choose the axis once. A slow, curved swipe must not lose its capture.
+        start.horizontal = true;
+      }
       move(dx);
     }
 
     function up(event: PointerEvent) {
       if (!start || start.id !== event.pointerId) return;
-      const distance = event.clientX - start.x;
+      const distance = start.horizontal ? event.clientX - start.x : 0;
       cancel();
       settle(distance);
     }

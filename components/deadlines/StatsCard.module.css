@@ -6,7 +6,9 @@
 }
 
 .statsViewport {
-  overflow: hidden;
+  /* Clip the moving content without creating a nested touch scroll container. */
+  overflow: clip;
+  touch-action: pan-y pinch-zoom;
   min-height: 56px;
 }
 
