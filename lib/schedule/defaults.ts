@@ -71,7 +71,8 @@ const defaultSubjectGroups: SubjectGroup[] = [
   },
 ];
 
-const dayTemplates: DayTemplate[] = [
+// Keep the previous layout for historical weeks: saved slots use positional IDs.
+const legacyDayTemplates: DayTemplate[] = [
   {
     slots: [
       {
@@ -146,16 +147,101 @@ const dayTemplates: DayTemplate[] = [
   },
 ];
 
+// Recurring blocks from "Rozvrh 26_27 - 21. - 25. 9..pdf".
+// Activity choices and one-off trips are intentionally left for weekly planning.
+// Lunch times fill the unlabelled gaps between the surrounding timed blocks.
+const currentTemplateStart = "2026-09-21";
+const dayTemplates: DayTemplate[] = [
+  {
+    slots: [
+      {
+        time: "08:00-08:15",
+        fixedKey: "morningCircle",
+        fixedLabel: "Ranni kruh",
+      },
+      { time: "08:20-10:20" },
+      { time: "10:30-11:30" },
+      {
+        time: "11:40-12:40",
+        fixedKey: "assembly",
+        fixedLabel: "Shromazdeni",
+      },
+      { time: "12:40-13:20", fixedKey: "lunch", fixedLabel: "Obed" },
+      { time: "13:20-14:00" },
+      { time: "14:05-15:00" },
+    ],
+  },
+  {
+    slots: [
+      {
+        time: "08:00-08:15",
+        fixedKey: "morningCircle",
+        fixedLabel: "Ranni kruh",
+      },
+      { time: "08:20-10:20" },
+      { time: "10:30-11:30" },
+      { time: "11:40-12:40" },
+      { time: "12:40-13:20", fixedKey: "lunch", fixedLabel: "Obed" },
+      { time: "13:20-14:00" },
+      { time: "14:05-15:00" },
+    ],
+  },
+  {
+    slots: [
+      {
+        time: "08:00-08:15",
+        fixedKey: "morningCircle",
+        fixedLabel: "Ranni kruh",
+      },
+      { time: "08:20-10:20" },
+      { time: "10:30-11:30" },
+      { time: "11:30-12:05", fixedKey: "lunch", fixedLabel: "Obed" },
+      {
+        time: "12:05-13:05",
+        fixedKey: "currentEvents",
+        fixedLabel: "Aktuality",
+        allowTopic: true,
+      },
+      {
+        time: "13:10-15:00",
+        fixedKey: "pe",
+        fixedLabel: "Telocvik",
+        allowTopic: true,
+      },
+    ],
+  },
+  {
+    slots: [
+      {
+        time: "08:00-08:15",
+        fixedKey: "morningCircle",
+        fixedLabel: "Ranni kruh",
+      },
+      { time: "08:20-10:20" },
+      { time: "10:30-11:30" },
+      { time: "11:40-12:40" },
+      { time: "12:40-13:20", fixedKey: "lunch", fixedLabel: "Obed" },
+      { time: "13:20-14:00", fixedKey: "tutor", fixedLabel: "Tutor" },
+      { time: "14:05-15:00" },
+    ],
+  },
+  {
+    slots: [{ time: "08:00-15:00" }],
+  },
+];
+
 /**
  * Generates the default structure of DaySchedule items with slots for a given week start ISO date.
  * Maps slot configurations from preset templates.
- * 
+ *
  * @param weekStartISO - The ISO date of the Monday starting the target week.
  * @returns Array of 5 DaySchedule objects.
  */
 export function buildDaysForWeek(weekStartISO: string) {
   const base = new Date(weekStartISO);
-  return dayTemplates.map((dayTpl, dayIdx) => {
+  const templates =
+    weekStartISO >= currentTemplateStart ? dayTemplates : legacyDayTemplates;
+  return templates.map((dayTpl, dayIdx) => {
     const current = new Date(base);
     current.setDate(base.getDate() + dayIdx);
     const slots: Slot[] = dayTpl.slots.map((slotTpl, slotIdx) => ({
@@ -175,7 +261,7 @@ export function buildDaysForWeek(weekStartISO: string) {
 
 /**
  * Creates a brand new default ScheduleState object initialized with default subjects, groups, and the current week.
- * 
+ *
  * @returns A new ScheduleState object.
  */
 function createDefaultState(): ScheduleState {
@@ -196,7 +282,7 @@ function createDefaultState(): ScheduleState {
 
 /**
  * Type guard function checking if a value is a non-null object/record.
- * 
+ *
  * @param value - The value to check.
  * @returns True if value is an object, false otherwise.
  */
@@ -207,7 +293,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 /**
  * Strips diacritics, converts to lowercase, and removes all non-alphabet characters.
  * Used for normalization in fixed slot key inference.
- * 
+ *
  * @param value - The raw label string.
  * @returns The normalized label.
  */
@@ -221,7 +307,7 @@ function normalizeFixedLabel(value: string): string {
 
 /**
  * Infers and returns the canonical FixedSlotKey based on raw key/label data, supporting translation/mapping.
- * 
+ *
  * @param rawKey - The raw slot key.
  * @param rawLabel - The raw slot label.
  * @returns The resolved FixedSlotKey or null.
@@ -261,7 +347,7 @@ function inferFixedSlotKey(
 
 /**
  * Resolves the status string of a deadline item relative to today's date.
- * 
+ *
  * @param deadline - Partial deadline containing at least the target ISO date.
  * @param todayISO - Today's date ISO string.
  * @returns The resolved status ("done", "today", "expired", or "upcoming").
@@ -279,7 +365,7 @@ export function resolveDeadlineStatus(
 /**
  * Parses and normalizes raw deadlines data from the database.
  * Filters out invalid entries and updates status based on today's date.
- * 
+ *
  * @param rawDeadlines - Raw deadlines input.
  * @param todayISO - Today's ISO date string.
  * @returns Array of normalized DeadlineItem objects.
@@ -334,7 +420,7 @@ function normalizeDeadlines(
 /**
  * Migrates a raw, potentially partial/legacy schedule state object to the latest state schema.
  * Merges weeks, settings, subjects, lunches, and deadlines with default templates.
- * 
+ *
  * @param raw - The raw state object fetched from the database.
  * @returns A fully populated and schema-compliant ScheduleState object.
  */
@@ -360,7 +446,6 @@ export function migrateState(raw: unknown): ScheduleState {
 
   base.lunches =
     source.lunches && typeof source.lunches === "object" ? source.lunches : {};
-
 
   const weekMap =
     source.weeks && typeof source.weeks === "object" ? source.weeks : {};
