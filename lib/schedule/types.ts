@@ -1,15 +1,11 @@
 export type FixedSlotKey =
-  | "morningCircle"
-  | "currentEvents"
-  | "lunch"
-  | "tutor"
-  | "pe"
-  | "assembly";
+  "morningCircle" | "currentEvents" | "lunch" | "tutor" | "pe" | "assembly";
 
 export type Subject = {
   id: string;
   name: string;
   color: string;
+  hiddenFromPlanning?: boolean;
 };
 
 export type SubjectGroup = {

@@ -44,6 +44,11 @@ export const csMessages = {
     languageSaveError: "Jazyk se nepodařilo uložit. Zkuste to prosím později.",
     languageAlreadyActive: "Čeština je již aktivní.",
     subjects: "Předměty",
+    showInPlanning: "Zobrazit v plánování",
+    subjectVisibilityDescription:
+      "Vypněte dočasné předměty, aby se nezobrazovaly ve výběru v rozvrhu. Stávající bloky a statistiky zůstanou beze změny. Předměty můžete kdykoli znovu zobrazit.",
+    subjectVisibilitySaveError:
+      "Viditelnost předmětu se nepodařilo uložit. Zkuste to později.",
     subjectSort: "Řazení předmětů v plánování",
     subjectSortDescription:
       "Vyberte, jak mají být třízené předměty ve výběru při vyplňování rozvrhu.",

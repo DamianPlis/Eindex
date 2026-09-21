@@ -390,6 +390,22 @@
   gap: 8px;
   align-items: center;
   flex: 0 0 auto;
+  flex-wrap: wrap;
+}
+
+.subjectVisibility {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.subjectVisibility input:focus-visible + .toggleTrack {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
 }
 
 .subjectActionBtn {
@@ -458,5 +474,13 @@
 
   .subjectName {
     padding-top: 3px;
+  }
+
+  .subjectActions {
+    width: 100%;
+  }
+
+  .subjectVisibility {
+    margin-right: auto;
   }
 }

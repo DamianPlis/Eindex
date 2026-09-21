@@ -148,6 +148,53 @@ test("settings reads preserve planning sort and normalize older rows missing tha
   });
   expect((await getUserSettings()).planningSubjectSort).toBe("count-desc");
 });
+test("planning visibility travels through the authenticated action and state loader", async () => {
+  await actions.setSubjectPlanningVisibilityAction({
+    id: "trip",
+    hiddenFromPlanning: true,
+    writerId: "tab-a",
+  });
+  const [ref, args, options] = mocks.mutation.mock.calls[0];
+  expect(getFunctionName(ref)).toBe("subjects:setPlanningVisibility");
+  expect(args).toEqual({
+    slug: "trip",
+    hiddenFromPlanning: true,
+    writerId: "tab-a",
+  });
+  expect(options).toEqual({ token: "auth-token" });
+  mocks.query.mockImplementation(async (ref) => {
+    if (getFunctionName(ref) === "schedule:listSlots")
+      return { page: [], isDone: true, continueCursor: "" };
+    if (getFunctionName(ref) === "subjects:getSubjects")
+      return [
+        {
+          slug: "trip",
+          name: "School trip",
+          color: "#123456",
+          hiddenFromPlanning: true,
+        },
+        { slug: "math", name: "Math", color: "#654321" },
+      ];
+    return [];
+  });
+  expect((await getUserState()).subjects).toEqual([
+    {
+      id: "trip",
+      name: "School trip",
+      color: "#123456",
+      hiddenFromPlanning: true,
+    },
+    { id: "math", name: "Math", color: "#654321", hiddenFromPlanning: false },
+  ]);
+  mocks.token.mockResolvedValue(undefined);
+  await expect(
+    actions.setSubjectPlanningVisibilityAction({
+      id: "trip",
+      hiddenFromPlanning: false,
+    }),
+  ).rejects.toThrow("Unauthorized");
+});
+
 test("server data reads and mutations reject missing tokens instead of returning fake defaults", async () => {
   mocks.token.mockResolvedValue(undefined);
   await expect(getUserState()).rejects.toThrow("Unauthorized");

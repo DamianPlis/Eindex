@@ -56,6 +56,7 @@ export default defineSchema({
     color: v.string(), // Hex string e.g. "#b09ce3"
     order: v.optional(v.number()),
     isArchived: v.optional(v.boolean()),
+    hiddenFromPlanning: v.optional(v.boolean()),
     createdAt: v.number(),
     updatedAt: v.number(),
   })

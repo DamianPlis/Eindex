@@ -40,6 +40,7 @@ export async function getUserState(_uid?: string): Promise<ScheduleState> {
       id: s.slug,
       name: s.name,
       color: s.color,
+      hiddenFromPlanning: s.hiddenFromPlanning ?? false,
     })),
     subjectGroups: groups.map((g) => ({
       id: g.slug,

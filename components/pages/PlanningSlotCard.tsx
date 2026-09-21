@@ -104,11 +104,18 @@ export function PlanningSlotCard({
               }}
             >
               <option value="">- {messages.planning.selectSubject} -</option>
-              {subjects.map((subject) => (
-                <option key={subject.id} value={subject.id}>
-                  {getSubjectDisplayName(subject, messages)}
+              {selectedSubject?.hiddenFromPlanning ? (
+                <option value={selectedSubject.id} hidden>
+                  {getSubjectDisplayName(selectedSubject, messages)}
                 </option>
-              ))}
+              ) : null}
+              {subjects
+                .filter((subject) => !subject.hiddenFromPlanning)
+                .map((subject) => (
+                  <option key={subject.id} value={subject.id}>
+                    {getSubjectDisplayName(subject, messages)}
+                  </option>
+                ))}
             </select>
 
             <input

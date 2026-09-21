@@ -43,6 +43,11 @@ export const plMessages = {
       "Nie udało się zapisać języka. Spróbuj ponownie później.",
     languageAlreadyActive: "Język polski jest już aktywny.",
     subjects: "Przedmioty",
+    showInPlanning: "Pokaż w planowaniu",
+    subjectVisibilityDescription:
+      "Wyłącz tymczasowe przedmioty, aby ukryć je na liście wyboru w planie. Istniejące bloki i statystyki pozostaną bez zmian. Możesz je ponownie pokazać w dowolnym momencie.",
+    subjectVisibilitySaveError:
+      "Nie udało się zapisać widoczności przedmiotu. Spróbuj ponownie później.",
     subjectSort: "Kolejność przedmiotów w planowaniu",
     subjectSortDescription:
       "Wybierz sposób sortowania przedmiotów w menu wyboru podczas wypełniania planu zajęć.",

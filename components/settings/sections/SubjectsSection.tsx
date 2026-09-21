@@ -18,6 +18,7 @@ export default function SubjectsSection() {
     isPending,
     handleAddSubject,
     handleUpdateSubject,
+    handleSubjectPlanningVisibilityChange,
     handleDeleteSubject,
     confirmDeleteSubject,
     handleSaveCustomSubject,
@@ -87,6 +88,12 @@ export default function SubjectsSection() {
           </button>
         </div>
 
+        <p
+          id="subject-visibility-description"
+          className={s.subjectSortDescription}
+        >
+          {messages.settings.subjectVisibilityDescription}
+        </p>
         <div className={s.subjectsList}>
           {subjects.map((subject) => (
             <div key={subject.id} className={s.subjectItem}>
@@ -129,6 +136,26 @@ export default function SubjectsSection() {
                   />
                   <span className={s.subjectName}>{subject.name}</span>
                   <div className={s.subjectActions}>
+                    <label className={s.subjectVisibility}>
+                      <span>{messages.settings.showInPlanning}</span>
+                      <span className={s.toggleSwitch}>
+                        <input
+                          type="checkbox"
+                          role="switch"
+                          checked={!subject.hiddenFromPlanning}
+                          disabled={isPending}
+                          aria-label={`${messages.settings.showInPlanning}: ${subject.name}`}
+                          aria-describedby="subject-visibility-description"
+                          onChange={(event) =>
+                            handleSubjectPlanningVisibilityChange(
+                              subject.id,
+                              event.target.checked,
+                            )
+                          }
+                        />
+                        <span className={s.toggleTrack} aria-hidden="true" />
+                      </span>
+                    </label>
                     <button
                       className={s.subjectActionBtn}
                       onClick={() => {

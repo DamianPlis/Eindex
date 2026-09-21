@@ -42,6 +42,11 @@ export const enMessages = {
     languageSaveError: "Could not save your language. Try again later.",
     languageAlreadyActive: "English is already active.",
     subjects: "Subjects",
+    showInPlanning: "Show in Planning",
+    subjectVisibilityDescription:
+      "Turn off temporary subjects to hide them from the schedule picker. Existing blocks and statistics stay unchanged. You can show them again anytime.",
+    subjectVisibilitySaveError:
+      "Could not save subject visibility. Try again later.",
     subjectSort: "Subject order in Planning",
     subjectSortDescription:
       "Choose how subjects will be sorted in the selection menu when you are filling in your timetable",

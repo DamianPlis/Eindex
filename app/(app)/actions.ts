@@ -111,6 +111,26 @@ export async function updateSubjectAction(input: {
   );
 }
 
+export async function setSubjectPlanningVisibilityAction(input: {
+  id: string;
+  hiddenFromPlanning: boolean;
+  writerId?: string;
+}) {
+  await requireSession();
+  const token = await convexAuthNextjsToken();
+  if (!token) throw new Error("Unauthorized");
+
+  await fetchMutation(
+    api.subjects.setPlanningVisibility,
+    {
+      slug: input.id,
+      hiddenFromPlanning: input.hiddenFromPlanning,
+      writerId: input.writerId,
+    },
+    { token },
+  );
+}
+
 export async function deleteSubjectAction(input: {
   id: string;
   writerId?: string;

@@ -32,6 +32,93 @@ const newDeadline = (text: string) => ({
 });
 const coord = { weekStart: "2026-09-14", dayIndex: 0, slotIndex: 1 };
 
+test("planning visibility is reversible and preserves slots, groups, and subject edits", async () => {
+  const { owner, other, t } = await setup();
+  const trip = await owner.mutation(api.subjects.addSubject, {
+    name: "School trip",
+    color: "#123456",
+  });
+  await owner.mutation(api.schedule.setSlotSubject, {
+    ...coord,
+    subjectId: trip.slug,
+  });
+  await owner.mutation(api.schedule.setSlotTopic, {
+    ...coord,
+    topic: "Museum",
+  });
+  await owner.mutation(api.subjects.addSubjectGroup, {
+    name: { en: "Activities" },
+    subjectIds: [trip.slug],
+  });
+  const before = await owner.query(api.schedule.getWeekSchedule, {
+    weekStart: coord.weekStart,
+  });
+  const groupsBefore = await owner.query(api.subjects.getSubjectGroups, {});
+
+  await expect(
+    other.mutation(api.subjects.setPlanningVisibility, {
+      slug: trip.slug,
+      hiddenFromPlanning: true,
+    }),
+  ).rejects.toThrow("Subject not found");
+  await expect(
+    t.mutation(api.subjects.setPlanningVisibility, {
+      slug: trip.slug,
+      hiddenFromPlanning: true,
+    }),
+  ).rejects.toThrow("Unauthorized");
+
+  await owner.mutation(api.subjects.setPlanningVisibility, {
+    slug: trip.slug,
+    hiddenFromPlanning: true,
+    writerId: "visibility-tab",
+  });
+  await owner.mutation(api.subjects.updateSubject, {
+    slug: trip.slug,
+    name: "School trip updated",
+    color: "#654321",
+  });
+  expect(
+    (await owner.query(api.subjects.getSubjects, {})).find(
+      (s) => s.slug === trip.slug,
+    ),
+  ).toMatchObject({ hiddenFromPlanning: true, name: "School trip updated" });
+  expect(
+    (
+      await owner.query(api.schedule.getWeekSchedule, {
+        weekStart: coord.weekStart,
+      })
+    ).slots,
+  ).toEqual(before.slots);
+  expect(await owner.query(api.subjects.getSubjectGroups, {})).toEqual(
+    groupsBefore,
+  );
+
+  await owner.mutation(api.subjects.setPlanningVisibility, {
+    slug: trip.slug,
+    hiddenFromPlanning: false,
+    writerId: "visibility-tab",
+  });
+  expect(
+    (await owner.query(api.subjects.getSubjects, {})).find(
+      (s) => s.slug === trip.slug,
+    ),
+  ).toMatchObject({ hiddenFromPlanning: false });
+  expect(await owner.query(api.settings.getUserSettings, {})).toMatchObject({
+    lastWriter: "visibility-tab",
+  });
+
+  await owner.mutation(api.subjects.setPlanningVisibility, {
+    slug: "math",
+    hiddenFromPlanning: true,
+  });
+  expect(
+    (await other.query(api.subjects.getSubjects, {})).find(
+      (s) => s.slug === "math",
+    )?.hiddenFromPlanning,
+  ).toBeUndefined();
+});
+
 test("first login persists editable defaults once and never resurrects deleted subjects/groups", async () => {
   const { owner } = await setup();
   const defaults = migrateState(null);

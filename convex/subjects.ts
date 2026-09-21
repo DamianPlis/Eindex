@@ -102,6 +102,32 @@ export const updateSubject = mutation({
   },
 });
 
+export const setPlanningVisibility = mutation({
+  args: {
+    slug: v.string(),
+    hiddenFromPlanning: v.boolean(),
+    writerId: v.optional(v.string()),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const userId = await requireUser(ctx);
+    const subject = await ctx.db
+      .query("subjects")
+      .withIndex("by_user_slug", (q) =>
+        q.eq("userId", userId).eq("slug", args.slug),
+      )
+      .unique();
+    if (!subject) throw new Error("Subject not found");
+
+    await ctx.db.patch(subject._id, {
+      hiddenFromPlanning: args.hiddenFromPlanning,
+      updatedAt: Date.now(),
+    });
+    await touchUser(ctx, userId, args.writerId);
+    return null;
+  },
+});
+
 export const deleteSubject = mutation({
   returns: v.object({ success: v.boolean() }),
   args: {

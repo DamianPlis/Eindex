@@ -14,6 +14,7 @@ import {
   updateSettingsAction,
   addCustomSubjectAction,
   updateSubjectAction,
+  setSubjectPlanningVisibilityAction,
   deleteSubjectAction,
   addSubjectGroupAction,
   updateSubjectGroupAction,
@@ -47,6 +48,7 @@ type SettingsContextValue = {
   ) => void;
   handleAddSubject: () => void;
   handleUpdateSubject: (id: string) => void;
+  handleSubjectPlanningVisibilityChange: (id: string, visible: boolean) => void;
   handleDeleteSubject: (id: string) => void;
   confirmDeleteSubject: () => void;
   handleSaveCustomSubject: (name: string, color: string) => void;
@@ -257,11 +259,36 @@ export default function SettingsProvider({
       });
       setSubjects((prev) =>
         prev.map((s) =>
-          s.id === id ? { id, name: editName, color: editColor } : s,
+          s.id === id ? { ...s, name: editName, color: editColor } : s,
         ),
       );
       setEditingSubjectId(null);
       refreshSettings();
+    });
+  }
+
+  function handleSubjectPlanningVisibilityChange(id: string, visible: boolean) {
+    const previousSubjects = subjects;
+    setSubjects((current) =>
+      current.map((subject) =>
+        subject.id === id
+          ? { ...subject, hiddenFromPlanning: !visible }
+          : subject,
+      ),
+    );
+    setErrorMessage("");
+    startTransition(async () => {
+      try {
+        await setSubjectPlanningVisibilityAction({
+          id,
+          hiddenFromPlanning: !visible,
+          writerId: clientIdRef.current,
+        });
+        refreshSettings();
+      } catch {
+        setSubjects(previousSubjects);
+        setErrorMessage(messages.settings.subjectVisibilitySaveError);
+      }
     });
   }
 
@@ -370,6 +397,7 @@ export default function SettingsProvider({
         handlePlanningSubjectSortChange,
         handleAddSubject,
         handleUpdateSubject,
+        handleSubjectPlanningVisibilityChange,
         handleDeleteSubject,
         confirmDeleteSubject,
         handleSaveCustomSubject,
