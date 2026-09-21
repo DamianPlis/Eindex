@@ -165,6 +165,7 @@ const dayTemplates: DayTemplate[] = [
         time: "11:40-12:40",
         fixedKey: "assembly",
         fixedLabel: "Shromazdeni",
+        allowTopic: true,
       },
       { time: "12:40-13:20", fixedKey: "lunch", fixedLabel: "Obed" },
       { time: "13:20-14:00" },
