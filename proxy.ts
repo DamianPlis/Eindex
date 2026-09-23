@@ -17,23 +17,26 @@ export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
     pathname.startsWith("/_next/") ||
     /\.[^/]+$/.test(pathname)
   )
-    return NextResponse.next();
+    return NextResponse.next({ request: { headers: request.headers } });
   const cookieLocale = request.cookies.get(LOCALE_COOKIE)?.value;
   const locale =
     getLocaleFromPathname(pathname) ??
     (cookieLocale && isAppLocale(cookieLocale) ? cookieLocale : DEFAULT_LOCALE);
   const path = stripLocaleFromPath(pathname);
-  const authenticated = await convexAuth.isAuthenticated();
-  if (!authenticated && path !== "/login" && path !== "/about")
-    return nextjsMiddlewareRedirect(request, localizePath(locale, "/login"));
-  if (authenticated && path === "/login")
-    return nextjsMiddlewareRedirect(request, localizePath(locale, "/"));
+  // Public pages can render immediately; LoginPanel handles restored sessions.
+  if (path !== "/login" && path !== "/about") {
+    const authenticated = await convexAuth.isAuthenticated();
+    if (!authenticated)
+      return nextjsMiddlewareRedirect(request, localizePath(locale, "/login"));
+  }
   if (!getLocaleFromPathname(pathname)) {
     const url = request.nextUrl.clone();
     url.pathname = localizePath(locale, pathname);
     return NextResponse.redirect(url, 307);
   }
-  const response = NextResponse.next();
+  // Convex Auth may have refreshed the request cookies. Forward them so SSR
+  // sees the same session as the middleware, rather than the expired token.
+  const response = NextResponse.next({ request: { headers: request.headers } });
   response.cookies.set(LOCALE_COOKIE, locale, {
     httpOnly: false,
     sameSite: "lax",

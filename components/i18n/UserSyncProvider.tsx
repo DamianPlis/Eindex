@@ -4,7 +4,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { useConvexAuth, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { getMessages, type AppMessages } from "@/lib/i18n/messages";
-import { getLocaleFromPathname, localizePath } from "@/lib/i18n/routing";
+import {
+  getLocaleFromPathname,
+  localizePath,
+  stripLocaleFromPath,
+} from "@/lib/i18n/routing";
 import { type AppLocale } from "@/lib/i18n/config";
 import { applyTheme } from "@/lib/settings/client";
 import { getClientId } from "@/lib/sync/client-id";
@@ -36,6 +40,8 @@ export function UserSyncProvider({
     if (
       !settings ||
       !pathname ||
+      // LoginPanel owns navigation once the session is restored.
+      stripLocaleFromPath(pathname) === "/login" ||
       getLocaleFromPathname(pathname) === settings.locale
     )
       return;

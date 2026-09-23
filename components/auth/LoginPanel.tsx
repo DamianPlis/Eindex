@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useConvexAuth } from "convex/react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useAppLocale, useMessages } from "@/components/i18n/UserSyncProvider";
 import LoginLocaleSwitcher from "@/components/auth/LoginLocaleSwitcher";
@@ -11,9 +13,19 @@ import u from "@/components/ui/shared.module.css";
 
 export default function LoginPanel() {
   const { signIn } = useAuthActions();
+  const { isLoading, isAuthenticated } = useConvexAuth();
+  const router = useRouter();
+  const locale = useAppLocale();
   const messages = useMessages();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const checking = isLoading || isAuthenticated || loading;
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace(localizePath(locale, "/"));
+    }
+  }, [isLoading, isAuthenticated, locale, router]);
 
   async function handleGoogleSignIn() {
     setError("");
@@ -26,8 +38,6 @@ export default function LoginPanel() {
     }
   }
 
-  const locale = useAppLocale();
-
   return (
     <div className={s.loginScreen}>
       <div className={`${u.container} ${s.loginCard}`}>
@@ -37,9 +47,10 @@ export default function LoginPanel() {
         <button
           className={u.primaryButton}
           onClick={handleGoogleSignIn}
-          disabled={loading}
+          disabled={checking}
+          aria-busy={checking}
         >
-          {loading ? messages.auth.checking : messages.auth.signInWithGoogle}
+          {checking ? messages.auth.checking : messages.auth.signInWithGoogle}
         </button>
         <div className={s.aboutContainer}>
           <Link
