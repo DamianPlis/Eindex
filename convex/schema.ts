@@ -9,6 +9,13 @@ export const planningSubjectSortValidator = v.union(
   v.literal("name-desc"),
 );
 
+// Retain palette data written before the appearance rollback.
+export const brandColorsValidator = v.object({
+  primary: v.string(),
+  fixed: v.string(),
+  completion: v.string(),
+});
+
 export default defineSchema({
   // Authentication tables provided by @convex-dev/auth (users, authSessions, authAccounts, etc.)
   ...authTables,
@@ -41,6 +48,7 @@ export default defineSchema({
     locale: v.union(v.literal("cs"), v.literal("en"), v.literal("pl")),
     useSchoolYear: v.boolean(),
     planningSubjectSort: v.optional(planningSubjectSortValidator),
+    colors: v.optional(brandColorsValidator),
     updatedAt: v.number(),
     lastWriter: v.optional(v.string()),
   }).index("by_user", ["userId"]),
