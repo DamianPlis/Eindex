@@ -19,6 +19,7 @@ import {
   pickTodaySchedule,
   selectDashboardDeadlines,
 } from "@/lib/schedule/selectors";
+import { formatEuropeanDate } from "@/lib/schedule/date-utils";
 import { getCachedUserState, getUserState } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
 import { getLunchPerDay } from "@/lib/lunch/server";
@@ -62,7 +63,7 @@ export default async function LocaleMainPage({
     <div className={a.mainContainer}>
       <div className={a.mainHeader}>
         <h2 className={a.mainTitle}>
-          {currentDay} - {selectedISO}
+          {currentDay} - {formatEuropeanDate(selectedISO)}
         </h2>
         {todayISO === selectedISO ? (
           <Link
@@ -188,7 +189,9 @@ async function RemindersContainer({
                     {item.text}
                   </Link>
                   <span className={d.deadlineTiming}>
-                    <time dateTime={item.date}>{item.date}</time>
+                    <time dateTime={item.date}>
+                      {formatEuropeanDate(item.date)}
+                    </time>
                     <span aria-hidden="true">·</span>
                     <span>
                       {formatDeadlineRelativeLabel(item.date, locale)}

@@ -8,6 +8,7 @@ import { getMessages } from "@/lib/i18n/messages";
 import { localizePath } from "@/lib/i18n/routing";
 import { assertLocale } from "@/lib/i18n/server";
 import { formatDeadlineRelativeLabel } from "@/lib/schedule/selectors";
+import { formatEuropeanDate } from "@/lib/schedule/date-utils";
 import { getUserState } from "@/lib/schedule/store";
 import { getSession, requireSession } from "@/lib/session";
 import dp from "@/app/[locale]/(app)/deadlines/DeadlinesPage.module.css";
@@ -30,7 +31,8 @@ export async function generateMetadata({
     if (item) {
       customTitle = item.text;
       customDescription =
-        item.description || `Termín odevzdání úkolu: ${item.date}`;
+        item.description ||
+        `Termín odevzdání úkolu: ${formatEuropeanDate(item.date)}`;
     }
   }
 
@@ -72,11 +74,6 @@ export default async function LocaleDeadlineDetailPage({
       ? messages.deadlines.homePage
       : messages.deadlines.deadlinesPage;
 
-  const dueDate = new Date(`${item.date}T12:00:00`);
-  const formattedDate = Number.isNaN(dueDate.getTime())
-    ? item.date
-    : new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(dueDate);
-
   return (
     <div className={dp.detailContainer}>
       <Link href={backHref} className={dp.backLink}>
@@ -112,7 +109,7 @@ export default async function LocaleDeadlineDetailPage({
             <div className={dp.detailDueContent}>
               <p className={dp.detailDueLabel}>{messages.deadlines.due}</p>
               <time className={dp.detailDue} dateTime={item.date}>
-                {formattedDate}
+                {formatEuropeanDate(item.date)}
               </time>
               <p className={dp.detailRelativeDate}>
                 {formatDeadlineRelativeLabel(item.date, locale)}

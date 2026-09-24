@@ -7,6 +7,7 @@ import StatusPill from "@/components/deadlines/StatusPill";
 import MarkDeadlineDone from "@/components/deadlines/MarkDeadlineDone";
 import Link from "next/link";
 import { localizePath } from "@/lib/i18n/routing";
+import { formatEuropeanDate } from "@/lib/schedule/date-utils";
 import type { DeadlineItem } from "@/lib/schedule/types";
 import { formatDeadlineRelativeLabel } from "@/lib/schedule/selectors";
 import { useDeadlinesRefresh } from "@/components/deadlines/DeadlinesRefreshContext";
@@ -16,8 +17,10 @@ import u from "@/components/ui/shared.module.css";
 
 export default function DeadlinesList({
   deadlines,
+  currentYear,
 }: {
   deadlines: DeadlineItem[];
+  currentYear: number;
 }) {
   const locale = useAppLocale();
   const messages = useMessages();
@@ -67,7 +70,9 @@ export default function DeadlinesList({
                   {deadline.text}
                 </Link>
                 <span className={s.deadlineTiming}>
-                  <time dateTime={deadline.date}>{deadline.date}</time>
+                  <time dateTime={deadline.date}>
+                    {formatEuropeanDate(deadline.date, currentYear)}
+                  </time>
                   <span aria-hidden="true">·</span>
                   <span>
                     {formatDeadlineRelativeLabel(deadline.date, locale)}

@@ -40,7 +40,11 @@ export default async function LocalePlanningPage({
 
   return (
     <Suspense key={`planning-${weekStart}`} fallback={<PlanningPageSkeleton />}>
-      <PlanningPageContent weekStart={weekStart} locale={locale} />
+      <PlanningPageContent
+        weekStart={weekStart}
+        locale={locale}
+        currentYear={new Date().getFullYear()}
+      />
     </Suspense>
   );
 }
@@ -48,9 +52,11 @@ export default async function LocalePlanningPage({
 async function PlanningPageContent({
   weekStart,
   locale,
+  currentYear,
 }: {
   weekStart: string;
   locale: AppLocale;
+  currentYear: number;
 }) {
   const session = await requireSession();
   const [state, settings] = await Promise.all([
@@ -65,6 +71,7 @@ async function PlanningPageContent({
   return (
     <PlanningPageClient
       weekStart={weekStart}
+      currentYear={currentYear}
       currentWeekStart={normalizeWeekKey()}
       prevWeek={shiftWeek(weekStart, -1)}
       nextWeek={shiftWeek(weekStart, 1)}

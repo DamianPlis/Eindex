@@ -89,5 +89,10 @@ async function DeadlinesListContainer() {
   const session = await requireSession();
   const uid = session.uid;
   const state = await getCachedUserState(uid);
-  return <DeadlinesList deadlines={state.deadlines} />;
+  return (
+    <DeadlinesList
+      deadlines={state.deadlines}
+      currentYear={new Date().getFullYear()}
+    />
+  );
 }

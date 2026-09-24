@@ -15,6 +15,7 @@ import ArrowRight from "@/icons/keyboard_arrow_right_24dp_000000_FILL0_wght400_G
 import DoubleArrowLeft from "@/icons/keyboard_double_arrow_left_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import DoubleArrowRight from "@/icons/keyboard_double_arrow_right_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
 import { localizePath } from "@/lib/i18n/routing";
+import { formatEuropeanDate } from "@/lib/schedule/date-utils";
 import type { DaySchedule, Slot, Subject } from "@/lib/schedule/types";
 import { getClientId } from "@/lib/sync/client-id";
 import s from "./PlanningPageClient.module.css";
@@ -22,6 +23,7 @@ import { PlanningSlotCard } from "./PlanningSlotCard";
 
 type PlanningPageClientProps = {
   weekStart: string;
+  currentYear: number;
   currentWeekStart: string;
   prevWeek: string;
   nextWeek: string;
@@ -59,11 +61,12 @@ function scrollToDayHorizontally(
   return true;
 }
 
-function getFallbackDayLabels(isoDateStr: string) {
+function getFallbackDayLabels(isoDateStr: string, currentYear: number) {
+  const formattedDate = formatEuropeanDate(isoDateStr, currentYear);
   return {
-    shortName: isoDateStr,
-    longName: isoDateStr,
-    shortDate: isoDateStr,
+    shortName: formattedDate,
+    longName: formattedDate,
+    shortDate: formattedDate,
   };
 }
 
@@ -79,9 +82,9 @@ function createUtcDate(isoDateStr: string) {
   return utcDate;
 }
 
-function getDayLabels(isoDateStr: string, locale: string) {
+function getDayLabels(isoDateStr: string, locale: string, currentYear: number) {
   const utcDate = createUtcDate(isoDateStr);
-  if (!utcDate) return getFallbackDayLabels(isoDateStr);
+  if (!utcDate) return getFallbackDayLabels(isoDateStr, currentYear);
 
   return {
     shortName: new Intl.DateTimeFormat(locale, {
@@ -92,16 +95,16 @@ function getDayLabels(isoDateStr: string, locale: string) {
       weekday: "long",
       timeZone: "UTC",
     }).format(utcDate),
-    shortDate: new Intl.DateTimeFormat(locale, {
-      day: "numeric",
-      month: "numeric",
-      timeZone: "UTC",
-    }).format(utcDate),
+    shortDate: formatEuropeanDate(isoDateStr, currentYear),
   };
 }
 
-function formatDayLabel(isoDateStr: string, locale: string) {
-  return getDayLabels(isoDateStr, locale).longName;
+function formatDayLabel(
+  isoDateStr: string,
+  locale: string,
+  currentYear: number,
+) {
+  return getDayLabels(isoDateStr, locale, currentYear).longName;
 }
 
 function getWeekOffsetInDays(
@@ -166,6 +169,7 @@ function computeNextSubjectOverrides(
 
 export default function PlanningPageClient({
   weekStart,
+  currentYear,
   currentWeekStart,
   prevWeek,
   nextWeek,
@@ -431,7 +435,8 @@ export default function PlanningPageClient({
             </Link>
           </div>
           <div className={s.weekTitle}>
-            {messages.planning.weekStarts} {weekStart}
+            {messages.planning.weekStarts}{" "}
+            {formatEuropeanDate(weekStart, currentYear)}
           </div>
           <div className={s.navGroup}>
             <Link
@@ -466,7 +471,7 @@ export default function PlanningPageClient({
           aria-label={messages.planning.days}
         >
           {days.map((day, dayIndex) => {
-            const labels = getDayLabels(day.date, locale);
+            const labels = getDayLabels(day.date, locale, currentYear);
             const isActive = dayIndex === activeDayIndex;
             return (
               <button
@@ -495,9 +500,11 @@ export default function PlanningPageClient({
               <div className={s.dayInner}>
                 <header className={s.dayHeader}>
                   <div className={s.dayName}>
-                    {formatDayLabel(day.date, locale)}
+                    {formatDayLabel(day.date, locale, currentYear)}
                   </div>
-                  <div className={s.dayDate}>{day.date}</div>
+                  <div className={s.dayDate}>
+                    {formatEuropeanDate(day.date, currentYear)}
+                  </div>
                 </header>
 
                 <div className={s.slots}>
