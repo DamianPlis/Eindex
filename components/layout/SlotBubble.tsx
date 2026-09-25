@@ -4,7 +4,7 @@ import { useSyncExternalStore } from "react";
 import { useMessages } from "@/components/i18n/UserSyncProvider";
 import type { Slot, Subject } from "@/lib/schedule/types";
 import { parseTimeRange } from "@/lib/schedule/date-utils";
-import LunchIcon from "@/icons/restaurant_24dp_999999_FILL0_wght400_GRAD0_opsz24.svg"
+import LunchIcon from "@/icons/restaurant.svg";
 import s from "./SlotBubble.module.css";
 
 function isCurrentSlot(timeStr: string) {
@@ -65,7 +65,11 @@ export default function SlotBubble({
   return (
     <div
       key={slot.id}
-      className={isHydrated && isCurrentSlot(slot.time) ? s.slotBubbleActive : s.slotBubble}
+      className={
+        isHydrated && isCurrentSlot(slot.time)
+          ? s.slotBubbleActive
+          : s.slotBubble
+      }
       style={style}
     >
       <div className={s.slotContent}>

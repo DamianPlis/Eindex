@@ -6,7 +6,7 @@ import type { Subject } from "@/lib/schedule/types";
 import { getSubjectDisplayName } from "@/lib/schedule/labels";
 import { APP_LOCALES } from "@/lib/i18n/config";
 import ModalFooter from "@/components/planning/ModalFooter";
-import CloseIcon from "@/icons/close_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import CloseIcon from "@/icons/close.svg";
 import styles from "./CustomSubjectGroupModal.module.css";
 import u from "@/components/ui/shared.module.css";
 

@@ -15,7 +15,7 @@ import {
   getCurrentPeriodStats,
   getPeriodLabel,
 } from "@/lib/schedule/stats";
-import SortIcon from "@/icons/sort_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import SortIcon from "@/icons/sort.svg";
 import SubjectsCombobox from "@/components/deadlines/SubjectsCombobox";
 import { useStatsPeriodSwipe } from "./useStatsPeriodSwipe";
 import styles from "./StatsCard.module.css";

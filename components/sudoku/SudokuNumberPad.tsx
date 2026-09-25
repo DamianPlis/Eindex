@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import s from "./Sudoku.module.css";
-import EraserIcon from "@/icons/ink_eraser_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg";
+import EraserIcon from "@/icons/eraser.svg";
 
 interface SudokuNumberPadProps {
   placeNumber: (n: number) => void;
@@ -25,7 +25,7 @@ export const SudokuNumberPad = forwardRef<HTMLDivElement, SudokuNumberPadProps>(
         </button>
       </div>
     );
-  }
+  },
 );
 
 SudokuNumberPad.displayName = "SudokuNumberPad";

@@ -5,7 +5,7 @@ import { useMessages, useAppLocale } from "@/components/i18n/UserSyncProvider";
 import { useSettings } from "@/components/settings/SettingsProvider";
 import CustomSubjectGroupModal from "@/components/planning/CustomSubjectGroupModal";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
-import AddIcon from "@/icons/add_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import AddIcon from "@/icons/add.svg";
 import s from "@/components/settings/settings.module.css";
 import {
   getSubjectGroupDisplayName,

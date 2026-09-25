@@ -6,12 +6,12 @@ import { usePathname } from "next/navigation";
 import { useMessages, useAppLocale } from "@/components/i18n/UserSyncProvider";
 import { matchesLocaleSearch } from "@/lib/i18n/search";
 import s from "./SettingsNav.module.css";
-import AppreanceIcon from "@/icons/palette_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import LanguageIcon from "@/icons/language_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import StatsIcon from "@/icons/insert_chart_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import CloseIcon from "@/icons/close_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import SearchIcon from "@/icons/search_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import HamburgerIcon from "@/icons/menu_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import AppreanceIcon from "@/icons/palette.svg";
+import LanguageIcon from "@/icons/language.svg";
+import StatsIcon from "@/icons/chart.svg";
+import CloseIcon from "@/icons/close.svg";
+import SearchIcon from "@/icons/search.svg";
+import HamburgerIcon from "@/icons/menu.svg";
 
 type NavItem = {
   id: string;

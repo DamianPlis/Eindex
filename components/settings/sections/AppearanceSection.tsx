@@ -2,8 +2,8 @@
 
 import { useMessages } from "@/components/i18n/UserSyncProvider";
 import { useSettings } from "@/components/settings/SettingsProvider";
-import DarkModeIcon from "@/icons/dark_mode_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import LightModeIcon from "@/icons/light_mode_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import DarkModeIcon from "@/icons/dark-mode.svg";
+import LightModeIcon from "@/icons/light-mode.svg";
 import s from "@/components/settings/settings.module.css";
 
 const themeOptions = [

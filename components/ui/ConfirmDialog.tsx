@@ -1,6 +1,6 @@
 "use client";
 
-import CloseIcon from "@/icons/close_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import CloseIcon from "@/icons/close.svg";
 import type { ReactNode } from "react";
 import u from "@/components/ui/shared.module.css";
 import { useMessages } from "../i18n/UserSyncProvider";

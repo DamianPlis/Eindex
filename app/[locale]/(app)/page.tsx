@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import ArrowRightIcon from "@/icons/arrow_right_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import CalendarIcon from "@/icons/calendar_month_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import CheckIcon from "@/icons/check_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import ArrowRightIcon from "@/icons/arrow-right.svg";
+import CalendarIcon from "@/icons/calendar.svg";
+import CheckIcon from "@/icons/check.svg";
 import StatusPill from "@/components/deadlines/StatusPill";
 import SlotBubble from "@/components/layout/SlotBubble";
 import { localizePath } from "@/lib/i18n/routing";

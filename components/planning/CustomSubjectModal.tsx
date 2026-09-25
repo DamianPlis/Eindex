@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { AppMessages } from "@/lib/i18n/messages";
 import ModalFooter from "@/components/planning/ModalFooter";
-import CloseIcon from "@/icons/close_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import CloseIcon from "@/icons/close.svg";
 import u from "@/components/ui/shared.module.css";
 import p from "@/components/pages/PlanningPageClient.module.css";
 
@@ -64,9 +64,7 @@ export default function CustomSubjectModal({
         </div>
 
         <div className={u.modalBody}>
-          <label className={p.formLabel}>
-            {messages.planning.name}
-          </label>
+          <label className={p.formLabel}>{messages.planning.name}</label>
           <input
             className={`${u.formInput} ${p.formInputSpaced}`}
             value={customName}
@@ -74,9 +72,7 @@ export default function CustomSubjectModal({
             placeholder={messages.planning.exampleSubject}
           />
 
-          <label className={p.formLabel}>
-            {messages.planning.color}
-          </label>
+          <label className={p.formLabel}>{messages.planning.color}</label>
           <div className={p.colorRow}>
             <input
               type="color"

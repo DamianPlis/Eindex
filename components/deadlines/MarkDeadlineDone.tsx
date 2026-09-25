@@ -3,7 +3,7 @@
 import { useFormStatus } from "react-dom";
 import { useMessages } from "@/components/i18n/UserSyncProvider";
 import { useDeadlineActions } from "./DeadlineToastProvider";
-import Check from "@/icons/check_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import Check from "@/icons/check.svg";
 import s from "./Deadlines.module.css";
 import u from "@/components/ui/shared.module.css";
 

@@ -10,9 +10,9 @@ import {
 import { matchesLocaleSearch } from "@/lib/i18n/search";
 import styles from "./SubjectsCombobox.module.css";
 import cardStyles from "./StatsCard.module.css";
-import SearchIcon from "@/icons/search_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import CloseIcon from "@/icons/close_24dp_000000_FILL0_wght400_GRAD0_opsz24 (1).svg";
-import FilterAltIcon from "@/icons/filter_alt_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg";
+import SearchIcon from "@/icons/search.svg";
+import CloseIcon from "@/icons/close-alt.svg";
+import FilterAltIcon from "@/icons/filter-alt.svg";
 
 interface SubjectsComboboxProps {
   subjects: Subject[];

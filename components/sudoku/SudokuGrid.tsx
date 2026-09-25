@@ -1,8 +1,8 @@
 import type { Board } from "@/lib/sudoku/sudoku";
 import s from "./Sudoku.module.css";
 import shared from "@/components/GameShared.module.css";
-import ResumeIcon from "@/icons/play_arrow_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg";
-import PauseIcon from "@/icons/pause_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg";
+import ResumeIcon from "@/icons/play.svg";
+import PauseIcon from "@/icons/pause.svg";
 import { AppMessages } from "@/lib/i18n/messages";
 
 interface SudokuGridProps {

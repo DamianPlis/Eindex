@@ -4,10 +4,10 @@ import { getMessages } from "@/lib/i18n/messages";
 import Link from "next/link";
 import { localizePath } from "@/lib/i18n/routing";
 import { normalizeAppLocale } from "@/lib/i18n/config";
-import CalendarIcon from "@/icons/calendar_month_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import ChecklistIcon from "@/icons/checklist_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import RestaurantIcon from "@/icons/restaurant_24dp_999999_FILL0_wght400_GRAD0_opsz24.svg";
-import SyncIcon from "@/icons/sync_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import CalendarIcon from "@/icons/calendar.svg";
+import ChecklistIcon from "@/icons/checklist.svg";
+import RestaurantIcon from "@/icons/restaurant.svg";
+import SyncIcon from "@/icons/sync.svg";
 import s from "./page.module.css";
 import u from "@/components/ui/shared.module.css";
 import { generatePageMetadata } from "@/lib/metadata";
@@ -35,11 +35,21 @@ export default async function LocaleAboutPage({
   return (
     <div className={s.aboutScreen} id="about-page-container">
       <main className={`${u.container} ${s.aboutCard}`} id="about-card">
-        <h1 className={s.aboutTitle} id="about-title">{messages.about.title}</h1>
-        <p className={s.aboutDescription} id="about-description">{messages.about.description}</p>
-        
-        <section className={s.featuresList} id="about-features-section" aria-labelledby="features-heading">
-          <h2 className={s.featuresTitle} id="features-heading">{messages.about.featuresTitle}</h2>
+        <h1 className={s.aboutTitle} id="about-title">
+          {messages.about.title}
+        </h1>
+        <p className={s.aboutDescription} id="about-description">
+          {messages.about.description}
+        </p>
+
+        <section
+          className={s.featuresList}
+          id="about-features-section"
+          aria-labelledby="features-heading"
+        >
+          <h2 className={s.featuresTitle} id="features-heading">
+            {messages.about.featuresTitle}
+          </h2>
           <div className={s.featureItem} id="feature-schedule">
             <CalendarIcon className={s.featureIcon} aria-hidden="true" />
             <p>{messages.about.featureSchedule}</p>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useAppLocale, useMessages } from "@/components/i18n/UserSyncProvider";
 import { localizePath } from "@/lib/i18n/routing";
-import LogoutIcon from "@/icons/logout_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import LogoutIcon from "@/icons/logout.svg";
 import u from "@/components/ui/shared.module.css";
 import ConfirmDialog from "../ui/ConfirmDialog";
 
@@ -64,4 +64,3 @@ export default function LogoutButton({ className }: LogoutButtonProps) {
     </>
   );
 }
-

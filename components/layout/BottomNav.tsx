@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAppLocale, useMessages } from "@/components/i18n/UserSyncProvider";
-import Calendar from "@/icons/calendar_month_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import Home from "@/icons/home_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import Checklist from "@/icons/checklist_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import Calendar from "@/icons/calendar.svg";
+import Home from "@/icons/home.svg";
+import Checklist from "@/icons/checklist.svg";
 import { localizePath, stripLocaleFromPath } from "@/lib/i18n/routing";
 import s from "./BottomNav.module.css";
 

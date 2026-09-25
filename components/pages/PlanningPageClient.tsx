@@ -10,10 +10,10 @@ import {
 } from "react";
 import { setSlotSubjectAction, setSlotTopicAction } from "@/app/(app)/actions";
 import { useAppLocale, useMessages } from "@/components/i18n/UserSyncProvider";
-import ArrowLeft from "@/icons/keyboard_arrow_left_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import ArrowRight from "@/icons/keyboard_arrow_right_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import DoubleArrowLeft from "@/icons/keyboard_double_arrow_left_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
-import DoubleArrowRight from "@/icons/keyboard_double_arrow_right_24dp_000000_FILL0_wght400_GRAD0_opsz24.svg";
+import ArrowLeft from "@/icons/chevron-left.svg";
+import ArrowRight from "@/icons/chevron-right.svg";
+import DoubleArrowLeft from "@/icons/chevrons-left.svg";
+import DoubleArrowRight from "@/icons/chevrons-right.svg";
 import { localizePath } from "@/lib/i18n/routing";
 import { formatEuropeanDate } from "@/lib/schedule/date-utils";
 import type { DaySchedule, Slot, Subject } from "@/lib/schedule/types";
