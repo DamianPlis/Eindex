@@ -16,11 +16,9 @@ import {
   formatDeadlineRelativeLabel,
   getTodayISO,
   getTomorrowISO,
-  pickTodaySchedule,
-  selectDashboardDeadlines,
 } from "@/lib/schedule/selectors";
 import { formatEuropeanDate } from "@/lib/schedule/date-utils";
-import { getCachedUserState, getUserState } from "@/lib/schedule/store";
+import { getDashboardData } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
 import { getLunchPerDay } from "@/lib/lunch/server";
 import { AppLocale } from "@/lib/i18n/config";
@@ -126,11 +124,7 @@ async function RemindersContainer({
   messages: ReturnType<typeof getMessages>;
   selectedISO: string;
 }) {
-  const state = await getUserState(uid);
-  const deadlineSelection = selectDashboardDeadlines(
-    state.deadlines,
-    selectedISO,
-  );
+  const { deadlineSelection } = await getDashboardData(uid, selectedISO);
   const isAttentionMode = deadlineSelection.mode === "attention";
   const panelTitle = isAttentionMode
     ? messages.home.attentionTitle
@@ -219,24 +213,18 @@ async function ScheduleListContainer({
   selectedDateISO: string;
   isToday: boolean;
 }) {
-  const [state, scrapedLunch] = await Promise.all([
-    getCachedUserState(uid),
+  const [data, lunchPerDay] = await Promise.all([
+    getDashboardData(uid, selectedDateISO),
     getLunchPerDay(),
   ]);
-  const slots = pickTodaySchedule(state, selectedDateISO);
-
-  // Merge: scraped data takes priority, fall back to user-stored lunches
-  const lunchPerDay: Record<string, string> = {
-    ...state.lunches,
-    ...scrapedLunch,
-  };
+  const { slots, subjects } = data;
 
   return (
     <div className={d.scheduleList}>
       {slots.length > 0 ? (
         slots.map((slot) => {
           const subject = slot.subjectId
-            ? state.subjects.find(
+            ? subjects.find(
                 (stateSubject) => stateSubject.id === slot.subjectId,
               ) || null
             : null;

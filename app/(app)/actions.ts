@@ -21,12 +21,17 @@ type SlotUpdateInput = {
   slotIndex: number;
 };
 
-export async function setSlotSubjectAction(
-  input: SlotUpdateInput & { subjectId: string | null; writerId?: string },
-) {
+async function requireActionToken() {
   await requireSession();
   const token = await convexAuthNextjsToken();
   if (!token) throw new Error("Unauthorized");
+  return token;
+}
+
+export async function setSlotSubjectAction(
+  input: SlotUpdateInput & { subjectId: string | null; writerId?: string },
+) {
+  const token = await requireActionToken();
 
   await fetchMutation(
     api.schedule.setSlotSubject,
@@ -44,9 +49,7 @@ export async function setSlotSubjectAction(
 export async function setSlotTopicAction(
   input: SlotUpdateInput & { topic: string; writerId?: string },
 ) {
-  await requireSession();
-  const token = await convexAuthNextjsToken();
-  if (!token) throw new Error("Unauthorized");
+  const token = await requireActionToken();
 
   await fetchMutation(
     api.schedule.setSlotTopic,
@@ -66,9 +69,7 @@ export async function addCustomSubjectAction(input: {
   color: string;
   writerId?: string;
 }) {
-  await requireSession();
-  const token = await convexAuthNextjsToken();
-  if (!token) throw new Error("Unauthorized");
+  const token = await requireActionToken();
 
   const cleanName = input.name.trim();
   if (!cleanName) return null;
@@ -92,9 +93,7 @@ export async function updateSubjectAction(input: {
   color: string;
   writerId?: string;
 }) {
-  await requireSession();
-  const token = await convexAuthNextjsToken();
-  if (!token) throw new Error("Unauthorized");
+  const token = await requireActionToken();
 
   const cleanName = input.name.trim();
   if (!cleanName || !input.id) return;
@@ -116,9 +115,7 @@ export async function setSubjectPlanningVisibilityAction(input: {
   hiddenFromPlanning: boolean;
   writerId?: string;
 }) {
-  await requireSession();
-  const token = await convexAuthNextjsToken();
-  if (!token) throw new Error("Unauthorized");
+  const token = await requireActionToken();
 
   await fetchMutation(
     api.subjects.setPlanningVisibility,
@@ -135,9 +132,7 @@ export async function deleteSubjectAction(input: {
   id: string;
   writerId?: string;
 }) {
-  await requireSession();
-  const token = await convexAuthNextjsToken();
-  if (!token) throw new Error("Unauthorized");
+  const token = await requireActionToken();
   if (!input.id) return;
 
   await fetchMutation(
@@ -156,9 +151,7 @@ export async function addSubjectGroupAction(input: {
   namePreferences?: Record<string, string>;
   writerId?: string;
 }) {
-  await requireSession();
-  const token = await convexAuthNextjsToken();
-  if (!token) throw new Error("Unauthorized");
+  const token = await requireActionToken();
 
   const result = await fetchMutation(
     api.subjects.addSubjectGroup,
@@ -181,9 +174,7 @@ export async function updateSubjectGroupAction(input: {
   namePreferences?: Record<string, string>;
   writerId?: string;
 }) {
-  await requireSession();
-  const token = await convexAuthNextjsToken();
-  if (!token) throw new Error("Unauthorized");
+  const token = await requireActionToken();
   if (!input.id) return;
 
   await fetchMutation(
@@ -203,9 +194,7 @@ export async function deleteSubjectGroupAction(input: {
   id: string;
   writerId?: string;
 }) {
-  await requireSession();
-  const token = await convexAuthNextjsToken();
-  if (!token) throw new Error("Unauthorized");
+  const token = await requireActionToken();
   if (!input.id) return;
 
   await fetchMutation(
@@ -223,9 +212,7 @@ export async function updateSettingsAction(
     writerId?: string;
   },
 ) {
-  await requireSession();
-  const token = await convexAuthNextjsToken();
-  if (!token) throw new Error("Unauthorized");
+  const token = await requireActionToken();
 
   const updates: {
     theme?: "light" | "dark";
@@ -267,9 +254,7 @@ export async function updateSettingsAction(
 }
 
 export async function addDeadlineAction(formData: FormData) {
-  await requireSession();
-  const token = await convexAuthNextjsToken();
-  if (!token) throw new Error("Unauthorized");
+  const token = await requireActionToken();
 
   const text = String(formData.get("text") || "").trim();
   const description = String(formData.get("description") || "").trim();
@@ -288,9 +273,7 @@ export async function addDeadlineAction(formData: FormData) {
 }
 
 export async function removeDeadlineAction(formData: FormData) {
-  await requireSession();
-  const token = await convexAuthNextjsToken();
-  if (!token) throw new Error("Unauthorized");
+  const token = await requireActionToken();
 
   const deadlineId = String(formData.get("id") || "").trim();
   if (!deadlineId) return null;
@@ -303,9 +286,7 @@ export async function removeDeadlineAction(formData: FormData) {
 }
 
 export async function markAsDoneDeadlineAction(formData: FormData) {
-  await requireSession();
-  const token = await convexAuthNextjsToken();
-  if (!token) throw new Error("Unauthorized");
+  const token = await requireActionToken();
 
   const deadlineId = String(formData.get("id") || "").trim();
   if (!deadlineId) return null;

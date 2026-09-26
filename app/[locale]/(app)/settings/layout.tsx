@@ -4,7 +4,7 @@ import SettingsProvider from "@/components/settings/SettingsProvider";
 import SettingsNav from "@/components/settings/SettingsNav";
 import SettingsPageSkeleton from "@/components/skeletons/settings/SettingsPageSkeleton";
 import { assertLocale } from "@/lib/i18n/server";
-import { getUserSettings, getUserState } from "@/lib/schedule/store";
+import { getSettingsPageData } from "@/lib/schedule/store";
 import { requireSession } from "@/lib/session";
 import { Suspense } from "react";
 import s from "@/components/settings/settings.module.css";
@@ -44,14 +44,15 @@ async function SettingsLayoutContent({
   children: React.ReactNode;
 }) {
   const session = await requireSession();
-  const settings = await getUserSettings(session.uid);
-  const state = await getUserState(session.uid);
+  const { settings, subjects, subjectGroups } = await getSettingsPageData(
+    session.uid,
+  );
 
   return (
     <SettingsProvider
       initialSettings={settings}
-      initialSubjects={state.subjects}
-      initialSubjectGroups={state.subjectGroups}
+      initialSubjects={subjects}
+      initialSubjectGroups={subjectGroups}
     >
       <div className={s.layout}>
         <SettingsNav />

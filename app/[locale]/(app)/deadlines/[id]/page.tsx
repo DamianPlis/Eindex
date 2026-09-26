@@ -9,7 +9,7 @@ import { localizePath } from "@/lib/i18n/routing";
 import { assertLocale } from "@/lib/i18n/server";
 import { formatDeadlineRelativeLabel } from "@/lib/schedule/selectors";
 import { formatEuropeanDate } from "@/lib/schedule/date-utils";
-import { getUserState } from "@/lib/schedule/store";
+import { getDeadline } from "@/lib/schedule/store";
 import { getSession, requireSession } from "@/lib/session";
 import dp from "@/app/[locale]/(app)/deadlines/DeadlinesPage.module.css";
 import { generatePageMetadata } from "@/lib/metadata";
@@ -26,8 +26,7 @@ export async function generateMetadata({
   let customDescription: string | undefined;
 
   if (session) {
-    const state = await getUserState(session.uid);
-    const item = state.deadlines.find((d) => d.id === id);
+    const item = await getDeadline(session.uid, id);
     if (item) {
       customTitle = item.text;
       customDescription =
@@ -60,8 +59,7 @@ export default async function LocaleDeadlineDetailPage({
     ? redirectValues?.redirect[0]
     : redirectValues?.redirect;
   const session = await requireSession();
-  const state = await getUserState(session.uid);
-  const item = state.deadlines.find((deadline) => deadline.id === id);
+  const item = await getDeadline(session.uid, id);
 
   if (!item) notFound();
 
