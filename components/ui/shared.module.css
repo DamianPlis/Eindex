@@ -97,8 +97,6 @@
   background: var(--card);
 }
 
-
-
 .destructiveButton {
   composes: bareBonesButton;
   background-color: var(--danger);
@@ -118,13 +116,6 @@
   cursor: pointer;
   transition: all 160ms ease;
   box-shadow: var(--shadow-xs);
-}
-
-.resetBtn {
-  composes: actionBtn;
-  /* background: var(--card); */
-  color: var(--danger);
-  /* border: 1px solid var(--danger-alpha-30); */
 }
 
 .actionBtn:hover {
@@ -205,20 +196,6 @@
   background: none;
   border: none;
 }
-
-/* ── Theme mode buttons ── */
-
-.darkModeBtn {
-  color: var(--muted);
-  border: 1px solid var(--muted);
-}
-
-.lightModeBtn {
-  color: var(--muted);
-  border: 1px solid var(--muted);
-}
-
-
 
 /* ── Transparent button ── */
 

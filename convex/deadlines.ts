@@ -1,6 +1,6 @@
 import { mutation, query, internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
-import type { Doc } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
 import schema from "./schema";
@@ -30,6 +30,18 @@ const undoResult = v.union(
   }),
 );
 const maxDeadlines = 4000;
+function findDeadline(
+  ctx: MutationCtx,
+  userId: Id<"users">,
+  deadlineId: string,
+) {
+  return ctx.db
+    .query("deadlines")
+    .withIndex("by_user_deadlineId", (q) =>
+      q.eq("userId", userId).eq("deadlineId", deadlineId),
+    )
+    .unique();
+}
 async function receipt(
   ctx: MutationCtx,
   deadline: Doc<"deadlines">,
@@ -145,12 +157,7 @@ export const removeDeadline = mutation({
   returns: undoResult,
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);
-    const deadline = await ctx.db
-      .query("deadlines")
-      .withIndex("by_user_deadlineId", (q) =>
-        q.eq("userId", userId).eq("deadlineId", args.deadlineId),
-      )
-      .unique();
+    const deadline = await findDeadline(ctx, userId, args.deadlineId);
     if (!deadline) return null;
     const undo = await receipt(ctx, deadline, "remove");
     await ctx.db.delete(deadline._id);
@@ -163,12 +170,7 @@ export const markAsDone = mutation({
   returns: undoResult,
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);
-    const deadline = await ctx.db
-      .query("deadlines")
-      .withIndex("by_user_deadlineId", (q) =>
-        q.eq("userId", userId).eq("deadlineId", args.deadlineId),
-      )
-      .unique();
+    const deadline = await findDeadline(ctx, userId, args.deadlineId);
     if (!deadline || deadline.status === "done") return null;
     const undo = await receipt(ctx, deadline, "done");
     await ctx.db.patch(deadline._id, { status: "done", updatedAt: Date.now() });
@@ -185,12 +187,7 @@ export const undoDeadline = mutation({
     if (!undo || undo.userId !== userId || undo.expiresAt < Date.now())
       throw new Error("Invalid deadline undo");
     if (undo.used) return null;
-    const current = await ctx.db
-      .query("deadlines")
-      .withIndex("by_user_deadlineId", (q) =>
-        q.eq("userId", userId).eq("deadlineId", undo.deadlineId),
-      )
-      .unique();
+    const current = await findDeadline(ctx, userId, undo.deadlineId);
     if (undo.kind === "done") {
       if (!current) throw new Error("Deadline no longer exists");
       await ctx.db.patch(current._id, {

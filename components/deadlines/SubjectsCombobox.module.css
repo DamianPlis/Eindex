@@ -2,7 +2,6 @@
   position: relative;
 }
 
-
 .trigger {
   /* position: absolute;
   top: 0;
@@ -20,15 +19,6 @@
 .trigger[aria-expanded="true"] {
   color: var(--primary);
   fill: var(--primary);
-}
-
-.filterIcon {
-  --pad: 4px;
-  --size: calc(1.25em + (var(--pad) * 2));
-  width: var(--size) !important;
-  height: var(--size) !important;
-  padding: var(--pad);
-  border-radius: var(--pad);
 }
 
 .badge {

@@ -15,7 +15,9 @@ import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { migrationClient } from "./convex-admin";
 import { normalizePlanningSubjectSort } from "../lib/settings/defaults";
+import { toMillis } from "../lib/utils/timestamp";
 import { internal } from "../convex/_generated/api";
+import { buildLegacySlots, type LegacyWeeks } from "./legacy-slots";
 
 const convexUrl = process.argv[2] || process.env.NEXT_PUBLIC_CONVEX_URL;
 if (!convexUrl) {
@@ -49,20 +51,6 @@ function cleanEnv(value: string | undefined): string {
     .trim()
     .replace(/^['"]|['"]$/g, "")
     .replace(/,$/, "");
-}
-
-function toMillis(value: unknown): number {
-  if (!value) return 0;
-  if (typeof value === "number") return value;
-  if (
-    typeof value === "object" &&
-    value !== null &&
-    "toMillis" in value &&
-    typeof (value as { toMillis?: unknown }).toMillis === "function"
-  ) {
-    return (value as { toMillis: () => number }).toMillis() || 0;
-  }
-  return 0;
 }
 
 function loadServiceAccountFromEnv(): ServiceAccount | null {
@@ -246,84 +234,10 @@ async function migrateAllUsers() {
     }
 
     // 5. Sync Weeks & Slots with real timestamps (Batched)
-    const weeks = (data.state?.weeks || {}) as Record<
-      string,
-      {
-        days?: Array<{ date?: string; slots?: Array<Record<string, unknown>> }>;
-      }
-    >;
-    const userSlots: Array<{
-      weekStart: string;
-      date: string;
-      dayIndex: number;
-      slotIndex: number;
-      time: string;
-      fixed: boolean;
-      fixedKey?:
-        | "morningCircle"
-        | "currentEvents"
-        | "lunch"
-        | "tutor"
-        | "pe"
-        | "assembly";
-      fixedLabel?: string;
-      allowTopic: boolean;
-      subjectId: string | null;
-      topic: string;
-      updatedAt: number;
-    }> = [];
-
-    for (const [weekStart, weekData] of Object.entries(weeks)) {
-      const days = weekData?.days || [];
-      for (let dayIdx = 0; dayIdx < days.length; dayIdx++) {
-        const day = days[dayIdx];
-        if (!day) continue;
-        const slots = day.slots || [];
-        for (let slotIdx = 0; slotIdx < slots.length; slotIdx++) {
-          const slot = slots[slotIdx];
-          if (!slot) continue;
-
-          const slotUpdatedAt =
-            typeof slot.updatedAt === "number" && slot.updatedAt > 0
-              ? slot.updatedAt
-              : toMillis(slot.updatedAt) || realUserUpdatedAt;
-
-          const fixedKey = [
-            "morningCircle",
-            "currentEvents",
-            "lunch",
-            "tutor",
-            "pe",
-            "assembly",
-          ].includes(String(slot.fixedKey))
-            ? (slot.fixedKey as
-                | "morningCircle"
-                | "currentEvents"
-                | "lunch"
-                | "tutor"
-                | "pe"
-                | "assembly")
-            : undefined;
-
-          userSlots.push({
-            weekStart,
-            date: day.date || weekStart,
-            dayIndex: dayIdx,
-            slotIndex: slotIdx,
-            time: typeof slot.time === "string" ? slot.time : "08:00-09:00",
-            fixed: Boolean(slot.fixed),
-            fixedKey,
-            fixedLabel:
-              typeof slot.fixedLabel === "string" ? slot.fixedLabel : undefined,
-            allowTopic: Boolean(slot.allowTopic),
-            subjectId:
-              typeof slot.subjectId === "string" ? slot.subjectId : null,
-            topic: typeof slot.topic === "string" ? slot.topic : "",
-            updatedAt: slotUpdatedAt,
-          });
-        }
-      }
-    }
+    const userSlots = buildLegacySlots(
+      (data.state?.weeks || {}) as LegacyWeeks,
+      realUserUpdatedAt,
+    );
 
     // Insert in batches of 50 with retry
     const BATCH_SIZE = 50;
