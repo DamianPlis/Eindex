@@ -1,27 +1,27 @@
-# Graph Report - random-next-app-copy  (2026-09-24)
+# Graph Report - random-next-app-copy  (2026-09-26)
 
 ## Corpus Check
-- 363 files · ~142,813 words
+- 365 files · ~143,552 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 30 file(s) not represented in the graph (top: .css 26, (none) 2, .example 1)
 
 ## Summary
-- 1763 nodes · 3221 edges · 232 communities (145 shown, 87 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 39 edges (avg confidence: 0.87)
+- 1794 nodes · 3244 edges · 259 communities (147 shown, 112 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 42 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `379a4b97`
+- Built from commit: `b7470e29`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - SettingsProvider.tsx
-- localizePath
+- Eindex
 - requireUser
 - schedule/types.ts
-- [locale]/(app)/page.tsx
-- DeadlineToastProvider.tsx
+- localizePath
+- useSettings
 - SkeletonLine.tsx
 - migrate-firestore-to-convex.ts
 - sudoku.ts
@@ -30,49 +30,49 @@
 - MandalaGame.tsx
 - compilerOptions
 - devDependencies
-- react
+- components_settings_settings_module
 - SettingsNav.tsx
 - Deployment & Production
 - package.json
 - compilerOptions
-- useMessages
+- DeadlinesList.tsx
 - PlanningSlotCard.tsx
-- components_settings_settings_module
+- UserSyncProvider.tsx
 - scripts
-- useSettings
+- icons_add_24dp_000000_fill0_wght400_grad0_opsz24
 - dependencies
 - server.d.ts
-- [locale]/(app)/layout.tsx
+- app/layout.tsx
 - What You Must Do When Invoked
 - overrides
 - auth.config.ts
-- toMillis
+- Next.js performance investigation report
 - postcss.config.mjs
-- firebase-messaging-sw.js
+- settings/types.ts
 - Data Fetching & Caching
-- labels.ts
+- SubjectGroupsSection.tsx
 - React Server Components
 - schedule/defaults.ts
 - Server Actions
-- Convex Migration Architecture & Scalable Database Schema
+- DeadlineToastProvider.tsx
 - App Router Architecture
 - 5. Re-render Optimization
 - 7. JavaScript Performance
 - Quick Reference
 - Convex guidelines
 - Find Skills
-- client.ts
+- LoginPanel.tsx
 - Next.js Developer
 - 6. Rendering Performance
-- actions.ts
+- DeadlineToastProvider
 - Convex Create Component
 - 3. Server-Side Performance
 - Convex Create Component
 - SlotBubble.tsx
-- NotFoundContent.tsx
+- react
 - React Best Practices
 - Sections
-- AddDeadline.tsx
+- useMessages
 - graphify reference: extra exports and benchmark
 - useStatsPeriodSwipe
 - Packaged Convex Components
@@ -91,7 +91,7 @@
 - Local Convex Components
 - Convex
 - graphify reference: query, path, explain
-- Eindex
+- SettingsRefreshContext.tsx
 - Patterns
 - 8. Advanced Patterns
 - Patterns
@@ -235,83 +235,113 @@
 - _template.md
 - extraction-spec.md
 - components_settings_sections_colorcustomizer_module
-- routing.ts
-- LanguageSection.tsx
+- [locale]/(app)/layout.tsx
+- messages/index.ts
+- search.ts
+- icons_arrow_right_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_calendar_month_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_check_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_checklist_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_close_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_close_24dp_000000_fill0_wght400_grad0_opsz24_1
+- icons_dark_mode_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_filter_alt_24dp_ffffff_fill0_wght400_grad0_opsz24
+- icons_home_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_ink_eraser_24dp_ffffff_fill0_wght400_grad0_opsz24
+- icons_insert_chart_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_keyboard_arrow_left_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_keyboard_arrow_right_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_keyboard_double_arrow_left_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_keyboard_double_arrow_right_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_language_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_light_mode_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_logout_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_menu_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_palette_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_pause_24dp_ffffff_fill0_wght400_grad0_opsz24
+- icons_play_arrow_24dp_ffffff_fill0_wght400_grad0_opsz24
+- icons_restaurant_24dp_999999_fill0_wght400_grad0_opsz24
+- icons_search_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_settings_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_sort_24dp_000000_fill0_wght400_grad0_opsz24
+- icons_sync_24dp_000000_fill0_wght400_grad0_opsz24
 - eslint.config.mjs
-- next.config.ts
+- CustomSubjectModal
+- LogoutButton.tsx
+- CustomSubjectGroupModal
 
 ## God Nodes (most connected - your core abstractions)
 1. `localizePath()` - 62 edges
 2. `next` - 55 edges
 3. `useMessages()` - 52 edges
-4. `react` - 46 edges
-5. `requireSession()` - 35 edges
-6. `assertLocale()` - 34 edges
-7. `SettingsProvider()` - 30 edges
-8. `getPreferredLocale()` - 29 edges
-9. `useAppLocale()` - 28 edges
-10. `requireUser()` - 28 edges
+4. `react` - 47 edges
+5. `assertLocale()` - 34 edges
+6. `SettingsProvider()` - 30 edges
+7. `getPreferredLocale()` - 29 edges
+8. `useAppLocale()` - 28 edges
+9. `requireUser()` - 28 edges
+10. `getMessages()` - 26 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Architecture` --references--> `UserSyncProvider()`  [INFERRED]
   README.md → components/i18n/UserSyncProvider.tsx
-- `Phase 4: Read Cutover & Convex Auth Activation` --references--> `getUserState()`  [INFERRED]
-  docs/CONVEX_MIGRATION_SCHEMA.md → lib/schedule/store.ts
 - `Critical Rules` --references--> `Id`  [INFERRED]
   .agents/skills/convex-create-component/SKILL.md → convex/_generated/dataModel.d.ts
 - `Critical Rules` --references--> `Id`  [INFERRED]
   .claude/skills/convex-create-component/SKILL.md → convex/_generated/dataModel.d.ts
 - `AppearancePage()` --calls--> `useSettings()`  [EXTRACTED]
   app/[locale]/(app)/settings/appearance/page.tsx → components/settings/SettingsProvider.tsx
+- `Props` --references--> `AppMessages`  [EXTRACTED]
+  components/sudoku/SudokuGame.tsx → lib/i18n/messages/index.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (232 total, 87 thin omitted)
+## Communities (259 total, 112 thin omitted)
 
 ### Community 0 - "SettingsProvider.tsx"
 Cohesion: 0.11
-Nodes (27): addCustomSubjectAction(), addSubjectGroupAction(), deleteSubjectAction(), deleteSubjectGroupAction(), setSubjectPlanningVisibilityAction(), updateSubjectAction(), updateSubjectGroupAction(), PendingAction (+19 more)
+Nodes (36): addCustomSubjectAction(), addSubjectGroupAction(), deleteSubjectAction(), deleteSubjectGroupAction(), requireActionToken(), setSubjectPlanningVisibilityAction(), SlotUpdateInput, updateSettingsAction() (+28 more)
 
-### Community 1 - "localizePath"
-Cohesion: 0.27
-Nodes (17): AboutPageRedirect(), DeadlineDetailPage(), DeadlinesPage(), MainPage(), PlanningPage(), SettingsAppearancePage(), SettingsLanguagePage(), SettingsPage() (+9 more)
+### Community 1 - "Eindex"
+Cohesion: 0.33
+Nodes (5): Architecture, Eindex, Legacy data cutover, Local development, Validation and build
 
 ### Community 2 - "requireUser"
 Cohesion: 0.05
-Nodes (78): auth, isAuthenticated, signIn, signOut, store, resolveAuthUser(), getDashboardData, addDeadline (+70 more)
+Nodes (74): auth, isAuthenticated, signIn, signOut, store, resolveAuthUser(), getDashboardData, addDeadline (+66 more)
 
 ### Community 3 - "schedule/types.ts"
-Cohesion: 0.23
-Nodes (17): StatsCard(), StatsCardProps, icons_sort_24dp_000000_fill0_wght400_grad0_opsz24, filterStats(), getCurrentPeriodStats(), getDateRange(), getPeriodLabel(), getWeekStats() (+9 more)
+Cohesion: 0.29
+Nodes (14): StatsCard(), StatsCardProps, icons_sort, filterStats(), getCurrentPeriodStats(), getDateRange(), getPeriodLabel(), getWeekStats() (+6 more)
 
-### Community 4 - "[locale]/(app)/page.tsx"
+### Community 4 - "localizePath"
 Cohesion: 0.05
-Nodes (77): metadata, RootLayout(), viewport, generateMetadata(), LocaleAboutPage(), app_locale_about_page_module, generateMetadata(), LocaleDeadlineDetailPage() (+69 more)
+Nodes (94): AboutPageRedirect(), DeadlineDetailPage(), DeadlinesPage(), MainPage(), PlanningPage(), SettingsAppearancePage(), SettingsLanguagePage(), SettingsPage() (+86 more)
 
-### Community 5 - "DeadlineToastProvider.tsx"
-Cohesion: 0.20
-Nodes (15): markAsDoneDeadlineAction(), removeDeadlineAction(), undoDeadlineAction(), Actions, Context, DeadlineToast(), DeadlineToastProvider(), lock() (+7 more)
+### Community 5 - "useSettings"
+Cohesion: 0.16
+Nodes (14): LanguagePage(), SettingsAllPage(), StatisticsPage(), SubjectsPage(), AppearanceSection(), themeOptions, LanguageSection(), StatisticsSection() (+6 more)
 
 ### Community 6 - "SkeletonLine.tsx"
-Cohesion: 0.11
-Nodes (15): app_locale_app_deadlines_deadlinespage_module, components_pages_planningpageclient_module, DeadlineDetailPageSkeleton(), DeadlinesListSkeleton(), PlanningPageSkeleton(), slotCount, slotCountFR, RemindersListSkeleton() (+7 more)
+Cohesion: 0.13
+Nodes (14): app_locale_app_deadlines_deadlinespage_module, components_layout_slotbubble_module, DeadlineDetailPageSkeleton(), DeadlinesListSkeleton(), PlanningPageSkeleton(), slotCount, slotCountFR, RemindersListSkeleton() (+6 more)
 
 ### Community 7 - "migrate-firestore-to-convex.ts"
-Cohesion: 0.13
-Nodes (19): components, internal, dotenv, firebase-admin, ref_node_util, ref_path, migrationClient(), auth (+11 more)
+Cohesion: 0.08
+Nodes (27): api, components, internal, toMillis(), dotenv, firebase-admin, ref_node_url, ref_node_util (+19 more)
 
 ### Community 8 - "sudoku.ts"
-Cohesion: 0.08
-Nodes (46): components_gameshared_module, useGameTimer(), UseGameTimerOptions, useKeyboardNavigation(), UseKeyboardNavigationOptions, FEEDBACK_CLEAR, FeedbackState, GameStatus (+38 more)
+Cohesion: 0.07
+Nodes (45): components_gameshared_module, useGameTimer(), UseGameTimerOptions, useKeyboardNavigation(), UseKeyboardNavigationOptions, FEEDBACK_CLEAR, FeedbackState, GameStatus (+37 more)
 
 ### Community 9 - "lunch/server.ts"
-Cohesion: 0.32
-Nodes (12): GET(), extractPerDay(), fetchMenuHtml, findCommaOutsideBrackets(), getLunchPerDay(), isMainCourseLabel(), isSoupLabel(), normalizeText() (+4 more)
+Cohesion: 0.29
+Nodes (13): GET(), extractPerDay(), fetchMenuHtml, findCommaOutsideBrackets(), getLunchPerDay(), isMainCourseLabel(), isSoupLabel(), normalizeText() (+5 more)
 
 ### Community 10 - "PlanningPageClient.tsx"
-Cohesion: 0.08
-Nodes (30): setSlotSubjectAction(), setSlotTopicAction(), computeNextSubjectOverrides(), createUtcDate(), formatDayLabel(), getCurrentPlanningDayIndex(), getDayLabels(), getFallbackDayLabels() (+22 more)
+Cohesion: 0.13
+Nodes (26): setSlotSubjectAction(), setSlotTopicAction(), createUtcDate(), formatDayLabel(), getDayLabels(), getFallbackDayLabels(), getWeekOffsetInDays(), PlanningPageClient() (+18 more)
 
 ### Community 11 - "MandalaGame.tsx"
 Cohesion: 0.13
@@ -325,13 +355,13 @@ Nodes (23): compilerOptions, allowJs, allowUnreachableCode, allowUnusedLabels, e
 Cohesion: 0.11
 Nodes (19): devDependencies, autoprefixer, babel-plugin-react-compiler, convex-test, dotenv, @edge-runtime/vm, eslint, eslint-config-next (+11 more)
 
-### Community 14 - "react"
-Cohesion: 0.11
-Nodes (10): CustomSubjectGroupModal(), CustomSubjectGroupModalProps, components_planning_customsubjectgroupmodal_module, CustomSubjectModal(), CustomSubjectModalProps, ModalFooter(), ModalFooterProps, APP_LOCALES (+2 more)
+### Community 14 - "components_settings_settings_module"
+Cohesion: 0.19
+Nodes (7): AppearancePage(), components_settings_settings_module, AppearanceSectionSkeleton(), SettingsPageSkeleton(), StatisticsSectionSkeleton(), SubjectGroupsSectionSkeleton(), SubjectsSectionSkeleton()
 
 ### Community 15 - "SettingsNav.tsx"
-Cohesion: 0.16
-Nodes (14): components_settings_settingsnav_module, NavItem, SettingsNav(), icons_insert_chart_24dp_000000_fill0_wght400_grad0_opsz24, icons_language_24dp_000000_fill0_wght400_grad0_opsz24, icons_menu_24dp_000000_fill0_wght400_grad0_opsz24, icons_palette_24dp_000000_fill0_wght400_grad0_opsz24, icons_search_24dp_000000_fill0_wght400_grad0_opsz24 (+6 more)
+Cohesion: 0.18
+Nodes (8): components_settings_settingsnav_module, NavItem, SettingsNav(), icons_chart, icons_language, icons_menu, icons_palette, icons_search
 
 ### Community 16 - "Deployment & Production"
 Cohesion: 0.07
@@ -339,31 +369,27 @@ Nodes (27): Bundle Analysis, Caching Strategy, CDN & Edge, CI/CD with GitHub Act
 
 ### Community 17 - "package.json"
 Cohesion: 0.11
-Nodes (18): name, private, version, @auth/core, autoprefixer, babel-plugin-react-compiler, cheerio, @edge-runtime/vm (+10 more)
+Nodes (17): name, private, version, @auth/core, autoprefixer, babel-plugin-react-compiler, @edge-runtime/vm, happy-dom (+9 more)
 
 ### Community 18 - "compilerOptions"
 Cohesion: 0.13
 Nodes (14): compilerOptions, allowJs, forceConsistentCasingInFileNames, isolatedModules, lib, module, moduleResolution, noEmit (+6 more)
 
-### Community 19 - "useMessages"
-Cohesion: 0.12
-Nodes (28): LocaleAppErrorPage(), LogoutButton(), handleLogout(), LogoutButtonProps, components_deadlines_deadlines_module, DeadlinesList(), useDeadlineActions(), DoneButton() (+20 more)
+### Community 19 - "DeadlinesList.tsx"
+Cohesion: 0.32
+Nodes (9): components_deadlines_deadlines_module, useDeadlineActions(), DoneButton(), MarkDeadlineDone(), RemoveButton(), RemoveDeadline(), StatusPill(), StatusPillProps (+1 more)
 
 ### Community 20 - "PlanningSlotCard.tsx"
-Cohesion: 0.29
-Nodes (10): ScheduleListContainer(), contrastForHex(), PlanningSlotCard(), PlanningSlotCardProps, safeHexToRgb(), getFixedSlotDisplayName(), getSubjectDisplayName(), Slot (+2 more)
+Cohesion: 0.26
+Nodes (11): ScheduleListContainer(), components_pages_planningpageclient_module, contrastForHex(), PlanningSlotCard(), PlanningSlotCardProps, safeHexToRgb(), getFixedSlotDisplayName(), getSubjectDisplayName() (+3 more)
 
-### Community 21 - "components_settings_settings_module"
-Cohesion: 0.22
-Nodes (7): AppearancePage(), SubjectsPage(), components_settings_settings_module, AppearanceSectionSkeleton(), SettingsPageSkeleton(), SubjectGroupsSectionSkeleton(), SubjectsSectionSkeleton()
+### Community 21 - "UserSyncProvider.tsx"
+Cohesion: 0.15
+Nodes (18): LocaleAppErrorPage(), LoginLocaleSwitcher(), switchTo(), LocaleContext, LocaleContextValue, useAppLocale(), useLocaleContext(), UserSyncProvider() (+10 more)
 
 ### Community 22 - "scripts"
 Cohesion: 0.18
 Nodes (11): scripts, build, build:frontend, dev, dev:backend, dev:frontend, format:check, lint (+3 more)
-
-### Community 23 - "useSettings"
-Cohesion: 0.24
-Nodes (11): SettingsAllPage(), StatisticsPage(), AppearanceSection(), themeOptions, StatisticsSection(), SubjectGroupsSection(), SubjectsSection(), useSettings() (+3 more)
 
 ### Community 24 - "dependencies"
 Cohesion: 0.20
@@ -373,9 +399,9 @@ Nodes (10): dependencies, @auth/core, cheerio, convex, @convex-dev/auth, @leeoni
 Cohesion: 0.28
 Nodes (8): Typescript guidelines, ActionCtx, DatabaseReader, DatabaseWriter, Env, MutationCtx, QueryCtx, ref_datamodel_js
 
-### Community 26 - "[locale]/(app)/layout.tsx"
-Cohesion: 0.16
-Nodes (14): BottomNav(), isRouteActive(), components_layout_bottomnav_module, components_layout_onlinestatusbanner_module, OnlineStatusBanner(), SettingsLink(), components_layout_topbar_module, getServerSnapshot() (+6 more)
+### Community 26 - "app/layout.tsx"
+Cohesion: 0.15
+Nodes (13): metadata, RootLayout(), viewport, helpLinks, components_layout_noscriptnotice_module, NoScriptNotice(), NoScriptNoticeProps, convex (+5 more)
 
 ### Community 27 - "What You Must Do When Invoked"
 Cohesion: 0.08
@@ -385,29 +411,37 @@ Nodes (24): For /graphify add and --watch, For /graphify query, For the commit h
 Cohesion: 0.67
 Nodes (3): overrides, @types/react, @types/react-dom
 
+### Community 31 - "Next.js performance investigation report"
+Cohesion: 0.13
+Nodes (14): 10. Recommended next measurement pass, 11. Specialist coverage, 1. Browser method and validity, 2. Main authenticated routes: repeated reloads, 3. Direct visits, settings subsections, games, and route clicks, 4. Browser asset counts, 5. Earlier local HTTP inline-CSS A/B, 6. Config and build experiments (+6 more)
+
+### Community 33 - "settings/types.ts"
+Cohesion: 0.29
+Nodes (8): ThemeRootSync(), ThemeRootSyncProps, applyTheme(), resolveThemeRoot(), COOKIE_MAX_AGE, THEME_COOKIE, AppTheme, ref_server_only
+
 ### Community 36 - "Data Fetching & Caching"
 Cohesion: 0.10
 Nodes (20): Best Practices, Cache Options, Client-Side Data Fetching, Data Fetching & Caching, Database Queries, Error Handling, Extended fetch API, Loading States (+12 more)
 
-### Community 37 - "labels.ts"
+### Community 37 - "SubjectGroupsSection.tsx"
 Cohesion: 0.16
-Nodes (14): components_deadlines_statscard_module, components_deadlines_subjectscombobox_module, SubjectsCombobox(), SubjectsComboboxProps, icons_close_24dp_000000_fill0_wght400_grad0_opsz24_1, icons_filter_alt_24dp_ffffff_fill0_wght400_grad0_opsz24, BuiltinSubjectGroupId, builtInSubjectGroupIds (+6 more)
+Nodes (15): components_deadlines_statscard_module, components_deadlines_subjectscombobox_module, SubjectsCombobox(), SubjectsComboboxProps, icons_close_alt, icons_filter_alt, BuiltinSubjectGroupId, builtInSubjectGroupIds (+7 more)
 
 ### Community 38 - "React Server Components"
 Cohesion: 0.10
 Nodes (19): Benefits of Server Components, Best Practices, Client Components, Composition Pattern, Context in Server/Client Components, Edge Runtime, Parallel Data Fetching, Pattern: Conditional Client Components (+11 more)
 
 ### Community 39 - "schedule/defaults.ts"
-Cohesion: 0.21
-Nodes (17): getMonday(), isoDate(), normalizeWeekKey(), buildDaysForWeek(), createDefaultState(), DayTemplate, dayTemplates, defaultSubjectGroups (+9 more)
+Cohesion: 0.18
+Nodes (18): getMonday(), isoDate(), buildDaysForWeek(), createDefaultState(), DayTemplate, dayTemplates, defaultSubjectGroups, defaultSubjects (+10 more)
 
 ### Community 40 - "Server Actions"
 Cohesion: 0.11
 Nodes (17): Basic Server Action, Best Practices, Client Component with Server Action, Error Handling, Form with Server Action, Inline Server Action, Optimistic Updates, Programmatic Server Action Call (+9 more)
 
-### Community 41 - "Convex Migration Architecture & Scalable Database Schema"
-Cohesion: 0.12
-Nodes (16): 1. Context & Exact Application Domain Analysis, 2. Why the Current Monolithic Firestore Model Fails at Scale, 3. Normalized Convex Entity-Relationship Diagram, 4. Accurate Convex Schema Definition (`convex/schema.ts`), 5. Phased Zero-Downtime Migration Strategy, 6. Comparison Summary, Backfill Logic:, Convex Migration Architecture & Scalable Database Schema (+8 more)
+### Community 41 - "DeadlineToastProvider.tsx"
+Cohesion: 0.20
+Nodes (10): Actions, Context, DeadlineToast(), components_deadlines_deadlinetoastprovider_module, Notice, ToastMessages, toastTitle(), icons_check (+2 more)
 
 ### Community 42 - "App Router Architecture"
 Cohesion: 0.12
@@ -433,9 +467,9 @@ Nodes (14): Action guidelines, Authentication guidelines, Component guidelines, 
 Cohesion: 0.14
 Nodes (13): Common Skill Categories, Find Skills, How to Help Users Find Skills, Step 1: Understand What They Need, Step 2: Check the Leaderboard First, Step 3: Search for Skills, Step 4: Verify Quality Before Recommending, Step 5: Present Options to the User (+5 more)
 
-### Community 48 - "client.ts"
-Cohesion: 0.26
-Nodes (9): handleThemeSelect(), ThemeRootSync(), ThemeRootSyncProps, applyTheme(), resolveThemeRoot(), COOKIE_MAX_AGE, THEME_COOKIE, AppTheme (+1 more)
+### Community 48 - "LoginPanel.tsx"
+Cohesion: 0.24
+Nodes (7): LoginPanel(), components_auth_loginpanel_module, react-dom, auth, render(), router, signIn
 
 ### Community 49 - "Next.js Developer"
 Cohesion: 0.15
@@ -445,9 +479,9 @@ Nodes (12): Code Examples, Constraints, Core Workflow, generateMetadata for dyna
 Cohesion: 0.17
 Nodes (12): 6.10 Use React DOM Resource Hints, 6.11 Use useTransition Over Manual Loading States, 6.1 Animate SVG Wrapper Instead of SVG Element, 6.2 CSS content-visibility for Long Lists, 6.3 Hoist Static JSX Elements, 6.4 Optimize SVG Precision, 6.5 Prevent Hydration Mismatch Without Flickering, 6.6 Suppress Expected Hydration Mismatches (+4 more)
 
-### Community 51 - "actions.ts"
-Cohesion: 0.29
-Nodes (12): SlotUpdateInput, updateSettingsAction(), DEFAULT_LOCALE, LOCALE_COOKIE, normalizeAppLocale(), DEFAULT_SETTINGS, isRecord(), normalizePlanningSubjectSort() (+4 more)
+### Community 51 - "DeadlineToastProvider"
+Cohesion: 0.50
+Nodes (8): markAsDoneDeadlineAction(), removeDeadlineAction(), undoDeadlineAction(), DeadlineToastProvider(), lock(), perform(), undoNotice(), unlock()
 
 ### Community 52 - "Convex Create Component"
 Cohesion: 0.18
@@ -462,12 +496,8 @@ Cohesion: 0.18
 Nodes (10): Checklist, Choose the Shape, Component Skeleton, Convex Create Component, Default Approach, Reference Files, Validation, When Not to Use (+2 more)
 
 ### Community 55 - "SlotBubble.tsx"
-Cohesion: 0.29
-Nodes (9): contrastColor(), isCurrentSlot(), components_layout_slotbubble_module, SlotBubble(), SlotBubbleProps, icons_restaurant_24dp_999999_fill0_wght400_grad0_opsz24, parseRange(), parseRangeMinutes() (+1 more)
-
-### Community 56 - "NotFoundContent.tsx"
-Cohesion: 0.17
-Nodes (7): app_errorpage_module, LocaleLoading(), LocaleNotFoundPage(), NotFoundPage(), NotFoundContent(), NotFoundContentProps, getRequestMessages()
+Cohesion: 0.33
+Nodes (8): contrastColor(), isCurrentSlot(), SlotBubble(), SlotBubbleProps, icons_restaurant, parseRange(), parseRangeMinutes(), parseTimeRange()
 
 ### Community 57 - "React Best Practices"
 Cohesion: 0.20
@@ -477,16 +507,16 @@ Nodes (9): 4.1 Deduplicate Global Event Listeners, 4.2 Use Passive Event Listene
 Cohesion: 0.20
 Nodes (9): 1. Eliminating Waterfalls (async), 2. Bundle Size Optimization (bundle), 3. Server-Side Performance (server), 4. Client-Side Data Fetching (client), 5. Re-render Optimization (rerender), 6. Rendering Performance (rendering), 7. JavaScript Performance (js), 8. Advanced Patterns (advanced) (+1 more)
 
-### Community 59 - "AddDeadline.tsx"
-Cohesion: 0.24
-Nodes (7): addDeadlineAction(), AddDeadline(), SubmitButton(), DeadlinesRefreshContext, DeadlinesRefreshContextValue, DeadlinesRefreshProvider(), useDeadlinesRefresh()
+### Community 59 - "useMessages"
+Cohesion: 0.23
+Nodes (9): addDeadlineAction(), AddDeadline(), SubmitButton(), DeadlinesList(), DeadlinesRefreshContext, DeadlinesRefreshContextValue, DeadlinesRefreshProvider(), useDeadlinesRefresh() (+1 more)
 
 ### Community 60 - "graphify reference: extra exports and benchmark"
 Cohesion: 0.22
 Nodes (8): graphify reference: extra exports and benchmark, Step 6b - Wiki (only if --wiki flag), Step 7 - Neo4j export (only if --neo4j or --neo4j-push flag), Step 7a - FalkorDB export (only if --falkordb or --falkordb-push flag), Step 7b - SVG export (only if --svg flag), Step 7c - GraphML export (only if --graphml flag), Step 7d - MCP server (only if --mcp flag), Step 8 - Token reduction benchmark (only if total_words > 5000)
 
 ### Community 61 - "useStatsPeriodSwipe"
-Cohesion: 0.54
+Cohesion: 0.44
 Nodes (8): useStatsPeriodSwipe(), cancel(), down(), move(), pointerMove(), settle(), up(), wheel()
 
 ### Community 62 - "Packaged Convex Components"
@@ -553,9 +583,9 @@ Nodes (5): Bundled skills, Convex, How to route, Rules, Why reach for Convex
 Cohesion: 0.33
 Nodes (5): For /graphify explain, For /graphify path, graphify reference: query, path, explain, Step 0 — Constrained query expansion (REQUIRED before traversal), Step 1 — Traversal
 
-### Community 78 - "Eindex"
-Cohesion: 0.33
-Nodes (5): Architecture, Eindex, Legacy data cutover, Local development, Validation and build
+### Community 78 - "SettingsRefreshContext.tsx"
+Cohesion: 0.40
+Nodes (4): SettingsRefreshContext, SettingsRefreshContextValue, SettingsRefreshProvider(), useSettingsRefresh()
 
 ### Community 79 - "Patterns"
 Cohesion: 0.40
@@ -837,37 +867,45 @@ Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphif
 Cohesion: 0.67
 Nodes (3): Critical Rules, Critical Rules, Id
 
-### Community 225 - "routing.ts"
+### Community 225 - "[locale]/(app)/layout.tsx"
+Cohesion: 0.23
+Nodes (10): components_layout_appshell_module, components_layout_onlinestatusbanner_module, OnlineStatusBanner(), SettingsLink(), components_layout_topbar_module, getServerSnapshot(), getSnapshot(), subscribe() (+2 more)
+
+### Community 226 - "messages/index.ts"
 Cohesion: 0.21
-Nodes (12): LOCALE_META, LoginLocaleSwitcher(), switchTo(), components_auth_loginlocaleswitcher_module, LoginPanel(), components_auth_loginpanel_module, UserSyncProvider(), isAppLocale() (+4 more)
+Nodes (10): CustomSubjectGroupModalProps, components_planning_customsubjectgroupmodal_module, CustomSubjectModalProps, ModalFooter(), ModalFooterProps, csMessages, enMessages, allMessages (+2 more)
 
-### Community 226 - "LanguageSection.tsx"
-Cohesion: 0.31
-Nodes (4): LanguagePage(), LanguageSection(), handleLocaleChange(), LanguageSectionSkeleton()
+### Community 227 - "search.ts"
+Cohesion: 0.52
+Nodes (6): filterWithUFuzzy(), getQueryVariants(), matchesLocaleSearch(), normalizeSearchString(), uf, @leeoniya/ufuzzy
 
-### Community 227 - "eslint.config.mjs"
+### Community 255 - "eslint.config.mjs"
 Cohesion: 0.50
 Nodes (3): eslintConfig, eslint, eslint-config-next
 
+### Community 257 - "LogoutButton.tsx"
+Cohesion: 0.29
+Nodes (6): LogoutButton(), LogoutButtonProps, ConfirmDialog(), ConfirmDialogProps, icons_close, icons_logout
+
 ## Knowledge Gaps
-- **751 isolated node(s):** `SlotUpdateInput`, `metadata`, `viewport`, `LOCALE_META`, `LogoutButtonProps` (+746 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1001 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **87 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **756 isolated node(s):** `SlotUpdateInput`, `metadata`, `viewport`, `LOCALE_META`, `LogoutButtonProps` (+751 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1031 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **112 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `convex` connect `requireUser` to `routing.ts`, `localizePath`, `[locale]/(app)/page.tsx`, `migrate-firestore-to-convex.ts`, `package.json`, `useMessages`, `actions.ts`, `server.d.ts`?**
-  _High betweenness centrality (0.065) - this node is a cross-community bridge._
-- **Why does `react` connect `react` to `SettingsProvider.tsx`, `localizePath`, `schedule/types.ts`, `[locale]/(app)/page.tsx`, `DeadlineToastProvider.tsx`, `SkeletonLine.tsx`, `sudoku.ts`, `PlanningPageClient.tsx`, `MandalaGame.tsx`, `SettingsNav.tsx`, `package.json`, `useMessages`, `PlanningSlotCard.tsx`, `[locale]/(app)/layout.tsx`, `labels.ts`, `client.ts`, `SlotBubble.tsx`, `NotFoundContent.tsx`, `AddDeadline.tsx`, `routing.ts`?**
-  _High betweenness centrality (0.062) - this node is a cross-community bridge._
-- **Why does `next` connect `localizePath` to `SettingsProvider.tsx`, `[locale]/(app)/page.tsx`, `DeadlineToastProvider.tsx`, `sudoku.ts`, `lunch/server.ts`, `PlanningPageClient.tsx`, `SettingsNav.tsx`, `package.json`, `useMessages`, `[locale]/(app)/layout.tsx`, `client.ts`, `actions.ts`, `NotFoundContent.tsx`, `AddDeadline.tsx`, `routing.ts`, `LanguageSection.tsx`, `app/(app)/error.tsx`, `(app)/not-found.tsx`, `manifest.ts`, `next.config.ts`?**
-  _High betweenness centrality (0.041) - this node is a cross-community bridge._
+- **Why does `react` connect `react` to `SettingsProvider.tsx`, `LogoutButton.tsx`, `schedule/types.ts`, `localizePath`, `SkeletonLine.tsx`, `sudoku.ts`, `PlanningPageClient.tsx`, `MandalaGame.tsx`, `SettingsNav.tsx`, `package.json`, `DeadlinesList.tsx`, `PlanningSlotCard.tsx`, `UserSyncProvider.tsx`, `app/layout.tsx`, `settings/types.ts`, `SubjectGroupsSection.tsx`, `DeadlineToastProvider.tsx`, `LoginPanel.tsx`, `SlotBubble.tsx`, `useMessages`, `useStatsPeriodSwipe`, `SettingsRefreshContext.tsx`, `[locale]/(app)/layout.tsx`, `messages/index.ts`?**
+  _High betweenness centrality (0.059) - this node is a cross-community bridge._
+- **Why does `convex` connect `requireUser` to `SettingsProvider.tsx`, `localizePath`, `migrate-firestore-to-convex.ts`, `LoginPanel.tsx`, `package.json`, `UserSyncProvider.tsx`, `server.d.ts`, `app/layout.tsx`?**
+  _High betweenness centrality (0.054) - this node is a cross-community bridge._
+- **Why does `next` connect `localizePath` to `SettingsProvider.tsx`, `LogoutButton.tsx`, `useSettings`, `migrate-firestore-to-convex.ts`, `sudoku.ts`, `lunch/server.ts`, `PlanningPageClient.tsx`, `SettingsNav.tsx`, `package.json`, `DeadlinesList.tsx`, `UserSyncProvider.tsx`, `app/layout.tsx`, `settings/types.ts`, `DeadlineToastProvider.tsx`, `LoginPanel.tsx`, `react`, `useMessages`, `SettingsRefreshContext.tsx`, `[locale]/(app)/layout.tsx`?**
+  _High betweenness centrality (0.034) - this node is a cross-community bridge._
 - **What connects `SlotUpdateInput`, `metadata`, `viewport` to the rest of the system?**
-  _751 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _756 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `SettingsProvider.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.10574712643678161 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.11463414634146342 - nodes in this community are weakly interconnected._
 - **Should `requireUser` be split into smaller, more focused modules?**
-  _Cohesion score 0.05154639175257732 - nodes in this community are weakly interconnected._
-- **Should `[locale]/(app)/page.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.053958177744585514 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05490734385724091 - nodes in this community are weakly interconnected._
+- **Should `localizePath` be split into smaller, more focused modules?**
+  _Cohesion score 0.05075987841945289 - nodes in this community are weakly interconnected._
