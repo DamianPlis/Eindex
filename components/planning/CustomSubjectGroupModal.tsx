@@ -54,7 +54,6 @@ export default function CustomSubjectGroupModal({
   if (isOpen && !prevIsOpen) {
     setPrevIsOpen(true);
     if (initialData) {
-      console.log("initialData", initialData);
       const fullNames: Record<string, string> = {};
       for (const locale of APP_LOCALES) {
         fullNames[locale] = initialData.names[locale] || "";

@@ -10,7 +10,6 @@ type ThemeRootSyncProps = {
 
 export default function ThemeRootSync({ theme }: ThemeRootSyncProps) {
   useEffect(() => {
-    console.log("theme root sync", theme);
     applyTheme(theme);
   }, [theme]);
 
