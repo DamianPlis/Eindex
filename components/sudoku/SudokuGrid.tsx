@@ -71,76 +71,103 @@ export function SudokuGrid({
         style={{ visibility: isPaused ? "hidden" : "visible" }}
       >
         {board.map((row, r) =>
-          row.map((val, c) => {
-            const isGiven = initialPuzzle
-              ? initialPuzzle[r][c] !== 0
-              : val !== 0;
-            const isChecking =
-              checkingCell?.[0] === r && checkingCell?.[1] === c;
-            const isSelected =
-              selectedCell?.[0] === r && selectedCell?.[1] === c;
-            const isHighlighted =
-              selectedCell &&
-              !isSelected &&
-              (selectedCell[0] === r ||
-                selectedCell[1] === c ||
-                (Math.floor(selectedCell[0] / 3) === Math.floor(r / 3) &&
-                  Math.floor(selectedCell[1] / 3) === Math.floor(c / 3)));
-            const hasError = errorCells.has(`${r}-${c}`);
-            const cellCandidates = candidates?.[r]?.[c];
-            const showCellCandidates =
-              cellCandidates && cellCandidates.size > 0 && val === 0;
-
-            const classes = [
-              isGiven ? s.cellGiven : s.cell,
-              isSelected ? s.cellSelected : "",
-              isHighlighted ? s.cellHighlighted : "",
-              hasError ? s.cellError : "",
-              !isGiven && val !== 0 ? s.cellUserFilled : "",
-              isChecking ? s.cellChecking : "",
-            ]
-              .filter(Boolean)
-              .join(" ");
-
-            return (
-              <div
-                key={`${r}-${c}`}
-                className={classes}
-                role="gridcell"
-                aria-label={`Row ${r + 1}, Column ${c + 1}`}
-                onClick={() => handleCellClick(r, c)}
-                tabIndex={isGiven || isGenerating ? -1 : 0}
-                style={
-                  !isGenerating
-                    ? { animationDelay: `${(r + c) * 30}ms` }
-                    : undefined
-                }
-              >
-                {val !== 0 ? (
-                  isGiven && !isGenerating ? (
-                    <span
-                      className={s.givenNumber}
-                      style={{ animationDelay: `${(r + c) * 30 + 200}ms` }}
-                    >
-                      {val}
-                    </span>
-                  ) : (
-                    val
-                  )
-                ) : showCellCandidates ? (
-                  <div className={s.candidates}>
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
-                      <span key={n} className={s.candidateNum}>
-                        {cellCandidates.has(n) ? n : ""}
-                      </span>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            );
-          }),
+          row.map((val, c) => (
+            <SudokuCell
+              key={`${r}-${c}`}
+              row={r}
+              col={c}
+              value={val}
+              initialValue={initialPuzzle?.[r]?.[c]}
+              selectedCell={selectedCell}
+              checkingCell={checkingCell}
+              hasError={errorCells.has(`${r}-${c}`)}
+              candidates={candidates?.[r]?.[c]}
+              isGenerating={isGenerating}
+              onClick={handleCellClick}
+            />
+          )),
         )}
       </div>
+    </div>
+  );
+}
+
+function SudokuCell({
+  row,
+  col,
+  value,
+  initialValue,
+  selectedCell,
+  checkingCell,
+  hasError,
+  candidates,
+  isGenerating,
+  onClick,
+}: {
+  row: number;
+  col: number;
+  value: number;
+  initialValue?: number;
+  selectedCell: [number, number] | null;
+  checkingCell: [number, number] | null;
+  hasError: boolean;
+  candidates?: Set<number>;
+  isGenerating: boolean;
+  onClick: (row: number, col: number) => void;
+}) {
+  const isGiven = initialValue !== undefined ? initialValue !== 0 : value !== 0;
+  const isSelected = selectedCell?.[0] === row && selectedCell?.[1] === col;
+  const isHighlighted =
+    selectedCell &&
+    !isSelected &&
+    (selectedCell[0] === row ||
+      selectedCell[1] === col ||
+      (Math.floor(selectedCell[0] / 3) === Math.floor(row / 3) &&
+        Math.floor(selectedCell[1] / 3) === Math.floor(col / 3)));
+  const classes = [
+    isGiven ? s.cellGiven : s.cell,
+    isSelected ? s.cellSelected : "",
+    isHighlighted ? s.cellHighlighted : "",
+    hasError ? s.cellError : "",
+    !isGiven && value !== 0 ? s.cellUserFilled : "",
+    checkingCell?.[0] === row && checkingCell?.[1] === col
+      ? s.cellChecking
+      : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return (
+    <div
+      className={classes}
+      role="gridcell"
+      aria-label={`Row ${row + 1}, Column ${col + 1}`}
+      onClick={() => onClick(row, col)}
+      tabIndex={isGiven || isGenerating ? -1 : 0}
+      style={
+        !isGenerating ? { animationDelay: `${(row + col) * 30}ms` } : undefined
+      }
+    >
+      {value !== 0 ? (
+        isGiven && !isGenerating ? (
+          <span
+            className={s.givenNumber}
+            style={{ animationDelay: `${(row + col) * 30 + 200}ms` }}
+          >
+            {value}
+          </span>
+        ) : (
+          value
+        )
+      ) : candidates && candidates.size > 0 ? (
+        <div className={s.candidates}>
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+            <span key={n} className={s.candidateNum}>
+              {candidates.has(n) ? n : ""}
+            </span>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }

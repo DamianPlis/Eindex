@@ -5,6 +5,7 @@ import type {
   Slot,
   Subject,
   SubjectGroup,
+  WeekSchedule,
 } from "@/lib/schedule/types";
 
 import {
@@ -418,6 +419,39 @@ function normalizeDeadlines(
   return validDeadlines;
 }
 
+function normalizeSavedWeek(
+  weekStart: string,
+  rawWeek?: WeekSchedule,
+): WeekSchedule {
+  const days = buildDaysForWeek(weekStart);
+  const savedDays = rawWeek?.days || [];
+
+  for (let dayIndex = 0; dayIndex < days.length; dayIndex++) {
+    const savedDay = savedDays[dayIndex];
+    if (!savedDay) continue;
+    days[dayIndex].date = savedDay.date || days[dayIndex].date;
+    for (
+      let slotIndex = 0;
+      slotIndex < days[dayIndex].slots.length;
+      slotIndex++
+    ) {
+      const savedSlot = savedDay.slots?.[slotIndex];
+      if (!savedSlot) continue;
+      const mergedSlot = {
+        ...days[dayIndex].slots[slotIndex],
+        ...savedSlot,
+        updatedAt: savedSlot.updatedAt || 0,
+      };
+      mergedSlot.fixedKey =
+        inferFixedSlotKey(savedSlot.fixedKey, savedSlot.fixedLabel) ||
+        mergedSlot.fixedKey;
+      days[dayIndex].slots[slotIndex] = mergedSlot;
+    }
+  }
+
+  return { weekStart, days };
+}
+
 /**
  * Migrates a raw, potentially partial/legacy schedule state object to the latest state schema.
  * Merges weeks, settings, subjects, lunches, and deadlines with default templates.
@@ -455,38 +489,8 @@ export function migrateState(raw: unknown): ScheduleState {
 
   base.weeks = {};
   for (const key of weekKeys) {
-    const rawWeek = weekMap[key];
     const normalized = normalizeWeekKey(key);
-    const builtDays = buildDaysForWeek(normalized);
-    const srcDays = rawWeek?.days || [];
-
-    for (let dayIdx = 0; dayIdx < builtDays.length; dayIdx++) {
-      const srcDay = srcDays[dayIdx];
-      if (!srcDay) continue;
-      builtDays[dayIdx].date = srcDay.date || builtDays[dayIdx].date;
-      for (
-        let slotIdx = 0;
-        slotIdx < builtDays[dayIdx].slots.length;
-        slotIdx++
-      ) {
-        const srcSlot = srcDay.slots?.[slotIdx];
-        if (!srcSlot) continue;
-        const mergedSlot = {
-          ...builtDays[dayIdx].slots[slotIdx],
-          ...srcSlot,
-          updatedAt: srcSlot.updatedAt || 0,
-        };
-        mergedSlot.fixedKey =
-          inferFixedSlotKey(srcSlot.fixedKey, srcSlot.fixedLabel) ||
-          mergedSlot.fixedKey;
-        builtDays[dayIdx].slots[slotIdx] = mergedSlot;
-      }
-    }
-
-    base.weeks[normalized] = {
-      weekStart: normalized,
-      days: builtDays,
-    };
+    base.weeks[normalized] = normalizeSavedWeek(normalized, weekMap[key]);
   }
 
   const currentWeek = isoDate(getMonday());

@@ -47,4 +47,6 @@ next-env.d.ts
 
 
 # graphify
-/graphify-out
+/graphify-out/
+/.codex/skills/graphify/
+/.codex/hooks.json

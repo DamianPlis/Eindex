@@ -25,6 +25,19 @@ type Notice = {
   undo?: DeadlineUndo;
   state: "ready" | "undoing" | "restored" | "error";
 };
+type ToastMessages = ReturnType<typeof useMessages>["deadlines"]["toast"];
+
+function toastTitle(
+  state: Notice["state"],
+  undo: DeadlineUndo | undefined,
+  messages: ToastMessages,
+) {
+  if (state === "error")
+    return undo ? messages.undoFailed : messages.actionFailed;
+  if (state === "restored") return messages.restored;
+  if (state === "undoing") return messages.undoing;
+  return undo?.kind === "remove" ? messages.removed : messages.done;
+}
 type Actions = {
   perform: (kind: DeadlineUndo["kind"], id: string) => Promise<void>;
   pendingIds: ReadonlySet<string>;
@@ -180,18 +193,7 @@ function DeadlineToast({
     };
   }, [id, onDismiss, paused, state]);
 
-  const title =
-    state === "error"
-      ? undo
-        ? messages.undoFailed
-        : messages.actionFailed
-      : state === "restored"
-        ? messages.restored
-        : state === "undoing"
-          ? messages.undoing
-          : undo?.kind === "remove"
-            ? messages.removed
-            : messages.done;
+  const title = toastTitle(state, undo, messages);
   const canUndo = !!undo && state !== "restored";
 
   return (
