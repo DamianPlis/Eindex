@@ -1,58 +1,58 @@
-# Graph Report - random-next-app-copy  (2026-09-26)
+# Graph Report - random-next-app-copy  (2026-09-27)
 
 ## Corpus Check
-- 364 files · ~145,226 words
+- 384 files · ~152,780 words
 - Verdict: corpus is large enough that graph structure adds value.
-- Unclassified: 31 file(s) not represented in the graph (top: .css 26, (none) 3, .example 1)
+- Unclassified: 32 file(s) not represented in the graph (top: .css 26, (none) 3, .example 1)
 
 ## Summary
-- 1809 nodes · 3280 edges · 267 communities (153 shown, 114 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 46 edges (avg confidence: 0.87)
+- 1886 nodes · 3401 edges · 274 communities (161 shown, 113 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 52 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `b7470e29`
+- Built from commit: `5824572b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- SettingsProvider
+- SettingsProvider.tsx
 - localizePath
 - server.js
 - schedule/types.ts
-- assertLocale
+- SudokuGame.tsx
 - useAppLocale
-- SettingsProvider.tsx
+- components_settings_settings_module
 - migrate-firestore-to-convex.ts
-- messages/index.ts
+- useSudokuGame.ts
 - lunch/server.ts
 - PlanningPageClient.tsx
 - MandalaGame.tsx
 - compilerOptions
 - devDependencies
-- CustomSubjectGroupModal
-- SubjectsCombobox.tsx
+- useSettings
+- SettingsNav.tsx
 - Deployment & Production
 - package.json
 - compilerOptions
 - DeadlinesList.tsx
-- labels.ts
-- useMessages
+- AppMessages
+- summarize-game-profile.mjs
 - scripts
 - icons_add_24dp_000000_fill0_wght400_grad0_opsz24
 - dependencies
 - server.d.ts
-- deadlines.ts
+- messages/index.ts
 - What You Must Do When Invoked
 - overrides
 - auth.config.ts
 - store.ts
 - postcss.config.mjs
-- i18n/config.ts
+- labels.ts
 - Data Fetching & Caching
 - DeadlineToastProvider.tsx
 - React Server Components
-- schedule/defaults.ts
+- SlotBubble.tsx
 - Server Actions
 - migration.test.ts
 - App Router Architecture
@@ -68,11 +68,11 @@
 - Convex Create Component
 - 3. Server-Side Performance
 - Convex Create Component
-- SlotBubble.tsx
-- sync.ts
+- DashboardScheduleList.tsx
+- model.ts
 - React Best Practices
 - Sections
-- react
+- verify-parity.ts
 - graphify reference: extra exports and benchmark
 - useStatsPeriodSwipe
 - Packaged Convex Components
@@ -235,8 +235,8 @@
 - _template.md
 - extraction-spec.md
 - components_settings_sections_colorcustomizer_module
-- [locale]/(app)/page.tsx
-- components_ui_shared_module
+- sudoku.ts
+- react
 - Next.js performance investigation report
 - icons_arrow_right_24dp_000000_fill0_wght400_grad0_opsz24
 - icons_calendar_month_24dp_000000_fill0_wght400_grad0_opsz24
@@ -266,87 +266,96 @@
 - icons_sort_24dp_000000_fill0_wght400_grad0_opsz24
 - icons_sync_24dp_000000_fill0_wght400_grad0_opsz24
 - settings/types.ts
-- actions.ts
-- NotFoundContent.tsx
-- model.ts
-- LoginPanel.tsx
+- settings/defaults.ts
+- performance-games/tsconfig.json
+- dashboard.ts
+- page.jsx
 - OnlineStatusBanner.tsx
-- Eindex
-- eslint.config.mjs
-- next.config.ts
+- UserSyncProvider
+- 7 — Sudoku and Mandala browser measurements
+- metrics.js
+- performance-games/package.json
+- performance-browser-report-2026-09-25.md
+- useMessages
+- AddDeadline.tsx
+- login-panel.test.ts
+- schedule.ts
+- ConvexClientProvider.tsx
+- PlanningPageSkeleton.tsx
+- DeadlineDetailPageSkeleton.tsx
 
 ## God Nodes (most connected - your core abstractions)
 1. `localizePath()` - 62 edges
 2. `next` - 55 edges
 3. `useMessages()` - 52 edges
-4. `react` - 46 edges
+4. `react` - 49 edges
 5. `assertLocale()` - 34 edges
-6. `requireUser()` - 31 edges
+6. `requireUser()` - 32 edges
 7. `SettingsProvider()` - 30 edges
-8. `getPreferredLocale()` - 29 edges
-9. `useAppLocale()` - 28 edges
-10. `convex` - 27 edges
+8. `getMessages()` - 29 edges
+9. `getPreferredLocale()` - 29 edges
+10. `useAppLocale()` - 28 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `Other bundle candidates` --references--> `UserSyncProvider()`  [INFERRED]
+  docs/performance-recommendation-05.md → components/i18n/UserSyncProvider.tsx
 - `Architecture` --references--> `UserSyncProvider()`  [INFERRED]
   README.md → components/i18n/UserSyncProvider.tsx
+- `Other bundle candidates` --references--> `getMessages()`  [INFERRED]
+  docs/performance-recommendation-05.md → lib/i18n/messages/index.ts
+- `Other bundle candidates` --references--> `ConvexClientProvider()`  [INFERRED]
+  docs/performance-recommendation-05.md → components/providers/ConvexClientProvider.tsx
 - `Critical Rules` --references--> `Id`  [INFERRED]
   .agents/skills/convex-create-component/SKILL.md → convex/_generated/dataModel.d.ts
-- `Critical Rules` --references--> `Id`  [INFERRED]
-  .claude/skills/convex-create-component/SKILL.md → convex/_generated/dataModel.d.ts
-- `handleLogout()` --calls--> `localizePath()`  [EXTRACTED]
-  components/auth/LogoutButton.tsx → lib/i18n/routing.ts
-- `Typescript guidelines` --references--> `Id`  [INFERRED]
-  convex/_generated/ai/guidelines.md → convex/_generated/dataModel.d.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (267 total, 114 thin omitted)
+## Communities (274 total, 113 thin omitted)
 
-### Community 0 - "SettingsProvider"
-Cohesion: 0.15
-Nodes (21): addCustomSubjectAction(), addSubjectGroupAction(), deleteSubjectAction(), deleteSubjectGroupAction(), setSubjectPlanningVisibilityAction(), updateSubjectAction(), updateSubjectGroupAction(), SubjectGroupsSection() (+13 more)
+### Community 0 - "SettingsProvider.tsx"
+Cohesion: 0.11
+Nodes (33): addCustomSubjectAction(), addDeadlineAction(), addSubjectGroupAction(), deleteSubjectAction(), deleteSubjectGroupAction(), requireActionToken(), setSlotTopicAction(), setSubjectPlanningVisibilityAction() (+25 more)
 
 ### Community 1 - "localizePath"
-Cohesion: 0.28
-Nodes (17): AboutPageRedirect(), DeadlineDetailPage(), DeadlinesPage(), MainPage(), PlanningPage(), SettingsAppearancePage(), SettingsLanguagePage(), SettingsPage() (+9 more)
+Cohesion: 0.06
+Nodes (78): AboutPageRedirect(), DeadlineDetailPage(), DeadlinesPage(), MainPage(), PlanningPage(), SettingsAppearancePage(), SettingsLanguagePage(), SettingsPage() (+70 more)
 
 ### Community 2 - "server.js"
-Cohesion: 0.15
-Nodes (16): action, env, httpAction, internalAction, internalMutation, internalQuery, mutation, query (+8 more)
+Cohesion: 0.17
+Nodes (12): action, env, httpAction, internalAction, internalMutation, internalQuery, mutation, query (+4 more)
 
 ### Community 3 - "schedule/types.ts"
-Cohesion: 0.29
-Nodes (15): StatsCard(), StatsCardProps, icons_sort, getSubjectDisplayName(), filterStats(), getCurrentPeriodStats(), getDateRange(), getPeriodLabel() (+7 more)
+Cohesion: 0.22
+Nodes (18): PlanningPageContent(), shiftWeek(), StatsCard(), StatsCardProps, icons_sort, parseRange(), parseRangeMinutes(), filterStats() (+10 more)
 
-### Community 4 - "assertLocale"
-Cohesion: 0.12
-Nodes (32): generateMetadata(), LocaleAboutPage(), app_locale_about_page_module, generateMetadata(), LocaleDeadlineDetailPage(), DeadlinesListContainer(), generateMetadata(), LocaleDeadlinesPage() (+24 more)
+### Community 4 - "SudokuGame.tsx"
+Cohesion: 0.15
+Nodes (15): components_gameshared_module, components_sudoku_sudoku_module, SudokuControls(), SudokuControlsProps, Props, SudokuGrid(), SudokuNumberPad, SudokuNumberPadProps (+7 more)
 
 ### Community 5 - "useAppLocale"
-Cohesion: 0.12
-Nodes (23): LOCALE_META, LoginLocaleSwitcher(), switchTo(), components_auth_loginlocaleswitcher_module, LogoutButton(), handleLogout(), useAppLocale(), components_layout_appshell_module (+15 more)
+Cohesion: 0.14
+Nodes (19): LOCALE_META, LoginLocaleSwitcher(), switchTo(), components_auth_loginlocaleswitcher_module, components_auth_loginpanel_module, useAppLocale(), components_layout_appshell_module, BottomNav() (+11 more)
 
-### Community 6 - "SettingsProvider.tsx"
-Cohesion: 0.06
-Nodes (37): app_locale_app_deadlines_deadlinespage_module, AppearancePage(), LanguagePage(), SettingsAllPage(), StatisticsPage(), SubjectsPage(), components_pages_planningpageclient_module, AppearanceSection() (+29 more)
+### Community 6 - "components_settings_settings_module"
+Cohesion: 0.13
+Nodes (14): SubjectsPage(), components_settings_settings_module, DeadlinesListSkeleton(), AppearanceSectionSkeleton(), LanguageSectionSkeleton(), SettingsPageSkeleton(), StatisticsSectionSkeleton(), SubjectGroupsSectionSkeleton() (+6 more)
 
 ### Community 7 - "migrate-firestore-to-convex.ts"
-Cohesion: 0.12
-Nodes (21): internal, toMillis(), dotenv, firebase-admin, ref_node_util, ref_path, migrationClient(), auth (+13 more)
+Cohesion: 0.19
+Nodes (13): toMillis(), ref_path, auth, buildLegacySlots(), callWithRetry(), cleanEnv(), convex, db (+5 more)
 
-### Community 8 - "messages/index.ts"
-Cohesion: 0.06
-Nodes (50): components_gameshared_module, useGameTimer(), UseGameTimerOptions, useKeyboardNavigation(), UseKeyboardNavigationOptions, FEEDBACK_CLEAR, FeedbackState, GameStatus (+42 more)
+### Community 8 - "useSudokuGame.ts"
+Cohesion: 0.16
+Nodes (17): useGameTimer(), UseGameTimerOptions, useKeyboardNavigation(), UseKeyboardNavigationOptions, FEEDBACK_CLEAR, FeedbackState, GameStatus, useSudokuGame() (+9 more)
 
 ### Community 9 - "lunch/server.ts"
 Cohesion: 0.29
-Nodes (13): GET(), ScheduleListContainer(), extractPerDay(), fetchMenuHtml, findCommaOutsideBrackets(), getLunchPerDay(), isMainCourseLabel(), isSoupLabel() (+5 more)
+Nodes (13): GET(), extractPerDay(), fetchMenuHtml, findCommaOutsideBrackets(), getLunchPerDay(), isMainCourseLabel(), isSoupLabel(), normalizeText() (+5 more)
 
 ### Community 10 - "PlanningPageClient.tsx"
-Cohesion: 0.13
-Nodes (25): setSlotSubjectAction(), setSlotTopicAction(), computeNextSubjectOverrides(), createUtcDate(), formatDayLabel(), getDayLabels(), getFallbackDayLabels(), getWeekOffsetInDays() (+17 more)
+Cohesion: 0.12
+Nodes (24): setSlotSubjectAction(), RemindersContainer(), computeNextSubjectOverrides(), createUtcDate(), getDayLabels(), getFallbackDayLabels(), getWeekOffsetInDays(), PlanningPageClient() (+16 more)
 
 ### Community 11 - "MandalaGame.tsx"
 Cohesion: 0.13
@@ -360,33 +369,37 @@ Nodes (23): compilerOptions, allowJs, allowUnreachableCode, allowUnusedLabels, e
 Cohesion: 0.11
 Nodes (19): devDependencies, autoprefixer, babel-plugin-react-compiler, convex-test, dotenv, @edge-runtime/vm, eslint, eslint-config-next (+11 more)
 
-### Community 15 - "SubjectsCombobox.tsx"
-Cohesion: 0.11
-Nodes (20): components_deadlines_statscard_module, components_deadlines_subjectscombobox_module, SubjectsCombobox(), components_settings_settingsnav_module, NavItem, SettingsNav(), icons_chart, icons_close_alt (+12 more)
+### Community 14 - "useSettings"
+Cohesion: 0.22
+Nodes (12): AppearancePage(), LanguagePage(), SettingsAllPage(), StatisticsPage(), AppearanceSection(), themeOptions, LanguageSection(), StatisticsSection() (+4 more)
+
+### Community 15 - "SettingsNav.tsx"
+Cohesion: 0.16
+Nodes (14): components_settings_settingsnav_module, NavItem, SettingsNav(), icons_chart, icons_language, icons_menu, icons_palette, icons_search (+6 more)
 
 ### Community 16 - "Deployment & Production"
 Cohesion: 0.07
 Nodes (27): Bundle Analysis, Caching Strategy, CDN & Edge, CI/CD with GitHub Actions, Database Connection Pooling, Deployment & Production, docker-compose.yml, Docker Deployment (+19 more)
 
 ### Community 17 - "package.json"
-Cohesion: 0.12
-Nodes (16): name, private, version, autoprefixer, babel-plugin-react-compiler, @edge-runtime/vm, happy-dom, postcss (+8 more)
+Cohesion: 0.10
+Nodes (20): eslintConfig, name, private, version, @auth/core, autoprefixer, babel-plugin-react-compiler, @edge-runtime/vm (+12 more)
 
 ### Community 18 - "compilerOptions"
 Cohesion: 0.13
 Nodes (14): compilerOptions, allowJs, forceConsistentCasingInFileNames, isolatedModules, lib, module, moduleResolution, noEmit (+6 more)
 
 ### Community 19 - "DeadlinesList.tsx"
-Cohesion: 0.29
+Cohesion: 0.27
 Nodes (10): components_deadlines_deadlines_module, useDeadlineActions(), DoneButton(), MarkDeadlineDone(), RemoveButton(), RemoveDeadline(), StatusPill(), StatusPillProps (+2 more)
 
-### Community 20 - "labels.ts"
-Cohesion: 0.14
-Nodes (19): SubjectsComboboxProps, contrastForHex(), PlanningSlotCard(), PlanningSlotCardProps, safeHexToRgb(), BuiltinSubjectGroupId, builtInSubjectGroupIds, builtinSubjectGroupIdSet (+11 more)
+### Community 20 - "AppMessages"
+Cohesion: 0.33
+Nodes (9): contrastForHex(), PlanningSlotCard(), PlanningSlotCardProps, safeHexToRgb(), AppMessages, Slot, Subject, renderSlot() (+1 more)
 
-### Community 21 - "useMessages"
-Cohesion: 0.25
-Nodes (10): LocaleAppErrorPage(), LogoutButtonProps, LocaleContext, LocaleContextValue, useLocaleContext(), useMessages(), ConfirmDialog(), ConfirmDialogProps (+2 more)
+### Community 21 - "summarize-game-profile.mjs"
+Cohesion: 0.13
+Nodes (12): ref_node_child_process, ref_node_fs, ref_node_path, fixture, result, root, result, round() (+4 more)
 
 ### Community 22 - "scripts"
 Cohesion: 0.18
@@ -400,9 +413,9 @@ Nodes (10): dependencies, @auth/core, cheerio, convex, @convex-dev/auth, @leeoni
 Cohesion: 0.28
 Nodes (8): Typescript guidelines, ActionCtx, DatabaseReader, DatabaseWriter, Env, MutationCtx, QueryCtx, ref_datamodel_js
 
-### Community 26 - "deadlines.ts"
-Cohesion: 0.23
-Nodes (12): expireUndo, findDeadline(), getDeadline, getDeadlines, getDeadlinesForDate, markAsDone, receipt(), removeDeadline (+4 more)
+### Community 26 - "messages/index.ts"
+Cohesion: 0.15
+Nodes (9): CustomSubjectGroupModal(), CustomSubjectGroupModalProps, components_planning_customsubjectgroupmodal_module, ModalFooter(), ModalFooterProps, APP_LOCALES, allMessages, plMessages (+1 more)
 
 ### Community 27 - "What You Must Do When Invoked"
 Cohesion: 0.08
@@ -413,36 +426,36 @@ Cohesion: 0.67
 Nodes (3): overrides, @types/react, @types/react-dom
 
 ### Community 31 - "store.ts"
-Cohesion: 0.16
-Nodes (13): getDashboardData, getDeadline, getRequestToken, getSettingsPageData, getUserState(), toDeadline(), toSubject(), toSubjectGroup() (+5 more)
+Cohesion: 0.07
+Nodes (42): getMonday(), isoDate(), normalizeWeekKey(), buildDaysForWeek(), createDefaultState(), DayTemplate, dayTemplates, defaultSubjectGroups (+34 more)
 
-### Community 33 - "i18n/config.ts"
-Cohesion: 0.19
-Nodes (13): AppLocale, DEFAULT_LOCALE, isAppLocale(), LOCALE_COOKIE, LOCALIZED_METADATA, PageKey, PageMetadataDefinition, getLocaleFromPathname() (+5 more)
+### Community 33 - "labels.ts"
+Cohesion: 0.15
+Nodes (14): components_deadlines_statscard_module, components_deadlines_subjectscombobox_module, SubjectsCombobox(), SubjectsComboboxProps, icons_close_alt, icons_filter_alt, BuiltinSubjectGroupId, builtInSubjectGroupIds (+6 more)
 
 ### Community 36 - "Data Fetching & Caching"
 Cohesion: 0.10
 Nodes (20): Best Practices, Cache Options, Client-Side Data Fetching, Data Fetching & Caching, Database Queries, Error Handling, Extended fetch API, Loading States (+12 more)
 
 ### Community 37 - "DeadlineToastProvider.tsx"
-Cohesion: 0.17
-Nodes (18): markAsDoneDeadlineAction(), removeDeadlineAction(), requireActionToken(), undoDeadlineAction(), Actions, Context, DeadlineToast(), DeadlineToastProvider() (+10 more)
+Cohesion: 0.19
+Nodes (16): markAsDoneDeadlineAction(), removeDeadlineAction(), undoDeadlineAction(), Actions, Context, DeadlineToast(), DeadlineToastProvider(), lock() (+8 more)
 
 ### Community 38 - "React Server Components"
 Cohesion: 0.10
 Nodes (19): Benefits of Server Components, Best Practices, Client Components, Composition Pattern, Context in Server/Client Components, Edge Runtime, Parallel Data Fetching, Pattern: Conditional Client Components (+11 more)
 
-### Community 39 - "schedule/defaults.ts"
-Cohesion: 0.18
-Nodes (21): LocalePlanningPage(), PlanningPageContent(), shiftWeek(), getMonday(), isoDate(), normalizeWeekKey(), buildDaysForWeek(), createDefaultState() (+13 more)
+### Community 39 - "SlotBubble.tsx"
+Cohesion: 0.36
+Nodes (7): contrastColor(), isCurrentSlot(), components_layout_slotbubble_module, SlotBubble(), SlotBubbleProps, icons_restaurant, parseTimeRange()
 
 ### Community 40 - "Server Actions"
 Cohesion: 0.11
 Nodes (17): Basic Server Action, Best Practices, Client Component with Server Action, Error Handling, Form with Server Action, Inline Server Action, Optimistic Updates, Programmatic Server Action Call (+9 more)
 
 ### Community 41 - "migration.test.ts"
-Cohesion: 0.18
-Nodes (8): resolveAuthUser(), api, components, upsertLunch, coord, modules, modules, convex-test
+Cohesion: 0.16
+Nodes (9): api, components, internal, upsertLunch, coord, modules, modules, modules (+1 more)
 
 ### Community 42 - "App Router Architecture"
 Cohesion: 0.12
@@ -469,8 +482,8 @@ Cohesion: 0.14
 Nodes (13): Common Skill Categories, Find Skills, How to Help Users Find Skills, Step 1: Understand What They Need, Step 2: Check the Leaderboard First, Step 3: Search for Skills, Step 4: Verify Quality Before Recommending, Step 5: Present Options to the User (+5 more)
 
 ### Community 48 - "requireUser"
-Cohesion: 0.21
-Nodes (22): addDeadline, initializeUser(), requireUser(), touchUser(), coordinates, getDaySchedule, getWeekSchedule, listSlots (+14 more)
+Cohesion: 0.17
+Nodes (27): addDeadline, expireUndo, findDeadline(), getDeadline, getDeadlines, getDeadlinesForDate, markAsDone, receipt() (+19 more)
 
 ### Community 49 - "Next.js Developer"
 Cohesion: 0.15
@@ -481,8 +494,8 @@ Cohesion: 0.17
 Nodes (12): 6.10 Use React DOM Resource Hints, 6.11 Use useTransition Over Manual Loading States, 6.1 Animate SVG Wrapper Instead of SVG Element, 6.2 CSS content-visibility for Long Lists, 6.3 Hoist Static JSX Elements, 6.4 Optimize SVG Precision, 6.5 Prevent Hydration Mismatch Without Flickering, 6.6 Suppress Expected Hydration Mismatches (+4 more)
 
 ### Community 51 - "convex"
-Cohesion: 0.16
-Nodes (11): auth, isAuthenticated, signIn, signOut, store, DataModel, Doc, TableNames (+3 more)
+Cohesion: 0.21
+Nodes (12): DataModel, Doc, TableNames, brandColorsValidator, planningSubjectSortValidator, getOrCreateUserByFirebaseUid(), syncDeadline, syncSlotsBatch (+4 more)
 
 ### Community 52 - "Convex Create Component"
 Cohesion: 0.18
@@ -496,13 +509,13 @@ Nodes (10): 3.10 Use after() for Non-Blocking Operations, 3.1 Authenticate Serve
 Cohesion: 0.18
 Nodes (10): Checklist, Choose the Shape, Component Skeleton, Convex Create Component, Default Approach, Reference Files, Validation, When Not to Use (+2 more)
 
-### Community 55 - "SlotBubble.tsx"
-Cohesion: 0.29
-Nodes (9): contrastColor(), isCurrentSlot(), components_layout_slotbubble_module, SlotBubble(), SlotBubbleProps, icons_restaurant, parseRange(), parseRangeMinutes() (+1 more)
+### Community 55 - "DashboardScheduleList.tsx"
+Cohesion: 0.21
+Nodes (6): DashboardData, DashboardScheduleList(), DashboardScheduleListProps, getFixedSlotDisplayName(), getSubjectDisplayName(), ref_node_stream
 
-### Community 56 - "sync.ts"
-Cohesion: 0.52
-Nodes (6): getOrCreateUserByFirebaseUid(), syncDeadline, syncSlotsBatch, syncSubject, syncSubjectGroup, syncUserAndSettings
+### Community 56 - "model.ts"
+Cohesion: 0.21
+Nodes (11): auth, isAuthenticated, signIn, signOut, store, resolveAuthUser(), convex_generated_server_mutationctx, http (+3 more)
 
 ### Community 57 - "React Best Practices"
 Cohesion: 0.20
@@ -512,9 +525,9 @@ Nodes (9): 4.1 Deduplicate Global Event Listeners, 4.2 Use Passive Event Listene
 Cohesion: 0.20
 Nodes (9): 1. Eliminating Waterfalls (async), 2. Bundle Size Optimization (bundle), 3. Server-Side Performance (server), 4. Client-Side Data Fetching (client), 5. Re-render Optimization (rerender), 6. Rendering Performance (rendering), 7. JavaScript Performance (js), 8. Advanced Patterns (advanced) (+1 more)
 
-### Community 59 - "react"
-Cohesion: 0.23
-Nodes (8): addDeadlineAction(), AddDeadline(), SubmitButton(), DeadlinesList(), DeadlinesRefreshContext, DeadlinesRefreshContextValue, useDeadlinesRefresh(), react
+### Community 59 - "verify-parity.ts"
+Cohesion: 0.28
+Nodes (7): dotenv, firebase-admin, ref_node_util, migrationClient(), byKey(), convex, verify()
 
 ### Community 60 - "graphify reference: extra exports and benchmark"
 Cohesion: 0.22
@@ -589,8 +602,8 @@ Cohesion: 0.33
 Nodes (5): For /graphify explain, For /graphify path, graphify reference: query, path, explain, Step 0 — Constrained query expansion (REQUIRED before traversal), Step 1 — Traversal
 
 ### Community 78 - "app/layout.tsx"
-Cohesion: 0.13
-Nodes (16): metadata, RootLayout(), viewport, ProtectedLocaleLayout(), UserSyncProvider(), helpLinks, components_layout_noscriptnotice_module, NoScriptNotice() (+8 more)
+Cohesion: 0.15
+Nodes (11): metadata, RootLayout(), viewport, helpLinks, components_layout_noscriptnotice_module, NoScriptNotice(), NoScriptNoticeProps, PwaRegistrar() (+3 more)
 
 ### Community 79 - "Patterns"
 Cohesion: 0.40
@@ -872,69 +885,97 @@ Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphif
 Cohesion: 0.67
 Nodes (3): Critical Rules, Critical Rules, Id
 
-### Community 225 - "[locale]/(app)/page.tsx"
-Cohesion: 0.18
-Nodes (16): getSelectedDateISO(), LocaleMainPage(), RemindersContainer(), RemindersListSkeleton(), ScheduleListSkeleton(), icons_arrow_right, DashboardDeadlineSelection, deadlineFormatters (+8 more)
+### Community 225 - "sudoku.ts"
+Cohesion: 0.32
+Nodes (12): AsyncGenStep, cloneBoard(), countSolutions(), fillBoard(), generatePuzzleAsync(), generatePuzzleWorker(), getAllCandidates(), getCandidates() (+4 more)
 
-### Community 226 - "components_ui_shared_module"
-Cohesion: 0.14
-Nodes (9): app_errorpage_module, CustomSubjectGroupModalProps, components_planning_customsubjectgroupmodal_module, CustomSubjectModal(), CustomSubjectModalProps, ModalFooter(), ModalFooterProps, components_ui_shared_module (+1 more)
+### Community 226 - "react"
+Cohesion: 0.16
+Nodes (7): app_errorpage_module, LocaleAppErrorPage(), CustomSubjectModal(), CustomSubjectModalProps, components_ui_shared_module, icons_close, react
 
 ### Community 227 - "Next.js performance investigation report"
 Cohesion: 0.13
-Nodes (14): 10. Recommended next measurement pass, 11. Specialist coverage, 1. Browser method and validity, 2. Main authenticated routes: repeated reloads, 3. Direct visits, settings subsections, games, and route clicks, 4. Browser asset counts, 5. Earlier local HTTP inline-CSS A/B, 6. Config and build experiments (+6 more)
+Nodes (15): 10. Recommended next measurement pass, 11. Specialist coverage, 1. Browser method and validity, 2. Main authenticated routes: repeated reloads, 3. Direct visits, settings subsections, games, and route clicks, 4. Browser asset counts, 5. Earlier local HTTP inline-CSS A/B, 6. Config and build experiments (+7 more)
 
 ### Community 255 - "settings/types.ts"
-Cohesion: 0.26
-Nodes (9): handleThemeSelect(), ThemeRootSync(), ThemeRootSyncProps, applyTheme(), resolveThemeRoot(), COOKIE_MAX_AGE, THEME_COOKIE, AppTheme (+1 more)
+Cohesion: 0.24
+Nodes (10): handleThemeSelect(), ThemeRootSync(), ThemeRootSyncProps, applyTheme(), resolveThemeRoot(), COOKIE_MAX_AGE, THEME_COOKIE, AppSettings (+2 more)
 
-### Community 256 - "actions.ts"
-Cohesion: 0.42
-Nodes (9): SlotUpdateInput, updateSettingsAction(), normalizeAppLocale(), DEFAULT_SETTINGS, isRecord(), normalizePlanningSubjectSort(), normalizeSettings(), normalizeTheme() (+1 more)
+### Community 256 - "settings/defaults.ts"
+Cohesion: 0.50
+Nodes (7): updateSettingsAction(), normalizeAppLocale(), DEFAULT_SETTINGS, isRecord(), normalizePlanningSubjectSort(), normalizeSettings(), normalizeTheme()
 
-### Community 257 - "NotFoundContent.tsx"
-Cohesion: 0.33
-Nodes (6): LocaleLoading(), LocaleNotFoundPage(), NotFoundPage(), NotFoundContent(), NotFoundContentProps, getRequestMessages()
+### Community 257 - "performance-games/tsconfig.json"
+Cohesion: 0.22
+Nodes (8): ../../tsconfig.json, compilerOptions, noUnusedLocals, noUnusedParameters, paths, exclude, extends, include
 
-### Community 258 - "model.ts"
-Cohesion: 0.36
-Nodes (7): deadlineOrder(), getDashboardData, getReminderCandidates(), selectedWeekStart(), convex_generated_server_mutationctx, convex_generated_server_queryctx, ref_generated_datamodel
+### Community 258 - "dashboard.ts"
+Cohesion: 0.53
+Nodes (5): deadlineOrder(), getDashboardData, getReminderCandidates(), selectedWeekStart(), convex_generated_server_queryctx
 
-### Community 259 - "LoginPanel.tsx"
-Cohesion: 0.28
-Nodes (6): LoginPanel(), components_auth_loginpanel_module, auth, render(), router, signIn
+### Community 259 - "page.jsx"
+Cohesion: 0.32
+Nodes (3): SudokuGame(), enMessages, Page()
 
 ### Community 260 - "OnlineStatusBanner.tsx"
 Cohesion: 0.43
 Nodes (6): components_layout_onlinestatusbanner_module, OnlineStatusBanner(), getServerSnapshot(), getSnapshot(), subscribe(), useOnlineStatus()
 
-### Community 261 - "Eindex"
-Cohesion: 0.33
-Nodes (5): Architecture, Eindex, Legacy data cutover, Local development, Validation and build
+### Community 261 - "UserSyncProvider"
+Cohesion: 0.29
+Nodes (6): UserSyncProvider(), Architecture, Eindex, Legacy data cutover, Local development, Validation and build
 
-### Community 262 - "eslint.config.mjs"
-Cohesion: 0.50
-Nodes (3): eslintConfig, eslint, eslint-config-next
+### Community 262 - "7 — Sudoku and Mandala browser measurements"
+Cohesion: 0.33
+Nodes (5): 7 — Sudoku and Mandala browser measurements, Decision and reproduction, Observed component work, Paint, layout, and interaction timing, What was tested
+
+### Community 265 - "performance-browser-report-2026-09-25.md"
+Cohesion: 0.29
+Nodes (3): 4 — Planning week window, 6 — External CSS, Recommendation 08: stream lunch separately
+
+### Community 266 - "useMessages"
+Cohesion: 0.28
+Nodes (9): LogoutButton(), LogoutButtonProps, LocaleContext, LocaleContextValue, useLocaleContext(), useMessages(), ConfirmDialog(), ConfirmDialogProps (+1 more)
+
+### Community 267 - "AddDeadline.tsx"
+Cohesion: 0.20
+Nodes (8): AddDeadline(), SubmitButton(), DeadlinesList(), DeadlinesRefreshContext, DeadlinesRefreshContextValue, useDeadlinesRefresh(), icons_add, icons_checklist
+
+### Community 269 - "login-panel.test.ts"
+Cohesion: 0.25
+Nodes (7): LoginPanel(), csMessages, react-dom, auth, render(), router, signIn
+
+### Community 270 - "schedule.ts"
+Cohesion: 0.28
+Nodes (8): coordinates, getDaySchedule, getPlanningData, getPlanningWeekStarts(), getWeekSchedule, listSlots, setSlotSubject, template()
+
+### Community 271 - "ConvexClientProvider.tsx"
+Cohesion: 0.25
+Nodes (6): convex, ConvexClientProvider(), Method and limits, Other bundle candidates, Performance recommendation 5: client bundle boundaries, Production build comparison
+
+### Community 272 - "PlanningPageSkeleton.tsx"
+Cohesion: 0.33
+Nodes (4): components_pages_planningpageclient_module, PlanningPageSkeleton(), slotCount, slotCountFR
 
 ## Knowledge Gaps
-- **757 isolated node(s):** `SlotUpdateInput`, `metadata`, `viewport`, `LOCALE_META`, `LogoutButtonProps` (+752 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1038 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **114 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **785 isolated node(s):** `SlotUpdateInput`, `metadata`, `viewport`, `LOCALE_META`, `LogoutButtonProps` (+780 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1081 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **113 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `convex` connect `convex` to `actions.ts`, `localizePath`, `model.ts`, `LoginPanel.tsx`, `server.js`, `migrate-firestore-to-convex.ts`, `migration.test.ts`, `app/layout.tsx`, `requireUser`, `package.json`, `useMessages`, `sync.ts`, `server.d.ts`, `deadlines.ts`, `store.ts`?**
-  _High betweenness centrality (0.062) - this node is a cross-community bridge._
-- **Why does `react` connect `react` to `localizePath`, `LoginPanel.tsx`, `assertLocale`, `schedule/types.ts`, `useAppLocale`, `SettingsProvider.tsx`, `messages/index.ts`, `OnlineStatusBanner.tsx`, `PlanningPageClient.tsx`, `MandalaGame.tsx`, `SubjectsCombobox.tsx`, `package.json`, `DeadlinesList.tsx`, `labels.ts`, `useMessages`, `store.ts`, `DeadlineToastProvider.tsx`, `schedule/defaults.ts`, `SlotBubble.tsx`, `useStatsPeriodSwipe`, `app/layout.tsx`, `[locale]/(app)/page.tsx`, `components_ui_shared_module`, `settings/types.ts`?**
-  _High betweenness centrality (0.055) - this node is a cross-community bridge._
-- **Why does `next` connect `localizePath` to `actions.ts`, `NotFoundContent.tsx`, `LoginPanel.tsx`, `assertLocale`, `useAppLocale`, `SettingsProvider.tsx`, `app/(app)/error.tsx`, `(app)/not-found.tsx`, `lunch/server.ts`, `manifest.ts`, `PlanningPageClient.tsx`, `messages/index.ts`, `next.config.ts`, `SubjectsCombobox.tsx`, `package.json`, `DeadlinesList.tsx`, `useMessages`, `i18n/config.ts`, `DeadlineToastProvider.tsx`, `schedule/defaults.ts`, `react`, `app/layout.tsx`, `[locale]/(app)/page.tsx`, `components_ui_shared_module`, `settings/types.ts`?**
+- **Why does `convex` connect `convex` to `SettingsProvider.tsx`, `localizePath`, `dashboard.ts`, `server.js`, `useAppLocale`, `migrate-firestore-to-convex.ts`, `migration.test.ts`, `useMessages`, `schedule.ts`, `ConvexClientProvider.tsx`, `requireUser`, `package.json`, `model.ts`, `server.d.ts`, `verify-parity.ts`, `store.ts`?**
+  _High betweenness centrality (0.061) - this node is a cross-community bridge._
+- **Why does `react` connect `react` to `SettingsProvider.tsx`, `localizePath`, `schedule/types.ts`, `SudokuGame.tsx`, `useAppLocale`, `components_settings_settings_module`, `OnlineStatusBanner.tsx`, `useSudokuGame.ts`, `page.jsx`, `useMessages`, `AddDeadline.tsx`, `MandalaGame.tsx`, `PlanningPageClient.tsx`, `login-panel.test.ts`, `ConvexClientProvider.tsx`, `SettingsNav.tsx`, `package.json`, `DeadlinesList.tsx`, `AppMessages`, `messages/index.ts`, `store.ts`, `labels.ts`, `DeadlineToastProvider.tsx`, `SlotBubble.tsx`, `DashboardScheduleList.tsx`, `useStatsPeriodSwipe`, `app/layout.tsx`, `settings/types.ts`?**
+  _High betweenness centrality (0.048) - this node is a cross-community bridge._
+- **Why does `next` connect `localizePath` to `SettingsProvider.tsx`, `react`, `SudokuGame.tsx`, `useAppLocale`, `DeadlineToastProvider.tsx`, `lunch/server.ts`, `useMessages`, `AddDeadline.tsx`, `PlanningPageClient.tsx`, `app/layout.tsx`, `useSettings`, `SettingsNav.tsx`, `package.json`, `DeadlinesList.tsx`, `settings/types.ts`?**
   _High betweenness centrality (0.030) - this node is a cross-community bridge._
 - **What connects `SlotUpdateInput`, `metadata`, `viewport` to the rest of the system?**
-  _757 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `SettingsProvider` be split into smaller, more focused modules?**
-  _Cohesion score 0.1471861471861472 - nodes in this community are weakly interconnected._
-- **Should `server.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.1471861471861472 - nodes in this community are weakly interconnected._
-- **Should `assertLocale` be split into smaller, more focused modules?**
-  _Cohesion score 0.12195121951219512 - nodes in this community are weakly interconnected._
+  _785 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `SettingsProvider.tsx` be split into smaller, more focused modules?**
+  _Cohesion score 0.1111111111111111 - nodes in this community are weakly interconnected._
+- **Should `localizePath` be split into smaller, more focused modules?**
+  _Cohesion score 0.05624416899906704 - nodes in this community are weakly interconnected._
+- **Should `useAppLocale` be split into smaller, more focused modules?**
+  _Cohesion score 0.1396011396011396 - nodes in this community are weakly interconnected._

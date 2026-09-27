@@ -3,6 +3,24 @@
 **Date:** 2026-09-25  
 **Scope:** Authenticated local Next.js routes, browser timing proxies, prior local HTTP/config experiments, and read-only source review.
 
+## Implementation follow-up — 2026-09-27
+
+Recommendations 4–8 are handled on local branch `next-app-optimization-followup`, based on `9fd6a1c` (recommendations 1–3). Each recommendation has its own commit; nothing was pushed. The original investigation below remains a historical record, separate from these new measurements.
+
+| Recommendation        | Result                                                                                                                                                                                  | Detailed evidence                                                    |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| 4 — Planning          | Indexed selected/previous/next-week reads, request caching, memoized day labels; usage ranking now uses those three weeks                                                               | [Implementation and checks](performance-recommendation-04.md)        |
+| 5 — Client boundaries | Measured two isolated production builds; removed five static skeleton client directives. Subroute gzip changes −65 to −716 B; settings root +127 B; Subjects gains one referenced chunk | [Exact bundle comparison](performance-recommendation-05.md)          |
+| 6 — Inline CSS        | Disabled as requested                                                                                                                                                                   | [Trade-off and scope](performance-recommendation-06.md)              |
+| 7 — Games             | Production browser fixture using actual game components: ten Sudoku and ten Mandala repeats, wheel and synthetic pan captures. No game code changes                                     | [Raw metrics, findings, confounds](performance-recommendation-07.md) |
+| 8 — Lunch             | Schedule streams while the lunch subtitle shows one skeleton line; controlled stream-order test passes                                                                                  | [Implementation and check](performance-recommendation-08.md)         |
+
+Validation: both TypeScript projects pass; frontend production build passes (49 generated pages); 22 focused tests across six files pass. New Convex code was tested locally, **not deployed**. The new planning query must be deployed to the intended backend before this frontend's planning route can use it. The build used process-local placeholder Convex URLs and did not connect to an account.
+
+The browser fixture produced actual performance entries, but missing paint entries and irregular presentation timing prevent a reliable FCP/LCP/INP comparison of authenticated routes. The useful game findings are a 9.25 ms median mount-to-playable Sudoku DOM time, short measured Mandala draw JS, and a worker that remained alive after unmount, returning results after exit in three of ten runs. These are not field metrics or measured application-wide speedups. Method, all samples, and limitations are linked above.
+
+Graphify's code graph was refreshed with AST extraction only. Its generated files accompany the final implementation commit; no LLM graph labeling was run.
+
 ## Executive summary
 
 I tested the signed-in local app in the in-app browser across the dashboard, planning, deadlines, deadline detail, settings and its subsections, Sudoku, and Mandala. Login was skipped as requested. The application code was not changed for this report; this Markdown file is the only new artifact.
@@ -33,13 +51,13 @@ Next.js recommends a production build for production-like performance checks; it
 
 Three sequential observations per route:
 
-| Route | Navigation-return samples (ms) | Median | Content-marker samples (ms) | Median | Final DOM observation |
-|---|---|---:|---|---:|---|
-| /cs dashboard | 1,132; 1,125; 1,126 | **1,126** | 1,253; 1,258; 1,261 | **1,258** | 212 nodes; main text 202 characters |
-| /cs/planning | 1,325; 1,288; 1,309 | **1,309** | 1,724; 1,669; 1,699 | **1,699** | 898 nodes; main text 6,101 chars; main scroll height 1,330 px |
-| /cs/deadlines | 81; 51; 77 | **77** | 1,030; 1,036; 982 | **1,030** | 274 nodes; 8 main buttons; 6 main inputs/selects; 3 detail links |
-| /cs/deadlines/[id] | 933; 966; 999 | **966** | 1,051; 1,092; 1,131 | **1,092** | 159 nodes; main text 76 chars |
-| /cs/settings | 1,000; 901; 924 | **924** | 1,271; 1,153; 1,159 | **1,159** | 640 nodes; 85 page buttons (82 in main); 35 main inputs; main scroll height 5,237 px; text 2,309 chars |
+| Route              | Navigation-return samples (ms) |    Median | Content-marker samples (ms) |    Median | Final DOM observation                                                                                  |
+| ------------------ | ------------------------------ | --------: | --------------------------- | --------: | ------------------------------------------------------------------------------------------------------ |
+| /cs dashboard      | 1,132; 1,125; 1,126            | **1,126** | 1,253; 1,258; 1,261         | **1,258** | 212 nodes; main text 202 characters                                                                    |
+| /cs/planning       | 1,325; 1,288; 1,309            | **1,309** | 1,724; 1,669; 1,699         | **1,699** | 898 nodes; main text 6,101 chars; main scroll height 1,330 px                                          |
+| /cs/deadlines      | 81; 51; 77                     |    **77** | 1,030; 1,036; 982           | **1,030** | 274 nodes; 8 main buttons; 6 main inputs/selects; 3 detail links                                       |
+| /cs/deadlines/[id] | 933; 966; 999                  |   **966** | 1,051; 1,092; 1,131         | **1,092** | 159 nodes; main text 76 chars                                                                          |
+| /cs/settings       | 1,000; 901; 924                |   **924** | 1,271; 1,153; 1,159         | **1,159** | 640 nodes; 85 page buttons (82 in main); 35 main inputs; main scroll height 5,237 px; text 2,309 chars |
 
 Deadlines illustrates why these are separate proxies: its reload call returned in a median 77 ms while the marker appeared at 1,030 ms. Neither time says when content was painted.
 
@@ -47,20 +65,20 @@ Deadlines illustrates why these are separate proxies: its reload call returned i
 
 These are single observations unless noted:
 
-| Route/action | Navigation return | Marker | Other observed details |
-|---|---:|---:|---|
-| First direct /cs | 749 ms | 1,301 ms | 183 nodes; main text 231 chars |
-| First direct /cs/planning | 2,568 ms | No valid content marker | Initial accessibility snapshot was shell/fallback only: 363 nodes; 39 body-text chars |
-| First direct /cs/deadlines | 668 ms | 1,048 ms | 277 nodes; 11 total page buttons; 6 inputs; 3 detail links |
-| First detail reload | 1,321 ms | 1,472 ms | 159 nodes; 3 total page buttons; no inputs |
-| /cs/settings/appearance | 568 ms | 1,088 ms | 193 nodes; 3 main buttons; 1 input; 2 headings; 43 main-text chars |
-| /cs/settings/language | 2,148 ms | 2,756 ms | 201 nodes; 4 buttons; 1 input; 2 headings; 64 main-text chars |
-| /cs/settings/subjects | 1,708 ms | 2,480 ms | 593 nodes; 77 buttons; 34 inputs; 4 headings; 2,114 main-text chars |
-| /cs/settings/statistics | 1,869 ms | 2,425 ms | 188 nodes; 1 button; 2 inputs; 2 headings; 115 main-text chars |
-| /cs/mandala | 2,495 ms | 2,782 ms to visible canvas | 159 nodes; 15 main buttons; 800 × 800 backing canvas displayed at 429 × 429 CSS px |
-| /cs/sudoku | Browser tool timed out after 16.1 s | No valid timing | Later snapshot showed interactive page: 297 nodes, 81 grid cells, 18 main buttons |
-| Sudoku → dashboard | 331 ms to URL change | 1,167 ms to main-text marker | One navigation |
-| Deadline list → detail click | 477 ms to URL change | 994 ms to #deadline-title | One navigation; not INP |
+| Route/action                 |                   Navigation return |                       Marker | Other observed details                                                                |
+| ---------------------------- | ----------------------------------: | ---------------------------: | ------------------------------------------------------------------------------------- |
+| First direct /cs             |                              749 ms |                     1,301 ms | 183 nodes; main text 231 chars                                                        |
+| First direct /cs/planning    |                            2,568 ms |      No valid content marker | Initial accessibility snapshot was shell/fallback only: 363 nodes; 39 body-text chars |
+| First direct /cs/deadlines   |                              668 ms |                     1,048 ms | 277 nodes; 11 total page buttons; 6 inputs; 3 detail links                            |
+| First detail reload          |                            1,321 ms |                     1,472 ms | 159 nodes; 3 total page buttons; no inputs                                            |
+| /cs/settings/appearance      |                              568 ms |                     1,088 ms | 193 nodes; 3 main buttons; 1 input; 2 headings; 43 main-text chars                    |
+| /cs/settings/language        |                            2,148 ms |                     2,756 ms | 201 nodes; 4 buttons; 1 input; 2 headings; 64 main-text chars                         |
+| /cs/settings/subjects        |                            1,708 ms |                     2,480 ms | 593 nodes; 77 buttons; 34 inputs; 4 headings; 2,114 main-text chars                   |
+| /cs/settings/statistics      |                            1,869 ms |                     2,425 ms | 188 nodes; 1 button; 2 inputs; 2 headings; 115 main-text chars                        |
+| /cs/mandala                  |                            2,495 ms |   2,782 ms to visible canvas | 159 nodes; 15 main buttons; 800 × 800 backing canvas displayed at 429 × 429 CSS px    |
+| /cs/sudoku                   | Browser tool timed out after 16.1 s |              No valid timing | Later snapshot showed interactive page: 297 nodes, 81 grid cells, 18 main buttons     |
+| Sudoku → dashboard           |                331 ms to URL change | 1,167 ms to main-text marker | One navigation                                                                        |
+| Deadline list → detail click |                477 ms to URL change |    994 ms to #deadline-title | One navigation; not INP                                                               |
 
 An earlier appearance observation used the incorrect criterion “main text > 60 characters”; it waited 4,702 ms without matching and was discarded. The corrected appearance result is the one above. The Sudoku browser-tool timeout is not evidence the app took 16.1 seconds to load.
 
@@ -70,38 +88,40 @@ The observed dashboard had 3 deadline-detail links and no schedule entries for i
 
 Counts are from observed page assets and include HMR/Next DevTools resources. They are not production transfer sizes.
 
-| Route | Scripts | Stylesheets | Fonts | Images | Other | Total |
-|---|---:|---:|---:|---:|---:|---:|
-| /cs | 20 | 5 | 1 | 0 | 1 | 27 |
-| planning | 21 | 6 | 1 | 1 | 1 | 30 |
-| deadlines | 22 | 5 | 1 | 0 | 1 | 29 |
-| deadline detail | 20 | 6 | 1 | 1 | 1 | 29 |
-| settings root | 23 | 6 | 1 | 3 | 1 | 34 |
-| appearance | 23 | 5 | 1 | 0 | 1 | 30 |
-| language | 23 | 5 | 1 | 3 | 1 | 33 |
-| subjects | 23 | 6 | 1 | 0 | 1 | 31 |
-| statistics | 23 | 5 | 1 | 0 | 1 | 30 |
-| Sudoku | 22 | 5 | 1 | 0 | 1 | 29 |
-| Mandala | 21 | 5 | 1 | 0 | 0 | 27 |
+| Route           | Scripts | Stylesheets | Fonts | Images | Other | Total |
+| --------------- | ------: | ----------: | ----: | -----: | ----: | ----: |
+| /cs             |      20 |           5 |     1 |      0 |     1 |    27 |
+| planning        |      21 |           6 |     1 |      1 |     1 |    30 |
+| deadlines       |      22 |           5 |     1 |      0 |     1 |    29 |
+| deadline detail |      20 |           6 |     1 |      1 |     1 |    29 |
+| settings root   |      23 |           6 |     1 |      3 |     1 |    34 |
+| appearance      |      23 |           5 |     1 |      0 |     1 |    30 |
+| language        |      23 |           5 |     1 |      3 |     1 |    33 |
+| subjects        |      23 |           6 |     1 |      0 |     1 |    31 |
+| statistics      |      23 |           5 |     1 |      0 |     1 |    30 |
+| Sudoku          |      22 |           5 |     1 |      0 |     1 |    29 |
+| Mandala         |      21 |           5 |     1 |      0 |     0 |    27 |
 
 ## 5. Earlier local HTTP inline-CSS A/B
 
 Separate from the signed-in browser run: local production-server HTTP requests on public About and Login routes. Corrected Capture B had 7 requests per route/config. Body sizes are HTML/CSS/JS response-body bytes; headers and image/font/other assets are excluded. Compression negotiation was not retained consistently enough to call these wire bytes.
 
-| Route | inlineCss | HTML B | Linked CSS count / B | JS count / B | Inline style chars | TTFB median; raw samples (ms) |
-|---|---|---:|---|---|---:|---|
-| /en/about | true | 63,360 | 0 / 0 | 12 / 220,320 | 50,234 | **28.84**; 19.46,25.28,28.19,28.84,32.10,38.82,361.59 |
-| /en/about | false | 11,060 | 3 / 10,603 | 12 / 220,320 | 0 | **26.29**; 19.76,21.71,26.17,26.29,28.01,42.18,889.42 |
-| /en/login | true | 61,659 | 0 / 0 | 14 / 231,116 | 50,571 | **19.56**; 18.72,18.72,19.54,19.56,23.73,26.65,54.54 |
-| /en/login | false | 9,506 | 3 / 10,739 | 14 / 231,116 | 0 | **17.18**; 15.44,15.76,17.04,17.18,23.11,28.03,150.28 |
+| Route     | inlineCss | HTML B | Linked CSS count / B | JS count / B | Inline style chars | TTFB median; raw samples (ms)                         |
+| --------- | --------- | -----: | -------------------- | ------------ | -----------------: | ----------------------------------------------------- |
+| /en/about | true      | 63,360 | 0 / 0                | 12 / 220,320 |             50,234 | **28.84**; 19.46,25.28,28.19,28.84,32.10,38.82,361.59 |
+| /en/about | false     | 11,060 | 3 / 10,603           | 12 / 220,320 |                  0 | **26.29**; 19.76,21.71,26.17,26.29,28.01,42.18,889.42 |
+| /en/login | true      | 61,659 | 0 / 0                | 14 / 231,116 |             50,571 | **19.56**; 18.72,18.72,19.54,19.56,23.73,26.65,54.54  |
+| /en/login | false     |  9,506 | 3 / 10,739           | 14 / 231,116 |                  0 | **17.18**; 15.44,15.76,17.04,17.18,23.11,28.03,150.28 |
 
 Combined HTML + linked CSS + JS body totals:
+
 - About: true 283,680 B; false 241,983 B; true is +41,697 B (+14.70% relative to false).
 - Login: true 292,775 B; false 251,361 B; true is +41,414 B (+14.15%).
 
 This is a payload result, not proof of a paint difference. Inline CSS removes separate stylesheet responses but repeats styles in HTML; external CSS can be cached separately. Next currently documents inlineCss as experimental, production-only, and a trade-off between first visits and returning visitors. [Next.js inlineCss docs](https://nextjs.org/docs/app/api-reference/config/next-config-js/inlineCss)
 
 Other retained captures and limitations:
+
 - Capture A About TTFB: true 16.96,17.07,18.42,20.38,30.91,32.76,36.30 ms (median 20.38); false 17.16,19.28,22.88,23.36,25.68,33.41,296.58 (median 23.36).
 - Capture A Login TTFB: true 15.25,17.22,17.69,18.27,19.27,23.74,53.97 (median 18.27); false 12.64,13.49,14.99,15.24,21.80,23.68,45.33 (median 15.24).
 - Capture A parser counted CSS-like URLs inside Flight payload as stylesheet links for inlineCss=true; those link counts are invalid. Capture B corrected it.
@@ -116,13 +136,13 @@ These were separate captures with different methods and must not be treated as o
 
 Five-request-per-route HTTP comparisons where available:
 
-| Variant | Median TTFB About/Login (ms) | HTML B About/Login | JS B About/Login | JS request counts |
-|---|---:|---:|---:|---:|
-| Baseline | 36.3 / 27.4 | 63,358 / 61,658 | 220,330 / 231,126 | 12 / 14 |
-| turbopackSharedRuntime=true | 33.4 / 21.4 | 63,452 / 61,752 | 220,198 / 230,994 | 12 / 14 |
-| generateComponentChunks=true | 25.3 / 19.2, one-response check only | 63,490 / 61,811 | 220,686 / 231,482 | No reduction observed |
-| Both flags | 36.8 / 26.2 | 63,637 / 61,964 | 220,518 / 231,314 | 12 / 14 |
-| firstPageLoadPriority variant | 37.0 / 27.9 | 63,361 / 61,661 | 220,331 / 231,127 | 12 / 14 |
+| Variant                       |         Median TTFB About/Login (ms) | HTML B About/Login |  JS B About/Login |     JS request counts |
+| ----------------------------- | -----------------------------------: | -----------------: | ----------------: | --------------------: |
+| Baseline                      |                          36.3 / 27.4 |    63,358 / 61,658 | 220,330 / 231,126 |               12 / 14 |
+| turbopackSharedRuntime=true   |                          33.4 / 21.4 |    63,452 / 61,752 | 220,198 / 230,994 |               12 / 14 |
+| generateComponentChunks=true  | 25.3 / 19.2, one-response check only |    63,490 / 61,811 | 220,686 / 231,482 | No reduction observed |
+| Both flags                    |                          36.8 / 26.2 |    63,637 / 61,964 | 220,518 / 231,314 |               12 / 14 |
+| firstPageLoadPriority variant |                          37.0 / 27.9 |    63,361 / 61,661 | 220,331 / 231,127 |               12 / 14 |
 
 No tested flag changed the observed 12/14 script request counts. Byte changes were small/mixed, and chunk-generation’s row was only one response per route, not a five-run comparison.
 
@@ -199,4 +219,3 @@ Twelve specialist agents were launched in batches: eleven returned findings on m
 - [React cache](https://react.dev/reference/react/cache)
 - [web.dev lab and field measurement](https://web.dev/articles/vitals-measurement-getting-started)
 - [web.dev Core Web Vitals thresholds](https://web.dev/articles/defining-core-web-vitals-thresholds)
-

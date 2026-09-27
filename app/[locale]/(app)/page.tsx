@@ -4,14 +4,10 @@ import ArrowRightIcon from "@/icons/arrow-right.svg";
 import CalendarIcon from "@/icons/calendar.svg";
 import CheckIcon from "@/icons/check.svg";
 import StatusPill from "@/components/deadlines/StatusPill";
-import SlotBubble from "@/components/layout/SlotBubble";
+import DashboardScheduleList from "@/components/dashboard/DashboardScheduleList";
 import { localizePath } from "@/lib/i18n/routing";
 import { getMessages } from "@/lib/i18n/messages";
 import { assertLocale } from "@/lib/i18n/server";
-import {
-  getSubjectDisplayName,
-  getFixedSlotDisplayName,
-} from "@/lib/schedule/labels";
 import {
   formatDeadlineRelativeLabel,
   getTodayISO,
@@ -95,8 +91,9 @@ export default async function LocaleMainPage({
         key={`schedule-${selectedISO}`}
         fallback={<ScheduleListSkeleton />}
       >
-        <ScheduleListContainer
-          uid={session.uid}
+        <DashboardScheduleList
+          schedulePromise={getDashboardData(session.uid, selectedISO)}
+          lunchPromise={getLunchPerDay()}
           messages={messages}
           selectedDateISO={selectedISO}
           isToday={isToday}
@@ -199,76 +196,5 @@ async function RemindersContainer({
         </ul>
       )}
     </section>
-  );
-}
-
-async function ScheduleListContainer({
-  uid,
-  messages,
-  selectedDateISO,
-  isToday,
-}: {
-  uid: string;
-  messages: ReturnType<typeof getMessages>;
-  selectedDateISO: string;
-  isToday: boolean;
-}) {
-  const [data, lunchPerDay] = await Promise.all([
-    getDashboardData(uid, selectedDateISO),
-    getLunchPerDay(),
-  ]);
-  const { slots, subjects } = data;
-
-  return (
-    <div className={d.scheduleList}>
-      {slots.length > 0 ? (
-        slots.map((slot) => {
-          const subject = slot.subjectId
-            ? subjects.find(
-                (stateSubject) => stateSubject.id === slot.subjectId,
-              ) || null
-            : null;
-          const isLunch =
-            slot.subjectId === "lunch" ||
-            slot.fixedKey === "lunch" ||
-            /obed|lunch/i.test(slot.fixedLabel || "");
-          const lunchText = isLunch
-            ? lunchPerDay[selectedDateISO] ||
-              messages.home.menuUnavailable ||
-              "Menu unavailable"
-            : "";
-          const title = slot.fixed
-            ? getFixedSlotDisplayName(slot, messages)
-            : getSubjectDisplayName(subject, messages) || slot.topic || "-";
-
-          let subtitle = "";
-          if (isLunch && lunchText) {
-            subtitle = lunchText;
-          } else if (slot.fixed && slot.allowTopic && slot.topic) {
-            subtitle = slot.topic;
-          } else if (!slot.fixed && slot.topic) {
-            subtitle = slot.topic;
-          }
-
-          return (
-            <SlotBubble
-              key={slot.id}
-              slot={slot}
-              subject={subject}
-              isLunch={isLunch}
-              lunchText={lunchText}
-              title={title}
-              subtitle={subtitle}
-            />
-          );
-        })
-      ) : (
-        <div className={d.emptyState}>
-          {isToday
-            ? messages.home.noScheduleForToday
-            : messages.home.noScheduleForTomorrow}
-        </div>
-      )}
-    </div>
   );
 }
