@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
         "bookish-zebra-pjwvxr4p45vv3rjxq-3000.app.github.dev",
       ],
     },
-    inlineCss: true,
+    inlineCss: false,
   },
   images: {
     formats: ["image/avif", "image/webp"],
