@@ -196,7 +196,7 @@ export function sortStats(
  * @param subjects - Array of subject definitions.
  * @param state - Current schedule state.
  * @param locale - Formatting/sorting locale.
- * @param option - Period range configuration for stats (defaults to "year").
+ * @param usage - Optional precomputed subject counts; defaults to this calendar year.
  * @returns Sorted array of Subject objects.
  */
 
@@ -206,10 +206,11 @@ export function sortPlanningSubjects(
   locale: AppLocale,
   sortBy: SortOption,
   messages: AppMessages,
+  usage?: Record<string, number>,
 ) {
-  const usage = getCurrentPeriodStats("year", state);
+  const subjectUsage = usage ?? getCurrentPeriodStats("year", state);
   const counts = Object.fromEntries(
-    subjects.map((subject) => [subject.id, usage[subject.id] ?? 0]),
+    subjects.map((subject) => [subject.id, subjectUsage[subject.id] ?? 0]),
   );
   const names = new Map(
     subjects.map((subject) => [

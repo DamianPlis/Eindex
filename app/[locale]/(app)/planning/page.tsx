@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import PlanningPageClient from "@/components/pages/PlanningPageClient";
 import { buildDaysForWeek, normalizeWeekKey } from "@/lib/schedule/defaults";
-import { getUserSettings, getUserState } from "@/lib/schedule/store";
-import { sortPlanningSubjects } from "@/lib/schedule/stats";
+import { getUserSettings, getPlanningPageState } from "@/lib/schedule/store";
+import {
+  getCurrentPeriodStats,
+  sortPlanningSubjects,
+} from "@/lib/schedule/stats";
 import { getMessages } from "@/lib/i18n/messages";
 import type { AppLocale } from "@/lib/i18n/config";
 import { requireSession } from "@/lib/session";
@@ -22,9 +25,9 @@ export async function generateMetadata({
 }
 
 function shiftWeek(weekISO: string, deltaWeeks: number) {
-  const date = new Date(weekISO);
-  date.setDate(date.getDate() + deltaWeeks * 7);
-  return normalizeWeekKey(date.toISOString());
+  const date = new Date(`${weekISO}T12:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + deltaWeeks * 7);
+  return date.toISOString().slice(0, 10);
 }
 
 export default async function LocalePlanningPage({
@@ -59,10 +62,20 @@ async function PlanningPageContent({
   currentYear: number;
 }) {
   const session = await requireSession();
+  const prevWeek = shiftWeek(weekStart, -1);
+  const nextWeek = shiftWeek(weekStart, 1);
   const [state, settings] = await Promise.all([
-    getUserState(session.uid),
+    getPlanningPageState(session.uid, weekStart),
     getUserSettings(session.uid),
   ]);
+  const rankingWeek = new Date(`${weekStart}T12:00:00`);
+  const subjectUsage: Record<string, number> = {};
+  for (const offset of [-1, 0, 1]) {
+    const weekUsage = getCurrentPeriodStats("week", state, rankingWeek, offset);
+    for (const [subjectId, count] of Object.entries(weekUsage)) {
+      subjectUsage[subjectId] = (subjectUsage[subjectId] ?? 0) + count;
+    }
+  }
   const week = state.weeks[weekStart] || {
     weekStart,
     days: buildDaysForWeek(weekStart),
@@ -73,8 +86,8 @@ async function PlanningPageContent({
       weekStart={weekStart}
       currentYear={currentYear}
       currentWeekStart={normalizeWeekKey()}
-      prevWeek={shiftWeek(weekStart, -1)}
-      nextWeek={shiftWeek(weekStart, 1)}
+      prevWeek={prevWeek}
+      nextWeek={nextWeek}
       days={week.days}
       subjects={sortPlanningSubjects(
         state.subjects,
@@ -82,6 +95,7 @@ async function PlanningPageContent({
         locale,
         settings.planningSubjectSort,
         getMessages(locale),
+        subjectUsage,
       )}
     />
   );

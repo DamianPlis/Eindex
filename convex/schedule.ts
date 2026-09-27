@@ -40,6 +40,26 @@ function template(args: {
     allowTopic: slot.allowTopic,
   };
 }
+function getPlanningWeekStarts(weekStart: string) {
+  const selected = new Date(`${weekStart}T12:00:00Z`);
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(weekStart) ||
+    Number.isNaN(selected.getTime()) ||
+    selected.getUTCDay() !== 1 ||
+    selected.toISOString().slice(0, 10) !== weekStart
+  ) {
+    throw new Error("Invalid planning week start");
+  }
+  const previous = new Date(selected);
+  previous.setUTCDate(previous.getUTCDate() - 7);
+  const next = new Date(selected);
+  next.setUTCDate(next.getUTCDate() + 7);
+  return [
+    previous.toISOString().slice(0, 10),
+    weekStart,
+    next.toISOString().slice(0, 10),
+  ];
+}
 export const listSlots = query({
   args: { paginationOpts: paginationOptsValidator },
   returns: paginationResultValidator(schema.doc("scheduleSlots")),
@@ -72,6 +92,37 @@ export const getWeekSchedule = query({
         .take(1000),
     ]);
     return { slots, subjects };
+  },
+});
+export const getPlanningData = query({
+  args: { weekStart: v.string() },
+  returns: v.object({
+    slots: v.array(schema.doc("scheduleSlots")),
+    subjects: v.array(schema.doc("subjects")),
+    weekStarts: v.array(v.string()),
+  }),
+  handler: async (ctx, args) => {
+    const userId = await requireUser(ctx);
+    const weekStarts = getPlanningWeekStarts(args.weekStart);
+    const getWeekSlots = (weekStart: string) =>
+      ctx.db
+        .query("scheduleSlots")
+        .withIndex("by_user_week", (q) =>
+          q.eq("userId", userId).eq("weekStart", weekStart),
+        )
+        .take(100);
+    const [weekSlots, subjects] = await Promise.all([
+      Promise.all(weekStarts.map(getWeekSlots)),
+      ctx.db
+        .query("subjects")
+        .withIndex("by_user", (q) => q.eq("userId", userId))
+        .take(4001),
+    ]);
+    return {
+      slots: weekSlots.flat(),
+      subjects,
+      weekStarts,
+    };
   },
 });
 export const getDaySchedule = query({

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { setSlotSubjectAction, setSlotTopicAction } from "@/app/(app)/actions";
 import { useAppLocale, useMessages } from "@/components/i18n/UserSyncProvider";
 import ArrowLeft from "@/icons/chevron-left.svg";
@@ -47,29 +47,19 @@ function createUtcDate(isoDateStr: string) {
   return utcDate;
 }
 
-function getDayLabels(isoDateStr: string, locale: string, currentYear: number) {
+function getDayLabels(
+  isoDateStr: string,
+  currentYear: number,
+  weekdayFormatters: { short: Intl.DateTimeFormat; long: Intl.DateTimeFormat },
+) {
   const utcDate = createUtcDate(isoDateStr);
   if (!utcDate) return getFallbackDayLabels(isoDateStr, currentYear);
 
   return {
-    shortName: new Intl.DateTimeFormat(locale, {
-      weekday: "short",
-      timeZone: "UTC",
-    }).format(utcDate),
-    longName: new Intl.DateTimeFormat(locale, {
-      weekday: "long",
-      timeZone: "UTC",
-    }).format(utcDate),
+    shortName: weekdayFormatters.short.format(utcDate),
+    longName: weekdayFormatters.long.format(utcDate),
     shortDate: formatEuropeanDate(isoDateStr, currentYear),
   };
-}
-
-function formatDayLabel(
-  isoDateStr: string,
-  locale: string,
-  currentYear: number,
-) {
-  return getDayLabels(isoDateStr, locale, currentYear).longName;
 }
 
 function getWeekOffsetInDays(
@@ -143,6 +133,21 @@ export default function PlanningPageClient({
 }: PlanningPageClientProps) {
   const locale = useAppLocale();
   const messages = useMessages();
+  const dayLabels = useMemo(() => {
+    const weekdayFormatters = {
+      short: new Intl.DateTimeFormat(locale, {
+        weekday: "short",
+        timeZone: "UTC",
+      }),
+      long: new Intl.DateTimeFormat(locale, {
+        weekday: "long",
+        timeZone: "UTC",
+      }),
+    };
+    return days.map((day) =>
+      getDayLabels(day.date, currentYear, weekdayFormatters),
+    );
+  }, [days, locale, currentYear]);
   // Keep the opening order across server refreshes. New subjects join at the end.
   const [subjectOrder, setSubjectOrder] = useState(() =>
     subjects.map((subject) => subject.id),
@@ -363,7 +368,7 @@ export default function PlanningPageClient({
           aria-label={messages.planning.days}
         >
           {days.map((day, dayIndex) => {
-            const labels = getDayLabels(day.date, locale, currentYear);
+            const labels = dayLabels[dayIndex];
             const isActive = dayIndex === activeDayIndex;
             return (
               <button
@@ -392,10 +397,10 @@ export default function PlanningPageClient({
               <div className={s.dayInner}>
                 <header className={s.dayHeader}>
                   <div className={s.dayName}>
-                    {formatDayLabel(day.date, locale, currentYear)}
+                    {dayLabels[dayIndex].longName}
                   </div>
                   <div className={s.dayDate}>
-                    {formatEuropeanDate(day.date, currentYear)}
+                    {dayLabels[dayIndex].shortDate}
                   </div>
                 </header>
 

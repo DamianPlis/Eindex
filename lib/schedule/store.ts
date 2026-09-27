@@ -106,7 +106,7 @@ export const getDeadline = cache(async (_uid: string, deadlineId: string) => {
   return item ? toDeadline(item) : null;
 });
 
-/** Load every saved week so history, statistics and planning sorting stay complete. */
+/** Load every saved week for history and statistics that need older weeks. */
 export async function getUserState(_uid?: string): Promise<ScheduleState> {
   const token = await getRequestToken();
   const loadSlots = async () => {
@@ -152,6 +152,46 @@ export async function getUserState(_uid?: string): Promise<ScheduleState> {
   }
   return state;
 }
+
+// Planning only needs the selected week and its neighbors; keep the full history
+// loader above for pages and statistics that depend on older weeks.
+export const getPlanningPageState = cache(
+  async (_uid: string, weekStart: string): Promise<ScheduleState> => {
+    const token = await getRequestToken();
+    const data = await fetchQuery(
+      api.schedule.getPlanningData,
+      { weekStart },
+      { token },
+    );
+    const weeks = Object.fromEntries(
+      data.weekStarts.map((start) => [
+        start,
+        {
+          weekStart: start,
+          days: buildDaysForWeek(start),
+        },
+      ]),
+    );
+    const state: ScheduleState = {
+      subjects: data.subjects.map(toSubject),
+      subjectGroups: [],
+      deadlines: [],
+      weeks,
+      lunches: {},
+    };
+    for (const slot of data.slots) {
+      const target =
+        state.weeks[slot.weekStart]?.days[slot.dayIndex]?.slots[slot.slotIndex];
+      if (target) {
+        target.subjectId = slot.subjectId ?? null;
+        target.topic = slot.topic;
+        target.updatedAt = slot.updatedAt;
+      }
+    }
+    return state;
+  },
+);
+
 export const getCachedUserState = cache(getUserState);
 export async function getUserSettings(_uid?: string) {
   const token = await getRequestToken();
