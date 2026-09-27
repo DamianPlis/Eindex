@@ -1,0 +1,1228 @@
+{
+  "title": "Client boundary production build comparison",
+  "date": "2026-09-27",
+  "baseline_commit": "9fd6a1c8d7c1caca7e963615a62ac641cfcada26",
+  "experiment": "Remove only the top-level use client directive from five static settings skeleton components.",
+  "files_changed_in_variant": [
+    "components/skeletons/settings/AppearanceSectionSkeleton.tsx",
+    "components/skeletons/settings/LanguageSectionSkeleton.tsx",
+    "components/skeletons/settings/StatisticsSectionSkeleton.tsx",
+    "components/skeletons/settings/SubjectGroupsSectionSkeleton.tsx",
+    "components/skeletons/settings/SubjectsSectionSkeleton.tsx"
+  ],
+  "build": {
+    "next_version": "16.3.4",
+    "command": "npm run build:frontend (next build; no convex deploy)",
+    "baseline_exit_code": 0,
+    "variant_exit_code": 0,
+    "environment": {
+      "NEXT_PUBLIC_CONVEX_URL": "https://placeholder.convex.cloud",
+      "NEXT_PUBLIC_CONVEX_SITE_URL": "https://placeholder.convex.site",
+      "CONVEX_URL": "https://placeholder.convex.cloud",
+      "CONVEX_SITE_URL": "https://placeholder.convex.site",
+      "NEXT_PUBLIC_APP_URL": "https://example.test",
+      "scope": "process-only; no deployment variables or backend deploy command used"
+    },
+    "workspace_warning": "Both builds emitted the same Turbopack workspace-root warning: because the scratch snapshot is nested under the worktree and has its own package-lock, Next inferred the enclosing worktree as workspace root. The source snapshot and node_modules junction were unchanged between builds."
+  },
+  "methodology": {
+    "snapshot": "Git archive of tracked app, components, lib, css, public, convex, hooks, icons, and root config/package files at baseline_commit; hooks and icons are app imports. node_modules is a junction to the already-installed workspace dependencies.",
+    "manifest": ".next/server/app/**/page_client-reference-manifest.js; for each selected route, count unique .js paths in clientModules[*].chunks.",
+    "raw_bytes": "Sum of on-disk byte lengths of unique manifest-reachable JavaScript chunks.",
+    "gzip_bytes": "Sum of individual gzip.compress(chunk, compresslevel=9, mtime=0) sizes; this is a reproducible compression comparison, not a captured HTTP content-encoding size.",
+    "limits": "The client reference manifest includes modules reachable through loading/error/not-found boundaries, including boundaries not rendered on a successful initial request. Totals are route client-graph bundle sizes, not measured browser requests, Core Web Vitals, or first-load transfer.",
+    "source_maps": ["static/chunks/2z3sh82dl8glu.js.map"]
+  },
+  "routes": {
+    "about": {
+      "baseline": {
+        "client_module_count": 14,
+        "reachable_client_chunk_count": 5,
+        "raw_bytes": 158806,
+        "gzip_bytes": 49684
+      },
+      "without_client_directives": {
+        "client_module_count": 14,
+        "reachable_client_chunk_count": 5,
+        "raw_bytes": 158805,
+        "gzip_bytes": 49685
+      },
+      "delta": {
+        "client_modules": 0,
+        "reachable_client_chunks": 0,
+        "raw_bytes": -1,
+        "gzip_bytes": 1
+      }
+    },
+    "settings-root": {
+      "baseline": {
+        "client_module_count": 30,
+        "reachable_client_chunk_count": 9,
+        "raw_bytes": 268969,
+        "gzip_bytes": 84853
+      },
+      "without_client_directives": {
+        "client_module_count": 25,
+        "reachable_client_chunk_count": 9,
+        "raw_bytes": 268964,
+        "gzip_bytes": 84980
+      },
+      "delta": {
+        "client_modules": -5,
+        "reachable_client_chunks": 0,
+        "raw_bytes": -5,
+        "gzip_bytes": 127
+      }
+    },
+    "settings-appearance": {
+      "baseline": {
+        "client_module_count": 30,
+        "reachable_client_chunk_count": 9,
+        "raw_bytes": 240592,
+        "gzip_bytes": 76832
+      },
+      "without_client_directives": {
+        "client_module_count": 25,
+        "reachable_client_chunk_count": 9,
+        "raw_bytes": 235452,
+        "gzip_bytes": 76116
+      },
+      "delta": {
+        "client_modules": -5,
+        "reachable_client_chunks": 0,
+        "raw_bytes": -5140,
+        "gzip_bytes": -716
+      }
+    },
+    "settings-language": {
+      "baseline": {
+        "client_module_count": 30,
+        "reachable_client_chunk_count": 9,
+        "raw_bytes": 240263,
+        "gzip_bytes": 76540
+      },
+      "without_client_directives": {
+        "client_module_count": 25,
+        "reachable_client_chunk_count": 9,
+        "raw_bytes": 235130,
+        "gzip_bytes": 75835
+      },
+      "delta": {
+        "client_modules": -5,
+        "reachable_client_chunks": 0,
+        "raw_bytes": -5133,
+        "gzip_bytes": -705
+      }
+    },
+    "settings-subjects": {
+      "baseline": {
+        "client_module_count": 30,
+        "reachable_client_chunk_count": 9,
+        "raw_bytes": 261425,
+        "gzip_bytes": 82641
+      },
+      "without_client_directives": {
+        "client_module_count": 25,
+        "reachable_client_chunk_count": 10,
+        "raw_bytes": 259083,
+        "gzip_bytes": 82576
+      },
+      "delta": {
+        "client_modules": -5,
+        "reachable_client_chunks": 1,
+        "raw_bytes": -2342,
+        "gzip_bytes": -65
+      }
+    },
+    "settings-statistics": {
+      "baseline": {
+        "client_module_count": 30,
+        "reachable_client_chunk_count": 9,
+        "raw_bytes": 239458,
+        "gzip_bytes": 76166
+      },
+      "without_client_directives": {
+        "client_module_count": 25,
+        "reachable_client_chunk_count": 9,
+        "raw_bytes": 234611,
+        "gzip_bytes": 75551
+      },
+      "delta": {
+        "client_modules": -5,
+        "reachable_client_chunks": 0,
+        "raw_bytes": -4847,
+        "gzip_bytes": -615
+      }
+    }
+  },
+  "raw_runs": {
+    "baseline": {
+      "build_root": ".data/boundary-bench/snapshot/.next",
+      "routes": {
+        "about": {
+          "manifest": "server/app/[locale]/about/page_client-reference-manifest.js",
+          "client_module_count": 14,
+          "reachable_client_chunk_count": 5,
+          "raw_bytes": 158806,
+          "gzip_bytes": 49684,
+          "chunks": [
+            {
+              "path": "/_next/static/chunks/0_zy-gzngipap.js",
+              "raw_bytes": 2590,
+              "gzip_bytes": 923
+            },
+            {
+              "path": "/_next/static/chunks/0zs6p112chw-l.js",
+              "raw_bytes": 11491,
+              "gzip_bytes": 4371
+            },
+            {
+              "path": "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "raw_bytes": 23439,
+              "gzip_bytes": 7013
+            },
+            {
+              "path": "/_next/static/chunks/2lhcc0p_on3sb.js",
+              "raw_bytes": 8868,
+              "gzip_bytes": 3584
+            },
+            {
+              "path": "/_next/static/chunks/2ziixylg1arjs.js",
+              "raw_bytes": 112418,
+              "gzip_bytes": 33793
+            }
+          ]
+        },
+        "settings-root": {
+          "manifest": "server/app/[locale]/(app)/settings/page_client-reference-manifest.js",
+          "client_module_count": 30,
+          "reachable_client_chunk_count": 9,
+          "raw_bytes": 268969,
+          "gzip_bytes": 84853,
+          "chunks": [
+            {
+              "path": "/_next/static/chunks/07xd88e2yeeoj.js",
+              "raw_bytes": 40256,
+              "gzip_bytes": 13632
+            },
+            {
+              "path": "/_next/static/chunks/0_zy-gzngipap.js",
+              "raw_bytes": 2590,
+              "gzip_bytes": 923
+            },
+            {
+              "path": "/_next/static/chunks/0vdvhzox2q3pb.js",
+              "raw_bytes": 31989,
+              "gzip_bytes": 9625
+            },
+            {
+              "path": "/_next/static/chunks/0zs6p112chw-l.js",
+              "raw_bytes": 11491,
+              "gzip_bytes": 4371
+            },
+            {
+              "path": "/_next/static/chunks/1h4wjgd9e1vz4.js",
+              "raw_bytes": 1968,
+              "gzip_bytes": 880
+            },
+            {
+              "path": "/_next/static/chunks/1n61dig93iquk.js",
+              "raw_bytes": 35950,
+              "gzip_bytes": 11032
+            },
+            {
+              "path": "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "raw_bytes": 23439,
+              "gzip_bytes": 7013
+            },
+            {
+              "path": "/_next/static/chunks/2lhcc0p_on3sb.js",
+              "raw_bytes": 8868,
+              "gzip_bytes": 3584
+            },
+            {
+              "path": "/_next/static/chunks/2ziixylg1arjs.js",
+              "raw_bytes": 112418,
+              "gzip_bytes": 33793
+            }
+          ]
+        },
+        "settings-appearance": {
+          "manifest": "server/app/[locale]/(app)/settings/appearance/page_client-reference-manifest.js",
+          "client_module_count": 30,
+          "reachable_client_chunk_count": 9,
+          "raw_bytes": 240592,
+          "gzip_bytes": 76832,
+          "chunks": [
+            {
+              "path": "/_next/static/chunks/07xd88e2yeeoj.js",
+              "raw_bytes": 40256,
+              "gzip_bytes": 13632
+            },
+            {
+              "path": "/_next/static/chunks/0_fu7_m8a66dn.js",
+              "raw_bytes": 3612,
+              "gzip_bytes": 1604
+            },
+            {
+              "path": "/_next/static/chunks/0_zy-gzngipap.js",
+              "raw_bytes": 2590,
+              "gzip_bytes": 923
+            },
+            {
+              "path": "/_next/static/chunks/0zs6p112chw-l.js",
+              "raw_bytes": 11491,
+              "gzip_bytes": 4371
+            },
+            {
+              "path": "/_next/static/chunks/1h4wjgd9e1vz4.js",
+              "raw_bytes": 1968,
+              "gzip_bytes": 880
+            },
+            {
+              "path": "/_next/static/chunks/1n61dig93iquk.js",
+              "raw_bytes": 35950,
+              "gzip_bytes": 11032
+            },
+            {
+              "path": "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "raw_bytes": 23439,
+              "gzip_bytes": 7013
+            },
+            {
+              "path": "/_next/static/chunks/2lhcc0p_on3sb.js",
+              "raw_bytes": 8868,
+              "gzip_bytes": 3584
+            },
+            {
+              "path": "/_next/static/chunks/2ziixylg1arjs.js",
+              "raw_bytes": 112418,
+              "gzip_bytes": 33793
+            }
+          ]
+        },
+        "settings-language": {
+          "manifest": "server/app/[locale]/(app)/settings/language/page_client-reference-manifest.js",
+          "client_module_count": 30,
+          "reachable_client_chunk_count": 9,
+          "raw_bytes": 240263,
+          "gzip_bytes": 76540,
+          "chunks": [
+            {
+              "path": "/_next/static/chunks/07xd88e2yeeoj.js",
+              "raw_bytes": 40256,
+              "gzip_bytes": 13632
+            },
+            {
+              "path": "/_next/static/chunks/0_zy-gzngipap.js",
+              "raw_bytes": 2590,
+              "gzip_bytes": 923
+            },
+            {
+              "path": "/_next/static/chunks/0zs6p112chw-l.js",
+              "raw_bytes": 11491,
+              "gzip_bytes": 4371
+            },
+            {
+              "path": "/_next/static/chunks/1h4wjgd9e1vz4.js",
+              "raw_bytes": 1968,
+              "gzip_bytes": 880
+            },
+            {
+              "path": "/_next/static/chunks/1n61dig93iquk.js",
+              "raw_bytes": 35950,
+              "gzip_bytes": 11032
+            },
+            {
+              "path": "/_next/static/chunks/2en_9ne6l262w.js",
+              "raw_bytes": 3283,
+              "gzip_bytes": 1312
+            },
+            {
+              "path": "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "raw_bytes": 23439,
+              "gzip_bytes": 7013
+            },
+            {
+              "path": "/_next/static/chunks/2lhcc0p_on3sb.js",
+              "raw_bytes": 8868,
+              "gzip_bytes": 3584
+            },
+            {
+              "path": "/_next/static/chunks/2ziixylg1arjs.js",
+              "raw_bytes": 112418,
+              "gzip_bytes": 33793
+            }
+          ]
+        },
+        "settings-subjects": {
+          "manifest": "server/app/[locale]/(app)/settings/subjects/page_client-reference-manifest.js",
+          "client_module_count": 30,
+          "reachable_client_chunk_count": 9,
+          "raw_bytes": 261425,
+          "gzip_bytes": 82641,
+          "chunks": [
+            {
+              "path": "/_next/static/chunks/07xd88e2yeeoj.js",
+              "raw_bytes": 40256,
+              "gzip_bytes": 13632
+            },
+            {
+              "path": "/_next/static/chunks/0_zy-gzngipap.js",
+              "raw_bytes": 2590,
+              "gzip_bytes": 923
+            },
+            {
+              "path": "/_next/static/chunks/0zs6p112chw-l.js",
+              "raw_bytes": 11491,
+              "gzip_bytes": 4371
+            },
+            {
+              "path": "/_next/static/chunks/1h4wjgd9e1vz4.js",
+              "raw_bytes": 1968,
+              "gzip_bytes": 880
+            },
+            {
+              "path": "/_next/static/chunks/1n61dig93iquk.js",
+              "raw_bytes": 35950,
+              "gzip_bytes": 11032
+            },
+            {
+              "path": "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "raw_bytes": 23439,
+              "gzip_bytes": 7013
+            },
+            {
+              "path": "/_next/static/chunks/2lhcc0p_on3sb.js",
+              "raw_bytes": 8868,
+              "gzip_bytes": 3584
+            },
+            {
+              "path": "/_next/static/chunks/2u-lfs3q8fbm9.js",
+              "raw_bytes": 24445,
+              "gzip_bytes": 7413
+            },
+            {
+              "path": "/_next/static/chunks/2ziixylg1arjs.js",
+              "raw_bytes": 112418,
+              "gzip_bytes": 33793
+            }
+          ]
+        },
+        "settings-statistics": {
+          "manifest": "server/app/[locale]/(app)/settings/statistics/page_client-reference-manifest.js",
+          "client_module_count": 30,
+          "reachable_client_chunk_count": 9,
+          "raw_bytes": 239458,
+          "gzip_bytes": 76166,
+          "chunks": [
+            {
+              "path": "/_next/static/chunks/07xd88e2yeeoj.js",
+              "raw_bytes": 40256,
+              "gzip_bytes": 13632
+            },
+            {
+              "path": "/_next/static/chunks/0_zy-gzngipap.js",
+              "raw_bytes": 2590,
+              "gzip_bytes": 923
+            },
+            {
+              "path": "/_next/static/chunks/0swfq7x79yqhq.js",
+              "raw_bytes": 2478,
+              "gzip_bytes": 938
+            },
+            {
+              "path": "/_next/static/chunks/0zs6p112chw-l.js",
+              "raw_bytes": 11491,
+              "gzip_bytes": 4371
+            },
+            {
+              "path": "/_next/static/chunks/1h4wjgd9e1vz4.js",
+              "raw_bytes": 1968,
+              "gzip_bytes": 880
+            },
+            {
+              "path": "/_next/static/chunks/1n61dig93iquk.js",
+              "raw_bytes": 35950,
+              "gzip_bytes": 11032
+            },
+            {
+              "path": "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "raw_bytes": 23439,
+              "gzip_bytes": 7013
+            },
+            {
+              "path": "/_next/static/chunks/2lhcc0p_on3sb.js",
+              "raw_bytes": 8868,
+              "gzip_bytes": 3584
+            },
+            {
+              "path": "/_next/static/chunks/2ziixylg1arjs.js",
+              "raw_bytes": 112418,
+              "gzip_bytes": 33793
+            }
+          ]
+        }
+      },
+      "candidates": {
+        "about": {
+          "components/providers/ConvexClientProvider.tsx": {
+            "[project]/components/providers/ConvexClientProvider.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          },
+          "components/i18n/UserSyncProvider.tsx": {
+            "[project]/components/i18n/UserSyncProvider.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          }
+        },
+        "settings-root": {
+          "components/skeletons/settings/": {
+            "[project]/components/skeletons/settings/AppearanceSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/LanguageSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/SubjectGroupsSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/SubjectsSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/StatisticsSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ]
+          },
+          "components/providers/ConvexClientProvider.tsx": {
+            "[project]/components/providers/ConvexClientProvider.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          },
+          "components/i18n/UserSyncProvider.tsx": {
+            "[project]/components/i18n/UserSyncProvider.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          }
+        },
+        "settings-appearance": {
+          "components/skeletons/settings/": {
+            "[project]/components/skeletons/settings/AppearanceSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/LanguageSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/SubjectGroupsSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/SubjectsSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/StatisticsSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ]
+          },
+          "components/providers/ConvexClientProvider.tsx": {
+            "[project]/components/providers/ConvexClientProvider.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          },
+          "components/i18n/UserSyncProvider.tsx": {
+            "[project]/components/i18n/UserSyncProvider.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          }
+        },
+        "settings-language": {
+          "components/skeletons/settings/": {
+            "[project]/components/skeletons/settings/AppearanceSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/LanguageSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/SubjectGroupsSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/SubjectsSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/StatisticsSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ]
+          },
+          "components/providers/ConvexClientProvider.tsx": {
+            "[project]/components/providers/ConvexClientProvider.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          },
+          "components/i18n/UserSyncProvider.tsx": {
+            "[project]/components/i18n/UserSyncProvider.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          }
+        },
+        "settings-subjects": {
+          "components/skeletons/settings/": {
+            "[project]/components/skeletons/settings/AppearanceSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/LanguageSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/SubjectGroupsSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/SubjectsSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/StatisticsSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ]
+          },
+          "components/providers/ConvexClientProvider.tsx": {
+            "[project]/components/providers/ConvexClientProvider.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          },
+          "components/i18n/UserSyncProvider.tsx": {
+            "[project]/components/i18n/UserSyncProvider.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          }
+        },
+        "settings-statistics": {
+          "components/skeletons/settings/": {
+            "[project]/components/skeletons/settings/AppearanceSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/LanguageSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/SubjectGroupsSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/SubjectsSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ],
+            "[project]/components/skeletons/settings/StatisticsSectionSkeleton.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js",
+              "/_next/static/chunks/07xd88e2yeeoj.js",
+              "/_next/static/chunks/1n61dig93iquk.js"
+            ]
+          },
+          "components/providers/ConvexClientProvider.tsx": {
+            "[project]/components/providers/ConvexClientProvider.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          },
+          "components/i18n/UserSyncProvider.tsx": {
+            "[project]/components/i18n/UserSyncProvider.tsx": [
+              "/_next/static/chunks/2j2hk--l8r_yg.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          }
+        }
+      },
+      "dictionary_sources": {
+        "en.ts": {
+          "path": "lib\\i18n\\messages\\en.ts",
+          "source_bytes": 10677
+        },
+        "cs.ts": {
+          "path": "lib\\i18n\\messages\\cs.ts",
+          "source_bytes": 11781
+        },
+        "pl.ts": {
+          "path": "lib\\i18n\\messages\\pl.ts",
+          "source_bytes": 11754
+        }
+      }
+    },
+    "without_client_directives": {
+      "build_root": ".data/boundary-bench/snapshot/.next",
+      "routes": {
+        "about": {
+          "manifest": "server/app/[locale]/about/page_client-reference-manifest.js",
+          "client_module_count": 14,
+          "reachable_client_chunk_count": 5,
+          "raw_bytes": 158805,
+          "gzip_bytes": 49685,
+          "chunks": [
+            {
+              "path": "/_next/static/chunks/0_zy-gzngipap.js",
+              "raw_bytes": 2590,
+              "gzip_bytes": 923
+            },
+            {
+              "path": "/_next/static/chunks/0zs6p112chw-l.js",
+              "raw_bytes": 11491,
+              "gzip_bytes": 4371
+            },
+            {
+              "path": "/_next/static/chunks/1d210ebjejimw.js",
+              "raw_bytes": 23438,
+              "gzip_bytes": 7014
+            },
+            {
+              "path": "/_next/static/chunks/2lhcc0p_on3sb.js",
+              "raw_bytes": 8868,
+              "gzip_bytes": 3584
+            },
+            {
+              "path": "/_next/static/chunks/2ziixylg1arjs.js",
+              "raw_bytes": 112418,
+              "gzip_bytes": 33793
+            }
+          ]
+        },
+        "settings-root": {
+          "manifest": "server/app/[locale]/(app)/settings/page_client-reference-manifest.js",
+          "client_module_count": 25,
+          "reachable_client_chunk_count": 9,
+          "raw_bytes": 268964,
+          "gzip_bytes": 84980,
+          "chunks": [
+            {
+              "path": "/_next/static/chunks/07xd88e2yeeoj.js",
+              "raw_bytes": 40256,
+              "gzip_bytes": 13632
+            },
+            {
+              "path": "/_next/static/chunks/0_zy-gzngipap.js",
+              "raw_bytes": 2590,
+              "gzip_bytes": 923
+            },
+            {
+              "path": "/_next/static/chunks/0as6u5i27eyb7.js",
+              "raw_bytes": 23234,
+              "gzip_bytes": 9146
+            },
+            {
+              "path": "/_next/static/chunks/0zs6p112chw-l.js",
+              "raw_bytes": 11491,
+              "gzip_bytes": 4371
+            },
+            {
+              "path": "/_next/static/chunks/1d210ebjejimw.js",
+              "raw_bytes": 23438,
+              "gzip_bytes": 7014
+            },
+            {
+              "path": "/_next/static/chunks/1h4wjgd9e1vz4.js",
+              "raw_bytes": 1968,
+              "gzip_bytes": 880
+            },
+            {
+              "path": "/_next/static/chunks/2lhcc0p_on3sb.js",
+              "raw_bytes": 8868,
+              "gzip_bytes": 3584
+            },
+            {
+              "path": "/_next/static/chunks/2ziixylg1arjs.js",
+              "raw_bytes": 112418,
+              "gzip_bytes": 33793
+            },
+            {
+              "path": "/_next/static/chunks/40qvf0uq8rwaj.js",
+              "raw_bytes": 44701,
+              "gzip_bytes": 11637
+            }
+          ]
+        },
+        "settings-appearance": {
+          "manifest": "server/app/[locale]/(app)/settings/appearance/page_client-reference-manifest.js",
+          "client_module_count": 25,
+          "reachable_client_chunk_count": 9,
+          "raw_bytes": 235452,
+          "gzip_bytes": 76116,
+          "chunks": [
+            {
+              "path": "/_next/static/chunks/07xd88e2yeeoj.js",
+              "raw_bytes": 40256,
+              "gzip_bytes": 13632
+            },
+            {
+              "path": "/_next/static/chunks/0_zy-gzngipap.js",
+              "raw_bytes": 2590,
+              "gzip_bytes": 923
+            },
+            {
+              "path": "/_next/static/chunks/0as6u5i27eyb7.js",
+              "raw_bytes": 23234,
+              "gzip_bytes": 9146
+            },
+            {
+              "path": "/_next/static/chunks/0zs6p112chw-l.js",
+              "raw_bytes": 11491,
+              "gzip_bytes": 4371
+            },
+            {
+              "path": "/_next/static/chunks/1d210ebjejimw.js",
+              "raw_bytes": 23438,
+              "gzip_bytes": 7014
+            },
+            {
+              "path": "/_next/static/chunks/1h4wjgd9e1vz4.js",
+              "raw_bytes": 1968,
+              "gzip_bytes": 880
+            },
+            {
+              "path": "/_next/static/chunks/2lhcc0p_on3sb.js",
+              "raw_bytes": 8868,
+              "gzip_bytes": 3584
+            },
+            {
+              "path": "/_next/static/chunks/2ziixylg1arjs.js",
+              "raw_bytes": 112418,
+              "gzip_bytes": 33793
+            },
+            {
+              "path": "/_next/static/chunks/3qfyyqkoksb45.js",
+              "raw_bytes": 11189,
+              "gzip_bytes": 2773
+            }
+          ]
+        },
+        "settings-language": {
+          "manifest": "server/app/[locale]/(app)/settings/language/page_client-reference-manifest.js",
+          "client_module_count": 25,
+          "reachable_client_chunk_count": 9,
+          "raw_bytes": 235130,
+          "gzip_bytes": 75835,
+          "chunks": [
+            {
+              "path": "/_next/static/chunks/07xd88e2yeeoj.js",
+              "raw_bytes": 40256,
+              "gzip_bytes": 13632
+            },
+            {
+              "path": "/_next/static/chunks/0_zy-gzngipap.js",
+              "raw_bytes": 2590,
+              "gzip_bytes": 923
+            },
+            {
+              "path": "/_next/static/chunks/0as6u5i27eyb7.js",
+              "raw_bytes": 23234,
+              "gzip_bytes": 9146
+            },
+            {
+              "path": "/_next/static/chunks/0zs6p112chw-l.js",
+              "raw_bytes": 11491,
+              "gzip_bytes": 4371
+            },
+            {
+              "path": "/_next/static/chunks/1d210ebjejimw.js",
+              "raw_bytes": 23438,
+              "gzip_bytes": 7014
+            },
+            {
+              "path": "/_next/static/chunks/1h4wjgd9e1vz4.js",
+              "raw_bytes": 1968,
+              "gzip_bytes": 880
+            },
+            {
+              "path": "/_next/static/chunks/2lhcc0p_on3sb.js",
+              "raw_bytes": 8868,
+              "gzip_bytes": 3584
+            },
+            {
+              "path": "/_next/static/chunks/2ziixylg1arjs.js",
+              "raw_bytes": 112418,
+              "gzip_bytes": 33793
+            },
+            {
+              "path": "/_next/static/chunks/3wpa-6t7k6n7r.js",
+              "raw_bytes": 10867,
+              "gzip_bytes": 2492
+            }
+          ]
+        },
+        "settings-subjects": {
+          "manifest": "server/app/[locale]/(app)/settings/subjects/page_client-reference-manifest.js",
+          "client_module_count": 25,
+          "reachable_client_chunk_count": 10,
+          "raw_bytes": 259083,
+          "gzip_bytes": 82576,
+          "chunks": [
+            {
+              "path": "/_next/static/chunks/07xd88e2yeeoj.js",
+              "raw_bytes": 40256,
+              "gzip_bytes": 13632
+            },
+            {
+              "path": "/_next/static/chunks/0_zy-gzngipap.js",
+              "raw_bytes": 2590,
+              "gzip_bytes": 923
+            },
+            {
+              "path": "/_next/static/chunks/0as6u5i27eyb7.js",
+              "raw_bytes": 23234,
+              "gzip_bytes": 9146
+            },
+            {
+              "path": "/_next/static/chunks/0zs6p112chw-l.js",
+              "raw_bytes": 11491,
+              "gzip_bytes": 4371
+            },
+            {
+              "path": "/_next/static/chunks/14y0emhqh3nlq.js",
+              "raw_bytes": 34006,
+              "gzip_bytes": 8829
+            },
+            {
+              "path": "/_next/static/chunks/1d210ebjejimw.js",
+              "raw_bytes": 23438,
+              "gzip_bytes": 7014
+            },
+            {
+              "path": "/_next/static/chunks/1h4wjgd9e1vz4.js",
+              "raw_bytes": 1968,
+              "gzip_bytes": 880
+            },
+            {
+              "path": "/_next/static/chunks/2lhcc0p_on3sb.js",
+              "raw_bytes": 8868,
+              "gzip_bytes": 3584
+            },
+            {
+              "path": "/_next/static/chunks/2w4mmmf73lbuj.js",
+              "raw_bytes": 814,
+              "gzip_bytes": 404
+            },
+            {
+              "path": "/_next/static/chunks/2ziixylg1arjs.js",
+              "raw_bytes": 112418,
+              "gzip_bytes": 33793
+            }
+          ]
+        },
+        "settings-statistics": {
+          "manifest": "server/app/[locale]/(app)/settings/statistics/page_client-reference-manifest.js",
+          "client_module_count": 25,
+          "reachable_client_chunk_count": 9,
+          "raw_bytes": 234611,
+          "gzip_bytes": 75551,
+          "chunks": [
+            {
+              "path": "/_next/static/chunks/07xd88e2yeeoj.js",
+              "raw_bytes": 40256,
+              "gzip_bytes": 13632
+            },
+            {
+              "path": "/_next/static/chunks/0_zy-gzngipap.js",
+              "raw_bytes": 2590,
+              "gzip_bytes": 923
+            },
+            {
+              "path": "/_next/static/chunks/0as6u5i27eyb7.js",
+              "raw_bytes": 23234,
+              "gzip_bytes": 9146
+            },
+            {
+              "path": "/_next/static/chunks/0zs6p112chw-l.js",
+              "raw_bytes": 11491,
+              "gzip_bytes": 4371
+            },
+            {
+              "path": "/_next/static/chunks/1d210ebjejimw.js",
+              "raw_bytes": 23438,
+              "gzip_bytes": 7014
+            },
+            {
+              "path": "/_next/static/chunks/1h4wjgd9e1vz4.js",
+              "raw_bytes": 1968,
+              "gzip_bytes": 880
+            },
+            {
+              "path": "/_next/static/chunks/1vqdw-6x7s53k.js",
+              "raw_bytes": 10348,
+              "gzip_bytes": 2208
+            },
+            {
+              "path": "/_next/static/chunks/2lhcc0p_on3sb.js",
+              "raw_bytes": 8868,
+              "gzip_bytes": 3584
+            },
+            {
+              "path": "/_next/static/chunks/2ziixylg1arjs.js",
+              "raw_bytes": 112418,
+              "gzip_bytes": 33793
+            }
+          ]
+        }
+      },
+      "candidates": {
+        "about": {
+          "components/providers/ConvexClientProvider.tsx": {
+            "[project]/components/providers/ConvexClientProvider.tsx": [
+              "/_next/static/chunks/1d210ebjejimw.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          },
+          "components/i18n/UserSyncProvider.tsx": {
+            "[project]/components/i18n/UserSyncProvider.tsx": [
+              "/_next/static/chunks/1d210ebjejimw.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          }
+        },
+        "settings-root": {
+          "components/providers/ConvexClientProvider.tsx": {
+            "[project]/components/providers/ConvexClientProvider.tsx": [
+              "/_next/static/chunks/1d210ebjejimw.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          },
+          "components/i18n/UserSyncProvider.tsx": {
+            "[project]/components/i18n/UserSyncProvider.tsx": [
+              "/_next/static/chunks/1d210ebjejimw.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          }
+        },
+        "settings-appearance": {
+          "components/providers/ConvexClientProvider.tsx": {
+            "[project]/components/providers/ConvexClientProvider.tsx": [
+              "/_next/static/chunks/1d210ebjejimw.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          },
+          "components/i18n/UserSyncProvider.tsx": {
+            "[project]/components/i18n/UserSyncProvider.tsx": [
+              "/_next/static/chunks/1d210ebjejimw.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          }
+        },
+        "settings-language": {
+          "components/providers/ConvexClientProvider.tsx": {
+            "[project]/components/providers/ConvexClientProvider.tsx": [
+              "/_next/static/chunks/1d210ebjejimw.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          },
+          "components/i18n/UserSyncProvider.tsx": {
+            "[project]/components/i18n/UserSyncProvider.tsx": [
+              "/_next/static/chunks/1d210ebjejimw.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          }
+        },
+        "settings-subjects": {
+          "components/providers/ConvexClientProvider.tsx": {
+            "[project]/components/providers/ConvexClientProvider.tsx": [
+              "/_next/static/chunks/1d210ebjejimw.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          },
+          "components/i18n/UserSyncProvider.tsx": {
+            "[project]/components/i18n/UserSyncProvider.tsx": [
+              "/_next/static/chunks/1d210ebjejimw.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          }
+        },
+        "settings-statistics": {
+          "components/providers/ConvexClientProvider.tsx": {
+            "[project]/components/providers/ConvexClientProvider.tsx": [
+              "/_next/static/chunks/1d210ebjejimw.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          },
+          "components/i18n/UserSyncProvider.tsx": {
+            "[project]/components/i18n/UserSyncProvider.tsx": [
+              "/_next/static/chunks/1d210ebjejimw.js",
+              "/_next/static/chunks/2ziixylg1arjs.js"
+            ]
+          }
+        }
+      },
+      "dictionary_sources": {
+        "en.ts": {
+          "path": "lib\\i18n\\messages\\en.ts",
+          "source_bytes": 10677
+        },
+        "cs.ts": {
+          "path": "lib\\i18n\\messages\\cs.ts",
+          "source_bytes": 11781
+        },
+        "pl.ts": {
+          "path": "lib\\i18n\\messages\\pl.ts",
+          "source_bytes": 11754
+        }
+      }
+    }
+  },
+  "dictionary_and_provider_candidates": {
+    "dictionary_source_bytes": {
+      "en.ts": 10677,
+      "cs.ts": 11781,
+      "pl.ts": 11754
+    },
+    "dictionary_source_total_bytes": 34212,
+    "sample_translation_literals_in_about_client_bundle": {
+      "en": {
+        "sample": "Authentication failed.",
+        "chunks": [
+          {
+            "chunk": "/_next/static/chunks/2ziixylg1arjs.js",
+            "raw_bytes": 112418,
+            "gzip_bytes": 33793
+          }
+        ]
+      },
+      "cs": {
+        "sample": "Oveření přihlášení se nepodařilo.",
+        "chunks": [
+          {
+            "chunk": "/_next/static/chunks/2ziixylg1arjs.js",
+            "raw_bytes": 112418,
+            "gzip_bytes": 33793
+          }
+        ]
+      },
+      "pl": {
+        "sample": "Uwierzytelnianie nie powiodło sic.",
+        "chunks": [
+          {
+            "chunk": "/_next/static/chunks/2ziixylg1arjs.js",
+            "raw_bytes": 112418,
+            "gzip_bytes": 33793
+          }
+        ]
+      }
+    },
+    "shared_root_chunk": {
+      "path": "/_next/static/chunks/2ziixylg1arjs.js",
+      "baseline": {
+        "path": "/_next/static/chunks/2ziixylg1arjs.js",
+        "raw_bytes": 112418,
+        "gzip_bytes": 33793
+      },
+      "without_client_directives": {
+        "path": "/_next/static/chunks/2ziixylg1arjs.js",
+        "raw_bytes": 112418,
+        "gzip_bytes": 33793
+      },
+      "client_source_map_available": false
+    },
+    "about_provider_module_chunks": {
+      "baseline": {
+        "components/providers/ConvexClientProvider.tsx": {
+          "[project]/components/providers/ConvexClientProvider.tsx": [
+            "/_next/static/chunks/2j2hk--l8r_yg.js",
+            "/_next/static/chunks/2ziixylg1arjs.js"
+          ]
+        },
+        "components/i18n/UserSyncProvider.tsx": {
+          "[project]/components/i18n/UserSyncProvider.tsx": [
+            "/_next/static/chunks/2j2hk--l8r_yg.js",
+            "/_next/static/chunks/2ziixylg1arjs.js"
+          ]
+        }
+      },
+      "without_client_directives": {
+        "components/providers/ConvexClientProvider.tsx": {
+          "[project]/components/providers/ConvexClientProvider.tsx": [
+            "/_next/static/chunks/1d210ebjejimw.js",
+            "/_next/static/chunks/2ziixylg1arjs.js"
+          ]
+        },
+        "components/i18n/UserSyncProvider.tsx": {
+          "[project]/components/i18n/UserSyncProvider.tsx": [
+            "/_next/static/chunks/1d210ebjejimw.js",
+            "/_next/static/chunks/2ziixylg1arjs.js"
+          ]
+        }
+      }
+    },
+    "attribution_limit": "Provider and dictionary code shares common minified chunks; manifests and chunk strings establish reachability and chunk totals, but do not isolate exact per-module bytes."
+  }
+}
