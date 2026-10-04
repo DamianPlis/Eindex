@@ -2,8 +2,8 @@
 
 A Next.js App Router school planner with Czech, English and Polish interfaces.
 Convex is the only runtime database and authentication provider. Google sign-in
-uses Convex Auth. Firebase Admin is a development dependency used only by the
-offline legacy migration tools.
+uses Convex Auth. The completed Firestore migration tools and their dependencies
+have been retired.
 
 ## Local development
 
@@ -18,8 +18,8 @@ offline legacy migration tools.
 4. `npm run dev` runs the backend watcher and frontend together.
    `npm run dev:frontend` and `npm run dev:backend` run them separately.
 
-See [.env.example](.env.example) for variable names. Never commit deploy keys,
-OAuth secrets, or Firebase credentials.
+See [.env.example](.env.example) for variable names. Never commit deploy keys or
+OAuth secrets.
 
 ## Architecture
 
@@ -55,28 +55,10 @@ npm run build:frontend
 is determined by the hosting environment's `CONVEX_DEPLOY_KEY`.
 Set the frontend URLs, Google callback and `SITE_URL` for that same environment.
 
-## Legacy data cutover
+## Migrated accounts
 
-The merge changes application code; it does not automatically copy live Firebase
-data or change production secrets. Old Firebase session cookies are no longer
-accepted; users sign in again with Google. A verified, normalized Google email
-links to an imported Convex user and preserves that user's data.
-
-Before switching a live Firebase installation:
-
-1. Back up both databases and stop Firebase writes during the final import.
-2. Select the target deployment explicitly. Configure the matching
-   `CONVEX_DEPLOY_KEY` and Firebase Admin credentials for the offline tools.
-3. Run `npx tsx scripts/migrate-firestore-to-convex.ts <convex-url>`.
-4. Run `npx tsx scripts/verify-parity.ts <convex-url>`. It actually reads both
-   systems and exits unsuccessfully on missing users or differing emails,
-   settings, subjects, groups, deadlines, or timetable slots.
-5. Resolve any stale rows or duplicate accounts reported by verification before
-   opening the Convex version to users. The importer upserts; it does not delete
-   extra Convex rows or merge conflicting accounts.
-6. Verify Google sign-in using an imported account and a fresh account.
-
-Do not rerun the importer over accounts already using Convex: it can overwrite
-newer data. Legacy import functions are `internalMutation`/`internalQuery` only,
-so an unauthenticated browser cannot impersonate a Firebase UID. The
-`firebaseUid` field is retained as migration metadata, not authentication.
+A verified, normalized Google email links to an imported Convex user and
+preserves that user's data. The `firebaseUid` field is retained as migration
+metadata, not authentication. Legacy import functions remain internal, and
+existing migration regression tests and their slot conversion helper are kept.
+The retired importer and parity scripts can be recovered from Git history.
