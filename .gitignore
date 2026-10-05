@@ -44,3 +44,5 @@ next-env.d.ts
 # .data folder for cached user data
 .data
 .env.local
+
+/graphify-out
