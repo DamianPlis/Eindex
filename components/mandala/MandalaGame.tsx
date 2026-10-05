@@ -27,12 +27,7 @@ const PALETTE = [
 // ── Types ──────────────────────────────────────────
 
 type FeatureType =
-  | "petal"
-  | "roundPetal"
-  | "diamond"
-  | "arch"
-  | "teardrop"
-  | "flame";
+  "petal" | "roundPetal" | "diamond" | "arch" | "teardrop" | "flame";
 
 interface RingConfig {
   type: FeatureType | "dots";
@@ -487,7 +482,6 @@ export default function MandalaGame({ messages }: Props) {
     view.zoom,
     view.panX,
     view.panY,
-    isLoaded,
   ]);
 
   useEffect(() => {

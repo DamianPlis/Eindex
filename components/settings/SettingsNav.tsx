@@ -106,9 +106,7 @@ export default function SettingsNav() {
   ];
 
   const filtered = search.trim()
-    ? navItems.filter((item) =>
-        matchesLocaleSearch(item.labelKey, search, locale),
-      )
+    ? navItems.filter((item) => matchesLocaleSearch(item.labelKey, search))
     : navItems;
 
   function isActive(href: string) {

@@ -20,7 +20,7 @@ vi.mock("next/headers", () => ({
   cookies: async () => ({ set: mocks.setCookie }),
 }));
 import * as actions from "../app/(app)/actions";
-import { getUserSettings, getUserState } from "../lib/schedule/store";
+import { getUserSettings, getSubjectCatalog } from "../lib/schedule/store";
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -90,49 +90,6 @@ test("settings action carries new planning sort and returns a complete UI settin
     planningSubjectSort: "name-desc",
   });
 });
-test("all schedule history pages are reassembled while empty subject/group lists stay empty", async () => {
-  mocks.query.mockImplementation(async (ref, args) => {
-    if (getFunctionName(ref) === "schedule:listSlots") {
-      return args.paginationOpts.cursor === null
-        ? {
-            page: [
-              {
-                weekStart: "2025-01-06",
-                dayIndex: 0,
-                slotIndex: 1,
-                subjectId: "math",
-                topic: "Old",
-                updatedAt: 1,
-              },
-            ],
-            isDone: false,
-            continueCursor: "next",
-          }
-        : {
-            page: [
-              {
-                weekStart: "2026-09-14",
-                dayIndex: 0,
-                slotIndex: 1,
-                subjectId: "czech",
-                topic: "New",
-                updatedAt: 2,
-              },
-            ],
-            isDone: true,
-            continueCursor: "",
-          };
-    }
-    return [];
-  });
-  const state = await getUserState("legacy-parameter");
-  expect(Object.keys(state.weeks)).toEqual(["2025-01-06", "2026-09-14"]);
-  expect(state.weeks["2025-01-06"].days[0].slots[1].topic).toBe("Old");
-  expect(state.subjects).toEqual([]);
-  expect(state.subjectGroups).toEqual([]);
-  for (const call of mocks.query.mock.calls)
-    expect(call[2]).toEqual({ token: "auth-token" });
-});
 test("settings reads preserve planning sort and normalize older rows missing that field", async () => {
   mocks.query.mockResolvedValue({
     theme: "dark",
@@ -163,8 +120,6 @@ test("planning visibility travels through the authenticated action and state loa
   });
   expect(options).toEqual({ token: "auth-token" });
   mocks.query.mockImplementation(async (ref) => {
-    if (getFunctionName(ref) === "schedule:listSlots")
-      return { page: [], isDone: true, continueCursor: "" };
     if (getFunctionName(ref) === "subjects:getSubjects")
       return [
         {
@@ -177,7 +132,7 @@ test("planning visibility travels through the authenticated action and state loa
       ];
     return [];
   });
-  expect((await getUserState()).subjects).toEqual([
+  expect((await getSubjectCatalog()).subjects).toEqual([
     {
       id: "trip",
       name: "School trip",
@@ -197,7 +152,7 @@ test("planning visibility travels through the authenticated action and state loa
 
 test("server data reads and mutations reject missing tokens instead of returning fake defaults", async () => {
   mocks.token.mockResolvedValue(undefined);
-  await expect(getUserState()).rejects.toThrow("Unauthorized");
+  await expect(getSubjectCatalog()).rejects.toThrow("Unauthorized");
   await expect(getUserSettings()).rejects.toThrow("Unauthorized");
   await expect(
     actions.setSlotSubjectAction({

@@ -1,17 +1,16 @@
 import type { Metadata } from "next";
 import PlanningPageClient from "@/components/pages/PlanningPageClient";
 import { buildDaysForWeek, normalizeWeekKey } from "@/lib/schedule/defaults";
-import { getUserSettings, getPlanningPageState } from "@/lib/schedule/store";
 import {
-  getCurrentPeriodStats,
-  sortPlanningSubjects,
-} from "@/lib/schedule/stats";
+  getUserSettings,
+  getPlanningPageState,
+  getPeriodUsage,
+} from "@/lib/schedule/store";
+import { getDateRange, sortPlanningSubjects } from "@/lib/schedule/stats";
 import { getMessages } from "@/lib/i18n/messages";
 import type { AppLocale } from "@/lib/i18n/config";
 import { requireSession } from "@/lib/session";
 import { assertLocale } from "@/lib/i18n/server";
-import { Suspense } from "react";
-import PlanningPageSkeleton from "@/components/skeletons/PlanningPageSkeleton";
 import { generatePageMetadata } from "@/lib/metadata";
 
 export async function generateMetadata({
@@ -37,45 +36,33 @@ export default async function LocalePlanningPage({
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ week?: string }>;
 }) {
-  const locale = assertLocale((await params).locale);
+  const locale: AppLocale = assertLocale((await params).locale);
   const query = await searchParams;
   const weekStart = normalizeWeekKey(query.week);
+  const now = new Date();
+  const currentYear = now.getFullYear();
 
-  return (
-    <Suspense key={`planning-${weekStart}`} fallback={<PlanningPageSkeleton />}>
-      <PlanningPageContent
-        weekStart={weekStart}
-        locale={locale}
-        currentYear={new Date().getFullYear()}
-      />
-    </Suspense>
-  );
-}
-
-async function PlanningPageContent({
-  weekStart,
-  locale,
-  currentYear,
-}: {
-  weekStart: string;
-  locale: AppLocale;
-  currentYear: number;
-}) {
   const session = await requireSession();
   const prevWeek = shiftWeek(weekStart, -1);
   const nextWeek = shiftWeek(weekStart, 1);
-  const [state, settings] = await Promise.all([
+  const [state, { settings, usage }] = await Promise.all([
     getPlanningPageState(session.uid, weekStart),
-    getUserSettings(session.uid),
+    getUserSettings().then(async (settings) => {
+      const { startISO, endISO } = getDateRange(
+        "year",
+        now,
+        0,
+        settings.useSchoolYear,
+      );
+      const usage = settings.planningSubjectSort.startsWith("count-")
+        ? await getPeriodUsage(session.uid, "year", startISO, endISO)
+        : [];
+      return { settings, usage };
+    }),
   ]);
-  const rankingWeek = new Date(`${weekStart}T12:00:00`);
-  const subjectUsage: Record<string, number> = {};
-  for (const offset of [-1, 0, 1]) {
-    const weekUsage = getCurrentPeriodStats("week", state, rankingWeek, offset);
-    for (const [subjectId, count] of Object.entries(weekUsage)) {
-      subjectUsage[subjectId] = (subjectUsage[subjectId] ?? 0) + count;
-    }
-  }
+  const subjectUsage = Object.fromEntries(
+    usage.map(({ subjectId, weightedCount }) => [subjectId, weightedCount]),
+  );
   const week = state.weeks[weekStart] || {
     weekStart,
     days: buildDaysForWeek(weekStart),
@@ -91,7 +78,6 @@ async function PlanningPageContent({
       days={week.days}
       subjects={sortPlanningSubjects(
         state.subjects,
-        state,
         locale,
         settings.planningSubjectSort,
         getMessages(locale),

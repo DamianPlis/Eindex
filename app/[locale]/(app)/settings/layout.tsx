@@ -5,7 +5,6 @@ import SettingsNav from "@/components/settings/SettingsNav";
 import SettingsPageSkeleton from "@/components/skeletons/settings/SettingsPageSkeleton";
 import { assertLocale } from "@/lib/i18n/server";
 import { getSettingsPageData } from "@/lib/schedule/store";
-import { requireSession } from "@/lib/session";
 import { Suspense } from "react";
 import s from "@/components/settings/settings.module.css";
 import { generatePageMetadata } from "@/lib/metadata";
@@ -43,10 +42,7 @@ async function SettingsLayoutContent({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await requireSession();
-  const { settings, subjects, subjectGroups } = await getSettingsPageData(
-    session.uid,
-  );
+  const { settings, subjects, subjectGroups } = await getSettingsPageData();
 
   return (
     <SettingsProvider

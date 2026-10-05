@@ -5,7 +5,15 @@ import StatsCardSkeleton from "@/components/skeletons/StatsCardSkeleton";
 import StatsCard from "@/components/deadlines/StatsCard";
 import { getMessages } from "@/lib/i18n/messages";
 import { assertLocale } from "@/lib/i18n/server";
-import { getCachedUserState, getUserSettings } from "@/lib/schedule/store";
+import {
+  getDeadlines,
+  getPeriodUsage,
+  getSubjectCatalog,
+  getUserSettings,
+} from "@/lib/schedule/store";
+import { getDateRange } from "@/lib/schedule/stats";
+import { isoDate } from "@/lib/schedule/date-utils";
+import type { StatsOptions } from "@/lib/schedule/types";
 import { requireSession } from "@/lib/session";
 import { Suspense } from "react";
 import DeadlinesListSkeleton from "@/components/skeletons/DeadlinesListSkeleton";
@@ -69,29 +77,51 @@ export default async function LocaleDeadlinesPage({
 async function StatsCards() {
   const session = await requireSession();
   const uid = session.uid;
-  const state = await getCachedUserState(uid);
-  const settings = await getUserSettings(uid);
+  const [catalog, settings] = await Promise.all([
+    getSubjectCatalog(),
+    getUserSettings(),
+  ]);
+  const referenceISO = isoDate(new Date());
+  const referenceDate = new Date(`${referenceISO}T12:00:00`);
+  const periods: StatsOptions[] = ["week", "month", "year"];
+  const cards = await Promise.all(
+    periods.map(async (period) => {
+      const initialRange = getDateRange(
+        period,
+        referenceDate,
+        0,
+        settings.useSchoolYear,
+      );
+      const initialUsage = await getPeriodUsage(
+        uid,
+        period,
+        initialRange.startISO,
+        initialRange.endISO,
+      );
+      return { period, initialRange, initialUsage };
+    }),
+  );
 
   return (
     <>
-      <StatsCard period="week" state={state} />
-      <StatsCard period="month" state={state} />
-      <StatsCard
-        period="year"
-        state={state}
-        useSchoolYear={settings.useSchoolYear}
-      />
+      {cards.map((card) => (
+        <StatsCard
+          key={card.period}
+          {...card}
+          {...catalog}
+          referenceISO={referenceISO}
+          useSchoolYear={settings.useSchoolYear}
+        />
+      ))}
     </>
   );
 }
 
 async function DeadlinesListContainer() {
-  const session = await requireSession();
-  const uid = session.uid;
-  const state = await getCachedUserState(uid);
+  const deadlines = await getDeadlines();
   return (
     <DeadlinesList
-      deadlines={state.deadlines}
+      deadlines={deadlines}
       currentYear={new Date().getFullYear()}
     />
   );

@@ -4,9 +4,8 @@ import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
-import type { PaginationResult } from "convex/server";
 import { buildDaysForWeek } from "@/lib/schedule/defaults";
-import type { ScheduleState } from "@/lib/schedule/types";
+import type { ScheduleState, StatsOptions } from "@/lib/schedule/types";
 import { normalizeSettings } from "@/lib/settings/defaults";
 import { selectDashboardDeadlines } from "@/lib/schedule/selectors";
 
@@ -82,19 +81,48 @@ export const getDashboardData = cache(
   },
 );
 
-export const getSettingsPageData = cache(async (_uid: string) => {
+export const getSubjectCatalog = cache(async () => {
   const token = await getRequestToken();
-  const [settings, subjects, groups] = await Promise.all([
-    fetchQuery(api.settings.getUserSettings, {}, { token }),
+  const [subjects, groups] = await Promise.all([
     fetchQuery(api.subjects.getSubjects, {}, { token }),
     fetchQuery(api.subjects.getSubjectGroups, {}, { token }),
   ]);
   return {
-    settings: normalizeSettings(settings),
     subjects: subjects.map(toSubject),
     subjectGroups: groups.map(toSubjectGroup),
   };
 });
+
+export const getSettingsPageData = cache(async () => {
+  const [settings, catalog] = await Promise.all([
+    getUserSettings(),
+    getSubjectCatalog(),
+  ]);
+  return { settings, ...catalog };
+});
+
+export const getDeadlines = cache(async () => {
+  const token = await getRequestToken();
+  return (await fetchQuery(api.deadlines.getDeadlines, {}, { token })).map(
+    toDeadline,
+  );
+});
+
+export const getPeriodUsage = cache(
+  async (
+    _uid: string,
+    period: StatsOptions,
+    startISO: string,
+    endISO: string,
+  ) => {
+    const token = await getRequestToken();
+    return fetchQuery(
+      api.subjectUsage.getPeriodUsage,
+      { period, startISO, endISO },
+      { token },
+    );
+  },
+);
 
 export const getDeadline = cache(async (_uid: string, deadlineId: string) => {
   const token = await getRequestToken();
@@ -106,55 +134,7 @@ export const getDeadline = cache(async (_uid: string, deadlineId: string) => {
   return item ? toDeadline(item) : null;
 });
 
-/** Load every saved week for history and statistics that need older weeks. */
-export async function getUserState(_uid?: string): Promise<ScheduleState> {
-  const token = await getRequestToken();
-  const loadSlots = async () => {
-    const slots: Doc<"scheduleSlots">[] = [];
-    let cursor: string | null = null;
-    for (;;) {
-      const result: PaginationResult<Doc<"scheduleSlots">> = await fetchQuery(
-        api.schedule.listSlots,
-        {
-          paginationOpts: { cursor, numItems: 500 },
-        },
-        { token },
-      );
-      slots.push(...result.page);
-      if (result.isDone) return slots;
-      cursor = result.continueCursor;
-    }
-  };
-  const [slots, deadlines, subjects, groups] = await Promise.all([
-    loadSlots(),
-    fetchQuery(api.deadlines.getDeadlines, {}, { token }),
-    fetchQuery(api.subjects.getSubjects, {}, { token }),
-    fetchQuery(api.subjects.getSubjectGroups, {}, { token }),
-  ]);
-  const state: ScheduleState = {
-    subjects: subjects.map(toSubject),
-    subjectGroups: groups.map(toSubjectGroup),
-    deadlines: deadlines.map(toDeadline),
-    weeks: {},
-    lunches: {},
-  };
-  for (const slot of slots) {
-    const week = (state.weeks[slot.weekStart] ??= {
-      weekStart: slot.weekStart,
-      days: buildDaysForWeek(slot.weekStart),
-    });
-    const target = week.days[slot.dayIndex]?.slots[slot.slotIndex];
-    if (target) {
-      target.subjectId = slot.subjectId ?? null;
-      target.topic = slot.topic;
-      target.updatedAt = slot.updatedAt;
-    }
-  }
-  return state;
-}
-
-// Planning only needs the selected week and its neighbors; keep the full history
-// loader above for pages and statistics that depend on older weeks.
+// Planning keeps its slot reads bounded; yearly ranking uses getPeriodUsage.
 export const getPlanningPageState = cache(
   async (_uid: string, weekStart: string): Promise<ScheduleState> => {
     const token = await getRequestToken();
@@ -192,10 +172,9 @@ export const getPlanningPageState = cache(
   },
 );
 
-export const getCachedUserState = cache(getUserState);
-export async function getUserSettings(_uid?: string) {
+export const getUserSettings = cache(async () => {
   const token = await getRequestToken();
   return normalizeSettings(
     await fetchQuery(api.settings.getUserSettings, {}, { token }),
   );
-}
+});

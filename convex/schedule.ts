@@ -1,12 +1,10 @@
 import { mutation, query } from "./_generated/server";
-import {
-  paginationOptsValidator,
-  paginationResultValidator,
-} from "convex/server";
 import { v } from "convex/values";
 import schema from "./schema";
 import { requireUser, touchUser } from "./model";
 import { buildDaysForWeek } from "../lib/schedule/defaults";
+import { getSlotContribution } from "../lib/schedule/usage";
+import { applyUsageChanges } from "./subjectUsage";
 
 const coordinates = {
   weekStart: v.string(),
@@ -60,40 +58,6 @@ function getPlanningWeekStarts(weekStart: string) {
     next.toISOString().slice(0, 10),
   ];
 }
-export const listSlots = query({
-  args: { paginationOpts: paginationOptsValidator },
-  returns: paginationResultValidator(schema.doc("scheduleSlots")),
-  handler: async (ctx, args) => {
-    const userId = await requireUser(ctx);
-    return await ctx.db
-      .query("scheduleSlots")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .paginate(args.paginationOpts);
-  },
-});
-export const getWeekSchedule = query({
-  args: { weekStart: v.string() },
-  returns: v.object({
-    slots: v.array(schema.doc("scheduleSlots")),
-    subjects: v.array(schema.doc("subjects")),
-  }),
-  handler: async (ctx, args) => {
-    const userId = await requireUser(ctx);
-    const [slots, subjects] = await Promise.all([
-      ctx.db
-        .query("scheduleSlots")
-        .withIndex("by_user_week", (q) =>
-          q.eq("userId", userId).eq("weekStart", args.weekStart),
-        )
-        .take(100),
-      ctx.db
-        .query("subjects")
-        .withIndex("by_user", (q) => q.eq("userId", userId))
-        .take(1000),
-    ]);
-    return { slots, subjects };
-  },
-});
 export const getPlanningData = query({
   args: { weekStart: v.string() },
   returns: v.object({
@@ -123,19 +87,6 @@ export const getPlanningData = query({
       subjects,
       weekStarts,
     };
-  },
-});
-export const getDaySchedule = query({
-  args: { date: v.string() },
-  returns: v.array(schema.doc("scheduleSlots")),
-  handler: async (ctx, args) => {
-    const userId = await requireUser(ctx);
-    return await ctx.db
-      .query("scheduleSlots")
-      .withIndex("by_user_date", (q) =>
-        q.eq("userId", userId).eq("date", args.date),
-      )
-      .take(100);
   },
 });
 export const setSlotSubject = mutation({
@@ -173,7 +124,13 @@ export const setSlotSubject = mutation({
       )
       .unique();
     const updatedAt = Math.max(Date.now(), (existing?.updatedAt ?? 0) + 1);
-    const patch = { subjectId, updatedAt, lastWriter: args.writerId };
+    const usageContribution = getSlotContribution({ ...args, subjectId });
+    const patch = {
+      subjectId,
+      updatedAt,
+      lastWriter: args.writerId,
+      usageContribution,
+    };
     const id =
       existing?._id ??
       (await ctx.db.insert("scheduleSlots", {
@@ -186,6 +143,9 @@ export const setSlotSubject = mutation({
         ...patch,
       }));
     if (existing) await ctx.db.patch(id, patch);
+    await applyUsageChanges(ctx, userId, [
+      { before: existing?.usageContribution, after: usageContribution },
+    ]);
     await touchUser(ctx, userId, args.writerId);
     return id;
   },
@@ -207,10 +167,17 @@ export const setSlotTopic = mutation({
           .eq("slotIndex", args.slotIndex),
       )
       .unique();
+    const usageContribution = getSlotContribution(
+      existing ?? {
+        ...args,
+        subjectId: defaults.fixedKey === "lunch" ? "lunch" : null,
+      },
+    );
     const patch = {
       topic: args.topic,
       updatedAt: Math.max(Date.now(), (existing?.updatedAt ?? 0) + 1),
       lastWriter: args.writerId,
+      usageContribution,
     };
     const id =
       existing?._id ??
@@ -224,6 +191,9 @@ export const setSlotTopic = mutation({
         ...patch,
       }));
     if (existing) await ctx.db.patch(id, patch);
+    await applyUsageChanges(ctx, userId, [
+      { before: existing?.usageContribution, after: usageContribution },
+    ]);
     await touchUser(ctx, userId, args.writerId);
     return id;
   },

@@ -1,10 +1,7 @@
 import { beforeEach, expect, test, vi } from "vitest";
 import { getFunctionName } from "convex/server";
 import { getMessages } from "../lib/i18n/messages";
-import {
-  getCurrentPeriodStats,
-  sortPlanningSubjects,
-} from "../lib/schedule/stats";
+import { sortPlanningSubjects } from "../lib/schedule/stats";
 
 const mocks = vi.hoisted(() => ({
   token: vi.fn(),
@@ -97,20 +94,10 @@ test("planning state hydrates only the selected week and its adjacent defaults",
     },
   ]);
 
-  const usage: Record<string, number> = {};
-  const anchor = new Date(`${weekStart}T12:00:00`);
-  for (const offset of [-1, 0, 1]) {
-    for (const [subjectId, count] of Object.entries(
-      getCurrentPeriodStats("week", state, anchor, offset),
-    )) {
-      usage[subjectId] = (usage[subjectId] ?? 0) + count;
-    }
-  }
-  expect(usage).toEqual({ math: 2, english: 1 });
+  const usage = { math: 2, english: 1 };
   expect(
     sortPlanningSubjects(
       state.subjects,
-      state,
       "en",
       "count-desc",
       getMessages("en"),

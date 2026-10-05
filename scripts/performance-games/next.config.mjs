@@ -1,6 +1,6 @@
 import path from "node:path";
 
-export default {
+const nextConfig = {
   reactCompiler: true,
   experimental: { inlineCss: false },
   turbopack: {
@@ -8,3 +8,5 @@ export default {
     rules: { "*.svg": { loaders: ["@svgr/webpack"], as: "*.js" } },
   },
 };
+
+export default nextConfig;

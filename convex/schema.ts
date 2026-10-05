@@ -16,6 +16,20 @@ export const brandColorsValidator = v.object({
   completion: v.string(),
 });
 
+export const usagePeriodKindValidator = v.union(
+  v.literal("calendar-year"),
+  v.literal("school-year"),
+);
+
+export const slotUsageContributionValidator = v.union(
+  v.null(),
+  v.object({
+    subjectId: v.string(),
+    date: v.string(),
+    weightedCount: v.number(),
+  }),
+);
+
 export default defineSchema({
   // Authentication tables provided by @convex-dev/auth (users, authSessions, authAccounts, etc.)
   ...authTables,
@@ -117,6 +131,8 @@ export default defineSchema({
     allowTopic: v.boolean(),
     subjectId: v.optional(v.union(v.string(), v.null())), // Subject slug, "lunch", or null
     topic: v.string(),
+    // Missing means not backfilled; null means counted with zero contribution.
+    usageContribution: v.optional(slotUsageContributionValidator),
     updatedAt: v.number(),
     lastWriter: v.optional(v.string()),
   })
@@ -133,8 +149,29 @@ export default defineSchema({
       "dayIndex",
       "slotIndex",
     ])
-    // 4. Used for fast statistics aggregation without table scanning:
+    // 4. Used to clear assignments when deleting a subject:
     .index("by_user_subject", ["userId", "subjectId"]),
+
+  subjectUsage: defineTable({
+    userId: v.id("users"),
+    periodKind: usagePeriodKindValidator,
+    periodStart: v.string(),
+    subjectId: v.string(),
+    weightedCount: v.number(),
+  }).index("by_userId_and_periodKind_and_periodStart_and_subjectId", [
+    "userId",
+    "periodKind",
+    "periodStart",
+    "subjectId",
+  ]),
+
+  // A persisted cursor makes the one-time per-user backfill resumable.
+  subjectUsageBackfills: defineTable({
+    userId: v.id("users"),
+    cursor: v.union(v.string(), v.null()),
+    complete: v.boolean(),
+    jobId: v.optional(v.id("_scheduled_functions")),
+  }).index("by_userId", ["userId"]),
 
   /**
    * Deadlines

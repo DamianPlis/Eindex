@@ -1,5 +1,4 @@
 import uFuzzy from "@leeoniya/ufuzzy";
-import type { AppLocale } from "./config";
 
 /**
  * uFuzzy instance configured for instant, typo-tolerant, find-as-you-type search.
@@ -18,9 +17,9 @@ const uf = new uFuzzy({
  */
 export function normalizeSearchString(str: string): string {
   if (!str) return "";
-  return uFuzzy.latinize(
-    str.replace(/[řŘ]/g, (c) => (c === "ř" ? "r" : "R"))
-  ).trim();
+  return uFuzzy
+    .latinize(str.replace(/[řŘ]/g, (c) => (c === "ř" ? "r" : "R")))
+    .trim();
 }
 
 /**
@@ -66,14 +65,10 @@ function getQueryVariants(query: string): string[] {
  *
  * @param target - The text to be searched (e.g. subject name or group name).
  * @param query - The search query typed by the user.
- * @param _locale - Optional locale parameter for future locale-specific extensions.
+
  * @returns True if target matches query, false otherwise.
  */
-export function matchesLocaleSearch(
-  target: string,
-  query: string,
-  _locale?: AppLocale | string,
-): boolean {
+export function matchesLocaleSearch(target: string, query: string): boolean {
   if (!query || !query.trim()) return true;
   if (!target) return false;
 

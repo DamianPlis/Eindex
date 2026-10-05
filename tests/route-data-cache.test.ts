@@ -178,8 +178,8 @@ test("settings renders share just three needed reads and preserve UI mappings", 
   });
   let result: Awaited<ReturnType<typeof getSettingsPageData>> | undefined;
   await renderLoads(
-    async () => (result = await getSettingsPageData("owner")),
-    () => getSettingsPageData("owner"),
+    async () => (result = await getSettingsPageData()),
+    () => getSettingsPageData(),
   );
   expect(runtime.query).toHaveBeenCalledTimes(3);
   expect(runtime.token).toHaveBeenCalledTimes(1);
@@ -242,7 +242,7 @@ test("all narrow loaders reject absent authentication before querying Convex", a
   await expect(getDashboardData("owner", "2026-09-22")).rejects.toThrow(
     "Unauthorized",
   );
-  await expect(getSettingsPageData("owner")).rejects.toThrow("Unauthorized");
+  await expect(getSettingsPageData()).rejects.toThrow("Unauthorized");
   await expect(getDeadline("owner", "task")).rejects.toThrow("Unauthorized");
   expect(runtime.query).not.toHaveBeenCalled();
 });
