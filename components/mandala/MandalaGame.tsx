@@ -486,7 +486,7 @@ export default function MandalaGame({ messages }: Props) {
 
   useEffect(() => {
     draw();
-  }, [draw]);
+  }, [draw, isLoaded]);
 
   // Convert a screen-space point (relative to canvas element) to mandala-space
   const screenToMandala = useCallback(
