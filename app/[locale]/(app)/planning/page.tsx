@@ -70,6 +70,7 @@ export default async function LocalePlanningPage({
 
   return (
     <PlanningPageClient
+      key={weekStart}
       weekStart={weekStart}
       currentYear={currentYear}
       currentWeekStart={normalizeWeekKey()}
