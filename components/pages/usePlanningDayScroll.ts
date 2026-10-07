@@ -47,8 +47,9 @@ export function usePlanningDayScroll(days: DaySchedule[], weekStart: string) {
     if (!scrollToDay(container, currentIndex, "auto")) return;
     activeDayIndexRef.current = currentIndex;
     skipNextScroll.current = true;
-    setActiveDayIndex(currentIndex);
+    const frame = requestAnimationFrame(() => setActiveDayIndex(currentIndex));
     window.scrollTo({ top: 0, behavior: "auto" });
+    return () => cancelAnimationFrame(frame);
   }, [days.length, weekStart]);
 
   useEffect(() => {
