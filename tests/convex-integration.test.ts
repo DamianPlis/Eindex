@@ -133,14 +133,28 @@ test("all schedule history pages are reassembled while empty subject/group lists
   for (const call of mocks.query.mock.calls)
     expect(call[2]).toEqual({ token: "auth-token" });
 });
+test("settings without a saved row default to alphabetical planning sort", async () => {
+  mocks.query.mockResolvedValue(null);
+  expect((await getUserSettings()).planningSubjectSort).toBe("name-asc");
+});
+
 test("settings reads preserve planning sort and normalize older rows missing that field", async () => {
-  mocks.query.mockResolvedValue({
-    theme: "dark",
-    locale: "en",
-    useSchoolYear: true,
-    planningSubjectSort: "count-asc",
-  });
-  expect((await getUserSettings()).planningSubjectSort).toBe("count-asc");
+  for (const planningSubjectSort of [
+    "count-desc",
+    "count-asc",
+    "name-asc",
+    "name-desc",
+  ]) {
+    mocks.query.mockResolvedValue({
+      theme: "dark",
+      locale: "en",
+      useSchoolYear: true,
+      planningSubjectSort,
+    });
+    expect((await getUserSettings()).planningSubjectSort).toBe(
+      planningSubjectSort,
+    );
+  }
   mocks.query.mockResolvedValue({
     theme: "light",
     locale: "cs",

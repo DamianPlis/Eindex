@@ -30,6 +30,14 @@ export function buildLegacySlots(
       if (!day) continue;
       for (const [slotIndex, slot] of (day.slots || []).entries()) {
         if (!slot) continue;
+        const idParts = typeof slot.id === "string" ? slot.id.split(":") : [];
+        const savedSlotIndex =
+          idParts.length === 3 &&
+          idParts[0] === weekStart &&
+          idParts[1] === String(dayIndex) &&
+          /^[0-7]$/.test(idParts[2] || "")
+            ? Number(idParts[2])
+            : slotIndex;
         const fixedKey = fixedKeys.includes(slot.fixedKey as FixedSlotKey)
           ? (slot.fixedKey as FixedSlotKey)
           : undefined;
@@ -37,7 +45,7 @@ export function buildLegacySlots(
           weekStart,
           date: day.date || weekStart,
           dayIndex,
-          slotIndex,
+          slotIndex: savedSlotIndex,
           time: typeof slot.time === "string" ? slot.time : "08:00-09:00",
           fixed: Boolean(slot.fixed),
           fixedKey,

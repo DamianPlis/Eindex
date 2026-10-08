@@ -63,7 +63,10 @@ export async function getUserState(_uid?: string): Promise<ScheduleState> {
       weekStart: slot.weekStart,
       days: buildDaysForWeek(slot.weekStart),
     });
-    const target = week.days[slot.dayIndex]?.slots[slot.slotIndex];
+    const target = week.days[slot.dayIndex]?.slots.find(
+      (candidate) =>
+        candidate.id === `${slot.weekStart}:${slot.dayIndex}:${slot.slotIndex}`,
+    );
     if (target) {
       target.subjectId = slot.subjectId ?? null;
       target.topic = slot.topic;

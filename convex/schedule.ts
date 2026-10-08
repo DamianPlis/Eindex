@@ -29,7 +29,10 @@ function template(args: {
   )
     throw new Error("Invalid schedule coordinates");
   const day = buildDaysForWeek(args.weekStart)[args.dayIndex];
-  const slot = day?.slots[args.slotIndex];
+  const slot = day?.slots.find(
+    (candidate) =>
+      candidate.id === `${args.weekStart}:${args.dayIndex}:${args.slotIndex}`,
+  );
   if (!slot) throw new Error("Invalid schedule coordinates");
   return {
     date: day.date,
@@ -122,7 +125,12 @@ export const setSlotSubject = mutation({
       )
       .unique();
     const updatedAt = Math.max(Date.now(), (existing?.updatedAt ?? 0) + 1);
-    const patch = { subjectId, updatedAt, lastWriter: args.writerId };
+    const patch = {
+      ...defaults,
+      subjectId,
+      updatedAt,
+      lastWriter: args.writerId,
+    };
     const id =
       existing?._id ??
       (await ctx.db.insert("scheduleSlots", {
@@ -130,7 +138,6 @@ export const setSlotSubject = mutation({
         weekStart: args.weekStart,
         dayIndex: args.dayIndex,
         slotIndex: args.slotIndex,
-        ...defaults,
         topic: "",
         ...patch,
       }));
@@ -157,6 +164,7 @@ export const setSlotTopic = mutation({
       )
       .unique();
     const patch = {
+      ...defaults,
       topic: args.topic,
       updatedAt: Math.max(Date.now(), (existing?.updatedAt ?? 0) + 1),
       lastWriter: args.writerId,
@@ -168,7 +176,6 @@ export const setSlotTopic = mutation({
         weekStart: args.weekStart,
         dayIndex: args.dayIndex,
         slotIndex: args.slotIndex,
-        ...defaults,
         subjectId: defaults.fixedKey === "lunch" ? "lunch" : null,
         ...patch,
       }));

@@ -2,7 +2,7 @@ import { expect, test } from "vitest";
 import { buildDaysForWeek, migrateState } from "../lib/schedule/defaults";
 
 test.each(["2026-09-21", "2026-09-28", "2027-01-04"])(
-  "weeks from 21 September use the 2026/27 PDF blocks (%s)",
+  "weeks from 21 September use the correct timetable revision (%s)",
   (weekStart) => {
     const days = buildDaysForWeek(weekStart);
     expect(
@@ -30,8 +30,15 @@ test.each(["2026-09-21", "2026-09-28", "2027-01-04"])(
         ["08:00-08:15", "morningCircle"],
         ["08:20-10:20", null],
         ["10:30-11:30", null],
-        ["11:30-12:05", "lunch"],
-        ["12:05-13:05", "currentEvents"],
+        ...(weekStart >= "2026-10-05"
+          ? [
+              ["11:30-12:30", "currentEvents"],
+              ["12:30-13:05", "lunch"],
+            ]
+          : [
+              ["11:30-12:05", "lunch"],
+              ["12:05-13:05", "currentEvents"],
+            ]),
         ["13:10-15:00", "pe"],
       ],
       [
@@ -52,7 +59,9 @@ test.each(["2026-09-21", "2026-09-28", "2027-01-04"])(
         expect(slot.subjectId).toBe(slot.fixedKey === "lunch" ? "lunch" : null);
         expect(slot.topic).toBe("");
         expect(slot.allowTopic).toBe(
-          slot.fixedKey === "currentEvents" || slot.fixedKey === "pe",
+          slot.fixedKey === "currentEvents" ||
+            slot.fixedKey === "pe" ||
+            slot.fixedKey === "assembly",
         );
       }
     }

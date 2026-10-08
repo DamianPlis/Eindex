@@ -152,6 +152,7 @@ const legacyDayTemplates: DayTemplate[] = [
 // Activity choices and one-off trips are intentionally left for weekly planning.
 // Lunch times fill the unlabelled gaps between the surrounding timed blocks.
 const currentTemplateStart = "2026-09-21";
+const currentEventsBeforeLunchStart = "2026-10-05";
 const dayTemplates: DayTemplate[] = [
   {
     slots: [
@@ -257,6 +258,12 @@ export function buildDaysForWeek(weekStartISO: string) {
       topic: "",
       updatedAt: 0,
     }));
+    if (weekStartISO >= currentEventsBeforeLunchStart && dayIdx === 2) {
+      // Keep lunch at coordinate 3 and Aktuality at 4 so saved topics stay attached.
+      slots[3].time = "12:30-13:05";
+      slots[4].time = "11:30-12:30";
+      slots.sort((a, b) => a.time.localeCompare(b.time));
+    }
     return { date: isoDate(current), slots };
   });
 }
@@ -435,13 +442,25 @@ function normalizeSavedWeek(
       slotIndex < days[dayIndex].slots.length;
       slotIndex++
     ) {
-      const savedSlot = savedDay.slots?.[slotIndex];
+      const defaultSlot = days[dayIndex].slots[slotIndex];
+      const savedSlot =
+        savedDay.slots?.find((slot) => slot?.id === defaultSlot.id) ||
+        savedDay.slots?.[Number(defaultSlot.id.split(":")[2])];
       if (!savedSlot) continue;
       const mergedSlot = {
-        ...days[dayIndex].slots[slotIndex],
+        ...defaultSlot,
         ...savedSlot,
         updatedAt: savedSlot.updatedAt || 0,
       };
+      if (
+        weekStart >= currentEventsBeforeLunchStart &&
+        dayIndex === 2 &&
+        (defaultSlot.fixedKey === "currentEvents" ||
+          defaultSlot.fixedKey === "lunch")
+      ) {
+        mergedSlot.id = defaultSlot.id;
+        mergedSlot.time = defaultSlot.time;
+      }
       mergedSlot.fixedKey =
         inferFixedSlotKey(savedSlot.fixedKey, savedSlot.fixedLabel) ||
         mergedSlot.fixedKey;

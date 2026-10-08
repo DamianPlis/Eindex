@@ -156,6 +156,22 @@ test("settings persist planning sorting, locale, theme and school year independe
   });
   expect(await other.query(api.settings.getUserSettings, {})).toMatchObject({
     locale: "cs",
+    planningSubjectSort: "name-asc",
+  });
+});
+
+test("alphabetical defaults never replace a saved most-common planning sort", async () => {
+  const { owner } = await setup();
+  expect(await owner.query(api.settings.getUserSettings, {})).toMatchObject({
+    planningSubjectSort: "name-asc",
+  });
+  await owner.mutation(api.settings.updateSettings, {
+    planningSubjectSort: "count-desc",
+  });
+  await owner.mutation(api.users.ensureInitialized, {});
+  await owner.mutation(api.settings.updateSettings, { theme: "dark" });
+  expect(await owner.query(api.settings.getUserSettings, {})).toMatchObject({
+    theme: "dark",
     planningSubjectSort: "count-desc",
   });
 });

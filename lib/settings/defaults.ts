@@ -5,7 +5,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   theme: "light",
   locale: DEFAULT_LOCALE,
   useSchoolYear: false,
-  planningSubjectSort: "count-desc",
+  planningSubjectSort: "name-asc",
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -19,6 +19,7 @@ export function normalizeTheme(value: unknown): AppTheme {
 export function normalizePlanningSubjectSort(
   value: unknown,
 ): AppSettings["planningSubjectSort"] {
+  // Keep the historical default for saved settings that predate this preference.
   return value === "count-asc" || value === "name-asc" || value === "name-desc"
     ? value
     : "count-desc";

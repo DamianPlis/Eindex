@@ -232,12 +232,12 @@ export default function PlanningPageClient({
                 </header>
 
                 <div className={s.slots}>
-                  {day.slots.map((slot, slotIndex) => (
+                  {day.slots.map((slot) => (
                     <PlanningSlotCard
                       key={slot.id}
                       slot={slot}
                       dayIndex={dayIndex}
-                      slotIndex={slotIndex}
+                      slotIndex={Number(slot.id.split(":")[2])}
                       subjects={stableSubjects}
                       messages={messages}
                       currentSubjectValue={currentSubjectValue(slot)}
