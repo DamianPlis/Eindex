@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useSyncExternalStore } from "react";
 import { useConvexAuth, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useAppLocale, useMessages } from "@/components/i18n/UserSyncProvider";
 import { getSubjectDisplayName } from "@/lib/schedule/labels";
+import { isoDate } from "@/lib/schedule/date-utils";
 import type {
   Subject,
   SubjectGroup,
@@ -53,9 +54,14 @@ export default function StatsCard({
   );
 
   const isSchoolYearPeriod = period === "year" && useSchoolYear;
+  const localReferenceISO = useSyncExternalStore(
+    () => () => {},
+    () => isoDate(),
+    () => referenceISO,
+  );
   const referenceDate = React.useMemo(
-    () => new Date(`${referenceISO}T12:00:00`),
-    [referenceISO],
+    () => new Date(`${localReferenceISO}T12:00:00`),
+    [localReferenceISO],
   );
   const range = getDateRange(period, referenceDate, offset, useSchoolYear);
   const liveUsage = useQuery(
