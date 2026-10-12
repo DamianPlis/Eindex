@@ -55,7 +55,10 @@ export function getSlotContribution(slot: {
 }): SlotUsageContribution | null {
   if (!slot.subjectId || slot.subjectId === "lunch") return null;
   const day = buildDaysForWeek(slot.weekStart)[slot.dayIndex];
-  const template = day?.slots[slot.slotIndex];
+  const template = day?.slots.find(
+    (candidate) =>
+      candidate.id === `${slot.weekStart}:${slot.dayIndex}:${slot.slotIndex}`,
+  );
   if (!template) return null;
   return {
     subjectId: slot.subjectId,

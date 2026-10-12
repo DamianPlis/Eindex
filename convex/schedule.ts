@@ -27,7 +27,10 @@ function template(args: {
   )
     throw new Error("Invalid schedule coordinates");
   const day = buildDaysForWeek(args.weekStart)[args.dayIndex];
-  const slot = day?.slots[args.slotIndex];
+  const slot = day?.slots.find(
+    (candidate) =>
+      candidate.id === `${args.weekStart}:${args.dayIndex}:${args.slotIndex}`,
+  );
   if (!slot) throw new Error("Invalid schedule coordinates");
   return {
     date: day.date,

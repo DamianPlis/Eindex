@@ -59,7 +59,10 @@ export const getDashboardData = cache(
     const dayIndex = days.findIndex((day) => day.date === selectedISO);
     const day = days[dayIndex];
     for (const saved of data.slots) {
-      const target = day?.slots[saved.slotIndex];
+      const target = day?.slots.find(
+        (slot) =>
+          slot.id === `${saved.weekStart}:${saved.dayIndex}:${saved.slotIndex}`,
+      );
       if (
         target &&
         saved.weekStart === data.weekStart &&
@@ -160,8 +163,13 @@ export const getPlanningPageState = cache(
       lunches: {},
     };
     for (const slot of data.slots) {
-      const target =
-        state.weeks[slot.weekStart]?.days[slot.dayIndex]?.slots[slot.slotIndex];
+      const target = state.weeks[slot.weekStart]?.days[
+        slot.dayIndex
+      ]?.slots.find(
+        (candidate) =>
+          candidate.id ===
+          `${slot.weekStart}:${slot.dayIndex}:${slot.slotIndex}`,
+      );
       if (target) {
         target.subjectId = slot.subjectId ?? null;
         target.topic = slot.topic;
