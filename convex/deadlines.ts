@@ -115,6 +115,19 @@ export const getDeadlinesForDate = query({
       .take(maxDeadlines);
   },
 });
+export const getDeadline = query({
+  args: { deadlineId: v.string() },
+  returns: v.union(v.null(), schema.doc("deadlines")),
+  handler: async (ctx, { deadlineId }) => {
+    const userId = await requireUser(ctx);
+    return await ctx.db
+      .query("deadlines")
+      .withIndex("by_user_deadlineId", (q) =>
+        q.eq("userId", userId).eq("deadlineId", deadlineId),
+      )
+      .unique();
+  },
+});
 export const addDeadline = mutation({
   args: {
     text: v.string(),

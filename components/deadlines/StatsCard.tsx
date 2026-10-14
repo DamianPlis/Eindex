@@ -1,10 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useSyncExternalStore } from "react";
+import { useConvexAuth, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { useAppLocale, useMessages } from "@/components/i18n/UserSyncProvider";
 import { getSubjectDisplayName } from "@/lib/schedule/labels";
+import { isoDate } from "@/lib/schedule/date-utils";
 import type {
-  ScheduleState,
+  Subject,
+  SubjectGroup,
   SortOption,
   FilterOption,
   StatsOptions,
@@ -12,7 +16,7 @@ import type {
 import {
   sortStats,
   filterStats,
-  getCurrentPeriodStats,
+  getDateRange,
   getPeriodLabel,
 } from "@/lib/schedule/stats";
 import SortIcon from "@/icons/sort.svg";
@@ -22,13 +26,21 @@ import styles from "./StatsCard.module.css";
 
 interface StatsCardProps {
   period: StatsOptions;
-  state: ScheduleState;
+  subjects: Subject[];
+  subjectGroups: SubjectGroup[];
+  initialUsage: { subjectId: string; weightedCount: number }[];
+  initialRange: { startISO: string; endISO: string };
+  referenceISO: string;
   useSchoolYear?: boolean;
 }
 
 export default function StatsCard({
   period,
-  state,
+  subjects,
+  subjectGroups,
+  initialUsage,
+  initialRange,
+  referenceISO,
   useSchoolYear = false,
 }: StatsCardProps) {
   const locale = useAppLocale();
@@ -36,11 +48,32 @@ export default function StatsCard({
   const [sortBy, setSortBy] = useState<SortOption>("count-desc");
   const [filterIds, setFilterIds] = useState<FilterOption>([]);
   const [offset, setOffset] = useState(0);
+  const { isAuthenticated } = useConvexAuth();
   const { cardRef, contentRef } = useStatsPeriodSwipe((direction) =>
     setOffset((previous) => previous + direction),
   );
 
   const isSchoolYearPeriod = period === "year" && useSchoolYear;
+  const localReferenceISO = useSyncExternalStore(
+    () => () => {},
+    () => isoDate(),
+    () => referenceISO,
+  );
+  const referenceDate = React.useMemo(
+    () => new Date(`${localReferenceISO}T12:00:00`),
+    [localReferenceISO],
+  );
+  const range = getDateRange(period, referenceDate, offset, useSchoolYear);
+  const liveUsage = useQuery(
+    api.subjectUsage.getPeriodUsage,
+    isAuthenticated ? { period, ...range } : "skip",
+  );
+  const usage =
+    liveUsage ??
+    (range.startISO === initialRange.startISO &&
+    range.endISO === initialRange.endISO
+      ? initialUsage
+      : undefined);
 
   const title = React.useMemo(() => {
     if (offset === 0) {
@@ -49,24 +82,37 @@ export default function StatsCard({
       if (period === "month") return messages.deadlines.statistics.thisMonth;
       return messages.deadlines.statistics.thisYear;
     }
-    return getPeriodLabel(period, locale, offset, new Date(), useSchoolYear);
-  }, [offset, period, locale, messages, isSchoolYearPeriod, useSchoolYear]);
+    return getPeriodLabel(period, locale, offset, referenceDate, useSchoolYear);
+  }, [
+    offset,
+    period,
+    locale,
+    messages,
+    isSchoolYearPeriod,
+    useSchoolYear,
+    referenceDate,
+  ]);
 
   const stats = React.useMemo(
     () =>
-      getCurrentPeriodStats(period, state, new Date(), offset, useSchoolYear),
-    [period, state, offset, useSchoolYear],
+      Object.fromEntries(
+        (usage ?? []).map(({ subjectId, weightedCount }) => [
+          subjectId,
+          weightedCount,
+        ]),
+      ),
+    [usage],
   );
 
   const subjectMap = React.useMemo(
     () =>
       new Map(
-        state.subjects.map((subject) => [
+        subjects.map((subject) => [
           subject.id,
           getSubjectDisplayName(subject, messages),
         ]),
       ),
-    [messages, state.subjects],
+    [messages, subjects],
   );
 
   const filteredStats = React.useMemo(
@@ -75,8 +121,8 @@ export default function StatsCard({
   );
 
   const periodLabel = React.useMemo(
-    () => getPeriodLabel(period, locale, offset, new Date(), useSchoolYear),
-    [period, locale, offset, useSchoolYear],
+    () => getPeriodLabel(period, locale, offset, referenceDate, useSchoolYear),
+    [period, locale, offset, useSchoolYear, referenceDate],
   );
 
   return (
@@ -180,16 +226,22 @@ export default function StatsCard({
             </select>
           </div>
           <SubjectsCombobox
-            subjects={state.subjects}
-            subjectGroups={state.subjectGroups}
+            subjects={subjects}
+            subjectGroups={subjectGroups}
             selectedIds={filterIds}
             onChange={setFilterIds}
           />
         </div>
       </div>
       <div className={styles.statsViewport}>
-        <div ref={contentRef} className={styles.statsContent}>
-          {filteredStats.length === 0 ? (
+        <div
+          ref={contentRef}
+          className={styles.statsContent}
+          aria-busy={usage === undefined}
+        >
+          {usage === undefined ? (
+            <p role="status">{messages.common.loading}</p>
+          ) : filteredStats.length === 0 ? (
             <p>{messages.deadlines.noData}</p>
           ) : (
             <ul>
@@ -205,7 +257,7 @@ export default function StatsCard({
                     key={subjectId}
                     className={styles.statsEntry}
                     style={{
-                      backgroundColor: `${state.subjects.find((s) => s.id === subjectId)?.color || "#000000"}55`,
+                      backgroundColor: `${subjects.find((s) => s.id === subjectId)?.color || "#000000"}55`,
                     }}
                   >
                     {subjectMap.get(subjectId) || subjectId}: {count}{" "}

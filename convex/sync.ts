@@ -2,6 +2,8 @@ import { internalMutation, type MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { planningSubjectSortValidator } from "./schema";
 import type { Id } from "./_generated/dataModel";
+import { getSlotContribution } from "../lib/schedule/usage";
+import { applyUsageChanges, type UsageChange } from "./subjectUsage";
 
 /**
  * Helper to ensure a Convex user exists matching the legacy Firebase UID.
@@ -153,6 +155,7 @@ export const syncSlotsBatch = internalMutation({
   handler: async (ctx, args) => {
     const userId = await getOrCreateUserByFirebaseUid(ctx, args.firebaseUid);
     const fallbackNow = Date.now();
+    const usageChanges: UsageChange[] = [];
 
     for (const slot of args.slots) {
       const slotUpdatedAt = slot.updatedAt || fallbackNow;
@@ -167,11 +170,20 @@ export const syncSlotsBatch = internalMutation({
         )
         .first();
 
+      const usageContribution = getSlotContribution({
+        ...slot,
+        subjectId: slot.subjectId || null,
+      });
+      usageChanges.push({
+        before: existing?.usageContribution,
+        after: usageContribution,
+      });
       if (existing) {
         await ctx.db.patch(existing._id, {
           subjectId: slot.subjectId || null,
           topic: slot.topic || "",
           updatedAt: slotUpdatedAt,
+          usageContribution,
         });
       } else {
         await ctx.db.insert("scheduleSlots", {
@@ -188,10 +200,12 @@ export const syncSlotsBatch = internalMutation({
           subjectId: slot.subjectId || null,
           topic: slot.topic || "",
           updatedAt: slotUpdatedAt,
+          usageContribution,
         });
       }
     }
 
+    await applyUsageChanges(ctx, userId, usageChanges);
     return { count: args.slots.length };
   },
 });

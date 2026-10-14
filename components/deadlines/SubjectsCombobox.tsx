@@ -76,12 +76,12 @@ export default function SubjectsCombobox({
 
   const filteredSubjects = subjects.filter((subject) => {
     const name = getSubjectDisplayName(subject, messages);
-    return matchesLocaleSearch(name, searchQuery, locale);
+    return matchesLocaleSearch(name, searchQuery);
   });
 
   const filteredGroups = subjectGroups.filter((group) => {
     const name = getSubjectGroupDisplayName(group, messages, locale);
-    return matchesLocaleSearch(name, searchQuery, locale);
+    return matchesLocaleSearch(name, searchQuery);
   });
 
   const activeCount = selectedIds.length;

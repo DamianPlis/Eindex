@@ -1,5 +1,3 @@
-"use client";
-
 import SkeletonLine from "@/components/skeletons/SkeletonLine";
 import s from "@/components/settings/settings.module.css";
 import sk from "@/components/skeletons/Skeletons.module.css";
@@ -27,7 +25,14 @@ export default function SubjectGroupsSectionSkeleton() {
               padding: "12px",
             }}
           >
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                gap: "8px",
+              }}
+            >
               <SkeletonLine className={`${sk.textLineMd} ${sk.noMargin}`} />
               <SkeletonLine className={`${sk.textLineSm} ${sk.noMargin}`} />
             </div>

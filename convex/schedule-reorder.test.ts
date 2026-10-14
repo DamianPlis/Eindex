@@ -6,7 +6,7 @@ import { api } from "./_generated/api";
 import schema from "./schema";
 import { buildDaysForWeek, migrateState } from "../lib/schedule/defaults";
 import { buildLegacySlots } from "../scripts/legacy-slots";
-import { getUserState } from "../lib/schedule/store";
+import { getPlanningPageState } from "../lib/schedule/store";
 
 const mocks = vi.hoisted(() => ({ token: vi.fn(), query: vi.fn() }));
 vi.mock("server-only", () => ({}));
@@ -184,7 +184,7 @@ test("backend writes update existing Aktualita coordinate 4 and keep lunch coord
         updatedAt: row.updatedAt ?? 999,
       });
   });
-  const before = await owner.query(api.schedule.getWeekSchedule, { weekStart });
+  const before = await owner.query(api.schedule.getPlanningData, { weekStart });
   const currentEvents = before.slots.find(
     (slot) => slot.dayIndex === 2 && slot.slotIndex === 4,
   )!;
@@ -215,7 +215,7 @@ test("backend writes update existing Aktualita coordinate 4 and keep lunch coord
       subjectId: "math",
     }),
   ).toBe(lunch._id);
-  const after = await owner.query(api.schedule.getWeekSchedule, { weekStart });
+  const after = await owner.query(api.schedule.getPlanningData, { weekStart });
   expect(after.slots).toHaveLength(before.slots.length);
   expect(
     after.slots.find((slot) => slot._id === currentEvents._id),
@@ -248,15 +248,23 @@ test("backend writes update existing Aktualita coordinate 4 and keep lunch coord
     slotIndex: 3,
     subjectId: "math",
   });
-  const next = await owner.query(api.schedule.getWeekSchedule, {
+  const next = await owner.query(api.schedule.getPlanningData, {
     weekStart: nextWeek,
   });
-  expect(next.slots.find((slot) => slot.slotIndex === 4)).toMatchObject({
+  expect(
+    next.slots.find(
+      (slot) => slot.weekStart === nextWeek && slot.slotIndex === 4,
+    ),
+  ).toMatchObject({
     fixedKey: "currentEvents",
     time: "11:30-12:30",
     topic: "Next Aktualita",
   });
-  expect(next.slots.find((slot) => slot.slotIndex === 3)).toMatchObject({
+  expect(
+    next.slots.find(
+      (slot) => slot.weekStart === nextWeek && slot.slotIndex === 3,
+    ),
+  ).toMatchObject({
     fixedKey: "lunch",
     time: "12:30-13:05",
     subjectId: "lunch",
@@ -266,11 +274,11 @@ test("backend writes update existing Aktualita coordinate 4 and keep lunch coord
 test("state hydration attaches saved coordinate 4 to Aktualita before lunch", async () => {
   const rows = buildLegacySlots({ [weekStart]: savedBeforeReorder() }, 999);
   mocks.query.mockImplementation(async (ref) =>
-    getFunctionName(ref) === "schedule:listSlots"
-      ? { page: rows, isDone: true, continueCursor: "" }
+    getFunctionName(ref) === "schedule:getPlanningData"
+      ? { slots: rows, subjects: [], weekStarts: [weekStart] }
       : [],
   );
-  const state = await getUserState();
+  const state = await getPlanningPageState("legacy-parameter", weekStart);
   const slots = state.weeks[weekStart].days[2].slots;
   expect(slots[3]).toMatchObject({
     id: `${weekStart}:2:4`,
@@ -290,4 +298,43 @@ test("state hydration attaches saved coordinate 4 to Aktualita before lunch", as
   expect(slots[5]).toMatchObject({ topic: "Saved PE topic" });
   for (const call of mocks.query.mock.calls)
     expect(call[2]).toEqual({ token: "auth-token" });
+});
+
+test("deployed master can still paginate its own schedule history", async () => {
+  const t = convexTest(schema, modules);
+  const [userId, otherUserId] = await t.run(async (ctx) => {
+    const userId = await ctx.db.insert("users", { email: "old@example.com" });
+    const otherUserId = await ctx.db.insert("users", {
+      email: "other@example.com",
+    });
+    for (const row of buildLegacySlots(
+      { [weekStart]: savedBeforeReorder() },
+      999,
+    ))
+      await ctx.db.insert("scheduleSlots", {
+        userId,
+        ...row,
+        updatedAt: row.updatedAt ?? 999,
+      });
+    return [userId, otherUserId];
+  });
+  const owner = t.withIdentity({ subject: `${userId}|session` });
+  const first = await owner.query(api.schedule.listSlots, {
+    paginationOpts: { cursor: null, numItems: 1 },
+  });
+  expect(first.page).toHaveLength(1);
+  expect(first.isDone).toBe(false);
+  const next = await owner.query(api.schedule.listSlots, {
+    paginationOpts: { cursor: first.continueCursor, numItems: 1 },
+  });
+  expect(next.page).toHaveLength(1);
+  expect(next.page[0]._id).not.toBe(first.page[0]._id);
+  const other = t.withIdentity({ subject: `${otherUserId}|session` });
+  expect(
+    (
+      await other.query(api.schedule.listSlots, {
+        paginationOpts: { cursor: null, numItems: 500 },
+      })
+    ).page,
+  ).toEqual([]);
 });

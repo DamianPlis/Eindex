@@ -3,6 +3,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import schema from "./schema";
 import { initializeUser, requireUser } from "./model";
+import { ensureSubjectUsage } from "./subjectUsage";
 
 export const viewer = query({
   args: {},
@@ -16,7 +17,9 @@ export const ensureInitialized = mutation({
   args: {},
   returns: v.null(),
   handler: async (ctx) => {
-    await initializeUser(ctx, await requireUser(ctx));
+    const userId = await requireUser(ctx);
+    await initializeUser(ctx, userId);
+    await ensureSubjectUsage(ctx, userId);
     return null;
   },
 });

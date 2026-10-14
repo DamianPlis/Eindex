@@ -9,7 +9,7 @@ export default async function LoginPage() {
   const locale = await getPreferredLocale(session);
 
   if (session) {
-    const settings = await getUserSettings(session.uid);
+    const settings = await getUserSettings();
     redirect(localizePath(settings.locale, "/"));
   }
 

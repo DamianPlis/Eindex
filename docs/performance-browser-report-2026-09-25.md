@@ -1,8 +1,25 @@
 # Next.js performance investigation report
 
-**Date:** 2026-09-25
-
+**Date:** 2026-09-25  
 **Scope:** Authenticated local Next.js routes, browser timing proxies, prior local HTTP/config experiments, and read-only source review.
+
+## Implementation follow-up — 2026-09-27
+
+Recommendations 4–8 are handled on local branch `next-app-optimization-followup`, based on `9fd6a1c` (recommendations 1–3). Each recommendation has its own commit; nothing was pushed. The original investigation below remains a historical record, separate from these new measurements.
+
+| Recommendation        | Result                                                                                                                                                                                  | Detailed evidence                                                    |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| 4 — Planning          | Indexed selected/previous/next-week reads, request caching, memoized day labels; usage ranking now uses those three weeks                                                               | [Implementation and checks](performance-recommendation-04.md)        |
+| 5 — Client boundaries | Measured two isolated production builds; removed five static skeleton client directives. Subroute gzip changes −65 to −716 B; settings root +127 B; Subjects gains one referenced chunk | [Exact bundle comparison](performance-recommendation-05.md)          |
+| 6 — Inline CSS        | Disabled as requested                                                                                                                                                                   | [Trade-off and scope](performance-recommendation-06.md)              |
+| 7 — Games             | Production browser fixture using actual game components: ten Sudoku and ten Mandala repeats, wheel and synthetic pan captures. No game code changes                                     | [Raw metrics, findings, confounds](performance-recommendation-07.md) |
+| 8 — Lunch             | Schedule streams while the lunch subtitle shows one skeleton line; controlled stream-order test passes                                                                                  | [Implementation and check](performance-recommendation-08.md)         |
+
+Validation: both TypeScript projects pass; frontend production build passes (49 generated pages); 22 focused tests across six files pass. New Convex code was tested locally, **not deployed**. The new planning query must be deployed to the intended backend before this frontend's planning route can use it. The build used process-local placeholder Convex URLs and did not connect to an account.
+
+The browser fixture produced actual performance entries, but missing paint entries and irregular presentation timing prevent a reliable FCP/LCP/INP comparison of authenticated routes. The useful game findings are a 9.25 ms median mount-to-playable Sudoku DOM time, short measured Mandala draw JS, and a worker that remained alive after unmount, returning results after exit in three of ten runs. These are not field metrics or measured application-wide speedups. Method, all samples, and limitations are linked above.
+
+Graphify's code graph was refreshed with AST extraction only. Its generated files accompany the final implementation commit; no LLM graph labeling was run.
 
 ## Executive summary
 

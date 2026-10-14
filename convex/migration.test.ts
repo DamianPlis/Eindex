@@ -50,7 +50,7 @@ test("planning visibility is reversible and preserves slots, groups, and subject
     name: { en: "Activities" },
     subjectIds: [trip.slug],
   });
-  const before = await owner.query(api.schedule.getWeekSchedule, {
+  const before = await owner.query(api.schedule.getPlanningData, {
     weekStart: coord.weekStart,
   });
   const groupsBefore = await owner.query(api.subjects.getSubjectGroups, {});
@@ -85,7 +85,7 @@ test("planning visibility is reversible and preserves slots, groups, and subject
   ).toMatchObject({ hiddenFromPlanning: true, name: "School trip updated" });
   expect(
     (
-      await owner.query(api.schedule.getWeekSchedule, {
+      await owner.query(api.schedule.getPlanningData, {
         weekStart: coord.weekStart,
       })
     ).slots,
@@ -190,18 +190,23 @@ test("schedule updates retain other fields, historical weeks, and user isolation
     weekStart: "2025-01-06",
     subjectId: "czech",
   });
-  const slots = await owner.query(api.schedule.listSlots, {
-    paginationOpts: { numItems: 1, cursor: null },
+  const current = await owner.query(api.schedule.getPlanningData, {
+    weekStart: coord.weekStart,
   });
-  expect(slots.page[0]).toMatchObject({ subjectId: "math", topic: "Algebra" });
-  expect(slots.isDone).toBe(false);
-  const next = await owner.query(api.schedule.listSlots, {
-    paginationOpts: { numItems: 100, cursor: slots.continueCursor },
+  expect(current.slots[0]).toMatchObject({
+    subjectId: "math",
+    topic: "Algebra",
   });
-  expect(next.page[0].weekStart).toBe("2025-01-06");
+  const historical = await owner.query(api.schedule.getPlanningData, {
+    weekStart: "2025-01-06",
+  });
+  expect(historical.slots[0]).toMatchObject({
+    weekStart: "2025-01-06",
+    subjectId: "czech",
+  });
   expect(
     (
-      await other.query(api.schedule.getWeekSchedule, {
+      await other.query(api.schedule.getPlanningData, {
         weekStart: coord.weekStart,
       })
     ).slots,
@@ -248,7 +253,7 @@ test("fixed lunch remains lunch and fixed non-topic slots cannot gain a topic", 
       topic: "Bad",
     }),
   ).toBeNull();
-  const data = await owner.query(api.schedule.getWeekSchedule, {
+  const data = await owner.query(api.schedule.getPlanningData, {
     weekStart: coord.weekStart,
   });
   expect(data.slots[0]).toMatchObject({
@@ -270,7 +275,7 @@ test("deleting a subject clears its schedule and groups without touching another
   await owner.mutation(api.subjects.deleteSubject, { slug: "math" });
   expect(
     (
-      await owner.query(api.schedule.getWeekSchedule, {
+      await owner.query(api.schedule.getPlanningData, {
         weekStart: coord.weekStart,
       })
     ).slots[0].subjectId,
@@ -282,7 +287,7 @@ test("deleting a subject clears its schedule and groups without touching another
   ).toBe(true);
   expect(
     (
-      await other.query(api.schedule.getWeekSchedule, {
+      await other.query(api.schedule.getPlanningData, {
         weekStart: coord.weekStart,
       })
     ).slots[0].subjectId,
@@ -427,8 +432,8 @@ test("anonymous callers cannot read or write private app data", async () => {
     "Unauthorized",
   );
   await expect(
-    t.query(api.schedule.listSlots, {
-      paginationOpts: { numItems: 10, cursor: null },
+    t.query(api.schedule.getPlanningData, {
+      weekStart: coord.weekStart,
     }),
   ).rejects.toThrow("Unauthorized");
   await expect(
@@ -553,13 +558,7 @@ test("planning sorting retains all four master options without mutating canonica
     "name-desc",
   ] as const) {
     expect(
-      sortPlanningSubjects(
-        state.subjects,
-        state,
-        "en",
-        sort,
-        getMessages("en"),
-      ),
+      sortPlanningSubjects(state.subjects, "en", sort, getMessages("en"), {}),
     ).toHaveLength(original.length);
   }
   expect(state.subjects.map((s) => s.id)).toEqual(original);

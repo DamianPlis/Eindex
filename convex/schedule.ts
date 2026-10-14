@@ -7,6 +7,8 @@ import { v } from "convex/values";
 import schema from "./schema";
 import { requireUser, touchUser } from "./model";
 import { buildDaysForWeek } from "../lib/schedule/defaults";
+import { getSlotContribution } from "../lib/schedule/usage";
+import { applyUsageChanges } from "./subjectUsage";
 
 const coordinates = {
   weekStart: v.string(),
@@ -43,6 +45,7 @@ function template(args: {
     allowTopic: slot.allowTopic,
   };
 }
+// shortcut: Deployed master frontends still read all history, remove after they retire.
 export const listSlots = query({
   args: { paginationOpts: paginationOptsValidator },
   returns: paginationResultValidator(schema.doc("scheduleSlots")),
@@ -54,40 +57,56 @@ export const listSlots = query({
       .paginate(args.paginationOpts);
   },
 });
-export const getWeekSchedule = query({
+
+function getPlanningWeekStarts(weekStart: string) {
+  const selected = new Date(`${weekStart}T12:00:00Z`);
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(weekStart) ||
+    Number.isNaN(selected.getTime()) ||
+    selected.getUTCDay() !== 1 ||
+    selected.toISOString().slice(0, 10) !== weekStart
+  ) {
+    throw new Error("Invalid planning week start");
+  }
+  const previous = new Date(selected);
+  previous.setUTCDate(previous.getUTCDate() - 7);
+  const next = new Date(selected);
+  next.setUTCDate(next.getUTCDate() + 7);
+  return [
+    previous.toISOString().slice(0, 10),
+    weekStart,
+    next.toISOString().slice(0, 10),
+  ];
+}
+export const getPlanningData = query({
   args: { weekStart: v.string() },
   returns: v.object({
     slots: v.array(schema.doc("scheduleSlots")),
     subjects: v.array(schema.doc("subjects")),
+    weekStarts: v.array(v.string()),
   }),
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);
-    const [slots, subjects] = await Promise.all([
+    const weekStarts = getPlanningWeekStarts(args.weekStart);
+    const getWeekSlots = (weekStart: string) =>
       ctx.db
         .query("scheduleSlots")
         .withIndex("by_user_week", (q) =>
-          q.eq("userId", userId).eq("weekStart", args.weekStart),
+          q.eq("userId", userId).eq("weekStart", weekStart),
         )
-        .take(100),
+        .take(100);
+    const [weekSlots, subjects] = await Promise.all([
+      Promise.all(weekStarts.map(getWeekSlots)),
       ctx.db
         .query("subjects")
         .withIndex("by_user", (q) => q.eq("userId", userId))
-        .take(1000),
+        .take(4001),
     ]);
-    return { slots, subjects };
-  },
-});
-export const getDaySchedule = query({
-  args: { date: v.string() },
-  returns: v.array(schema.doc("scheduleSlots")),
-  handler: async (ctx, args) => {
-    const userId = await requireUser(ctx);
-    return await ctx.db
-      .query("scheduleSlots")
-      .withIndex("by_user_date", (q) =>
-        q.eq("userId", userId).eq("date", args.date),
-      )
-      .take(100);
+    return {
+      slots: weekSlots.flat(),
+      subjects,
+      weekStarts,
+    };
   },
 });
 export const setSlotSubject = mutation({
@@ -125,11 +144,13 @@ export const setSlotSubject = mutation({
       )
       .unique();
     const updatedAt = Math.max(Date.now(), (existing?.updatedAt ?? 0) + 1);
+    const usageContribution = getSlotContribution({ ...args, subjectId });
     const patch = {
       ...defaults,
       subjectId,
       updatedAt,
       lastWriter: args.writerId,
+      usageContribution,
     };
     const id =
       existing?._id ??
@@ -142,6 +163,9 @@ export const setSlotSubject = mutation({
         ...patch,
       }));
     if (existing) await ctx.db.patch(id, patch);
+    await applyUsageChanges(ctx, userId, [
+      { before: existing?.usageContribution, after: usageContribution },
+    ]);
     await touchUser(ctx, userId, args.writerId);
     return id;
   },
@@ -163,11 +187,18 @@ export const setSlotTopic = mutation({
           .eq("slotIndex", args.slotIndex),
       )
       .unique();
+    const usageContribution = getSlotContribution(
+      existing ?? {
+        ...args,
+        subjectId: defaults.fixedKey === "lunch" ? "lunch" : null,
+      },
+    );
     const patch = {
       ...defaults,
       topic: args.topic,
       updatedAt: Math.max(Date.now(), (existing?.updatedAt ?? 0) + 1),
       lastWriter: args.writerId,
+      usageContribution,
     };
     const id =
       existing?._id ??
@@ -180,6 +211,9 @@ export const setSlotTopic = mutation({
         ...patch,
       }));
     if (existing) await ctx.db.patch(id, patch);
+    await applyUsageChanges(ctx, userId, [
+      { before: existing?.usageContribution, after: usageContribution },
+    ]);
     await touchUser(ctx, userId, args.writerId);
     return id;
   },

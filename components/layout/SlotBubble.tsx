@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import type { ReactNode } from "react";
 import { useMessages } from "@/components/i18n/UserSyncProvider";
 import type { Slot, Subject } from "@/lib/schedule/types";
 import { parseTimeRange } from "@/lib/schedule/date-utils";
@@ -40,6 +41,7 @@ type SlotBubbleProps = {
   subject: Subject | null;
   isLunch: boolean;
   lunchText: string;
+  lunchContent?: ReactNode;
   title: string;
   subtitle: string;
 };
@@ -49,6 +51,7 @@ export default function SlotBubble({
   subject,
   isLunch,
   lunchText,
+  lunchContent,
   title,
   subtitle,
 }: SlotBubbleProps) {
@@ -75,7 +78,7 @@ export default function SlotBubble({
       <div className={s.slotContent}>
         <div>
           <div className={s.slotTitleText}>{title}</div>
-          {subtitle && isLunch && lunchText ? (
+          {isLunch && (lunchContent || (subtitle && lunchText)) ? (
             <div className={s.slotSubtitle}>
               <LunchIcon
                 fill="currentColor"
@@ -83,7 +86,9 @@ export default function SlotBubble({
                 height={16}
                 width={16}
               />
-              <div className={s.slotSubtitleFlex}>{subtitle}</div>
+              <div className={s.slotSubtitleFlex}>
+                {lunchContent || subtitle}
+              </div>
             </div>
           ) : subtitle ? (
             <div className={s.slotSubtitle}>{subtitle}</div>

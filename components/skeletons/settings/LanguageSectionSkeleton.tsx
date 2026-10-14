@@ -1,5 +1,3 @@
-"use client";
-
 import SkeletonLine from "@/components/skeletons/SkeletonLine";
 import s from "@/components/settings/settings.module.css";
 import sk from "@/components/skeletons/Skeletons.module.css";

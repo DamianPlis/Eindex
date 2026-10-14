@@ -18,6 +18,7 @@ import type * as migrations from "../migrations.js";
 import type * as model from "../model.js";
 import type * as schedule from "../schedule.js";
 import type * as settings from "../settings.js";
+import type * as subjectUsage from "../subjectUsage.js";
 import type * as subjects from "../subjects.js";
 import type * as sync from "../sync.js";
 import type * as users from "../users.js";
@@ -39,6 +40,7 @@ declare const fullApi: ApiFromModules<{
   model: typeof model;
   schedule: typeof schedule;
   settings: typeof settings;
+  subjectUsage: typeof subjectUsage;
   subjects: typeof subjects;
   sync: typeof sync;
   users: typeof users;

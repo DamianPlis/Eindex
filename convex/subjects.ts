@@ -1,5 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { applyUsageChanges } from "./subjectUsage";
 import { requireUser, initializeUser, touchUser } from "./model";
 import schema from "./schema";
 
@@ -164,8 +165,17 @@ export const deleteSubject = mutation({
       await ctx.db.patch(slot._id, {
         subjectId: null,
         updatedAt: Date.now(),
+        usageContribution: null,
       });
     }
+    await applyUsageChanges(
+      ctx,
+      userId,
+      slotsWithSubject.map((slot) => ({
+        before: slot.usageContribution,
+        after: null,
+      })),
+    );
 
     // Remove subject from all groups
     const groups = await ctx.db
