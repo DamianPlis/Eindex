@@ -211,12 +211,8 @@
     "frontend-design": {
       "source": "anthropics/skills",
       "sourceType": "github",
-      "sourceUrl": "https://github.com/anthropics/skills.git",
       "skillPath": "skills/frontend-design/SKILL.md",
-      "skillFolderHash": "928950704df8a8b885c03de5da626331e6f29cf8",
-      "pluginName": "example-skills",
-      "installedAt": "2026-06-06T17:26:29.432Z",
-      "updatedAt": "2026-06-06T17:26:29.432Z"
+      "computedHash": "106acf230014cbb43ca34e6410371321b56ca742f9ee0442e8ec05bf02eb0384"
     },
     "grill-me": {
       "source": "mattpocock/skills",
