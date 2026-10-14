@@ -74,15 +74,23 @@ export const getDashboardData = query({
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);
     const weekStart = selectedWeekStart(args.selectedISO);
+    const dayIndex =
+      (new Date(`${args.selectedISO}T12:00:00Z`).getUTCDay() + 6) % 7;
 
     const [slots, deadlines, subjects, lunch, savedWeekSlot] =
       await Promise.all([
-        ctx.db
-          .query("scheduleSlots")
-          .withIndex("by_user_date", (q) =>
-            q.eq("userId", userId).eq("date", args.selectedISO),
-          )
-          .take(100),
+        // Legacy imports can have fallback dates; coordinates match the timetable.
+        weekStart
+          ? ctx.db
+              .query("scheduleSlots")
+              .withIndex("by_user_slot_coord", (q) =>
+                q
+                  .eq("userId", userId)
+                  .eq("weekStart", weekStart)
+                  .eq("dayIndex", dayIndex),
+              )
+              .take(100)
+          : [],
 
         getReminderCandidates(ctx, userId, args.selectedISO),
 

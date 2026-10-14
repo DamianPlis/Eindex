@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 import { convexTest } from "convex-test";
 import { expect, test } from "vitest";
-import { api } from "./_generated/api";
+import { api, internal } from "./_generated/api";
 import schema from "./schema";
 import { selectDashboardDeadlines } from "../lib/schedule/selectors";
 import type { DeadlineItem } from "../lib/schedule/types";
@@ -208,4 +208,49 @@ test("deadline detail is indexed by authenticated owner and application ID", asy
   await expect(
     t.query(api.dashboard.getDashboardData, { selectedISO }),
   ).rejects.toThrow("Unauthorized");
+});
+
+test("dashboard finds imported slots by coordinates despite legacy dates", async () => {
+  const { t, owner, ownerId, otherId } = await setup();
+  const weekStart = "2026-09-21";
+  await t.run(async (ctx) => {
+    await ctx.db.patch(ownerId, { firebaseUid: "owner-firebase" });
+    await ctx.db.patch(otherId, { firebaseUid: "other-firebase" });
+  });
+  const slot = {
+    weekStart,
+    date: weekStart, // Legacy importer fallback for a day without a date.
+    dayIndex: 1,
+    slotIndex: 1,
+    time: "08:20-10:20",
+    fixed: false,
+    allowTopic: false,
+    subjectId: "math",
+    topic: "Imported Tuesday",
+  };
+  await t.mutation(internal.sync.syncSlotsBatch, {
+    firebaseUid: "owner-firebase",
+    slots: [
+      slot,
+      { ...slot, dayIndex: 0, topic: "Monday" },
+      {
+        ...slot,
+        weekStart: "2026-09-28",
+        date: selectedISO,
+        topic: "Other week",
+      },
+    ],
+  });
+  await t.mutation(internal.sync.syncSlotsBatch, {
+    firebaseUid: "other-firebase",
+    slots: [{ ...slot, date: selectedISO, topic: "Foreign user" }],
+  });
+  const data = await owner.query(api.dashboard.getDashboardData, {
+    selectedISO,
+  });
+  expect(data.slots).toEqual([expect.objectContaining(slot)]);
+  const monday = await owner.query(api.dashboard.getDashboardData, {
+    selectedISO: weekStart,
+  });
+  expect(monday.slots.map((saved) => saved.topic)).toEqual(["Monday"]);
 });
