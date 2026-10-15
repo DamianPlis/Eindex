@@ -61,6 +61,20 @@
   margin-bottom: 10px;
 }
 
+.deadlinesSkeletonPageHeading {
+  composes: skeletonLine;
+  width: 180px;
+  height: 30px;
+  margin-bottom: 10px;
+}
+
+.deadlinesSkeletonAddButton {
+  composes: skeletonLine;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
 .skeletonToggleButton {
   composes: skeletonLine;
   width: 170px;
@@ -132,6 +146,11 @@
   composes: skeletonLine;
   width: 130px;
   height: 22px;
+}
+
+.deadlinesSkeletonStatsHeading {
+  composes: skeletonTitle;
+  margin-block: 20px 10px;
 }
 
 .skeletonIcon {

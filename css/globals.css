@@ -77,13 +77,21 @@
   --primary-alpha-20: color-mix(in srgb, var(--primary) 20%, transparent);
   --primary-alpha-30: color-mix(in srgb, var(--primary) 30%, transparent);
   --primary-alpha-90: color-mix(in srgb, var(--primary) 90%, transparent);
-  --primary-card-mix-10: color-mix(in srgb, var(--card) 90%, var(--primary) 10%);
+  --primary-card-mix-10: color-mix(in srgb,
+      var(--card) 90%,
+      var(--primary) 10%);
   --primary-card-mix-14: color-mix(in srgb, var(--primary) 14%, var(--card));
   --primary-card-mix-15: color-mix(in srgb, var(--primary) 15%, var(--card));
   --primary-card-mix-22: color-mix(in srgb, var(--primary) 22%, var(--card));
-  --primary-bubble-mix-18: color-mix(in srgb, var(--primary) 18%, var(--bubble));
-  --primary-border-mix-42: color-mix(in srgb, var(--primary) 42%, var(--border-light));
-  --primary-border-mix-45: color-mix(in srgb, var(--primary) 45%, var(--border-medium));
+  --primary-bubble-mix-18: color-mix(in srgb,
+      var(--primary) 18%,
+      var(--bubble));
+  --primary-border-mix-42: color-mix(in srgb,
+      var(--primary) 42%,
+      var(--border-light));
+  --primary-border-mix-45: color-mix(in srgb,
+      var(--primary) 45%,
+      var(--border-medium));
 
   /* ── Success / done color-mix ── */
   --success-alpha-21: color-mix(in srgb, var(--success) 21%, transparent);
@@ -96,8 +104,12 @@
   --muted-alpha-30: color-mix(in srgb, var(--muted) 30%, transparent);
   --text-soft-alpha-12: color-mix(in srgb, var(--text-soft) 12%, transparent);
   --text-soft-alpha-22: color-mix(in srgb, var(--text-soft) 22%, transparent);
-  --text-primary-alpha-8: color-mix(in srgb, var(--text-primary) 8%, transparent);
-  --text-primary-primary-mix-80: color-mix(in srgb, var(--text-primary) 20%, var(--primary) 80%);
+  --text-primary-alpha-8: color-mix(in srgb,
+      var(--text-primary) 8%,
+      transparent);
+  --text-primary-primary-mix-80: color-mix(in srgb,
+      var(--text-primary) 20%,
+      var(--primary) 80%);
 
   /* ── Card / bubble / nav color-mix ── */
   --card-alpha-72: color-mix(in srgb, var(--card) 72%, transparent);
@@ -106,8 +118,12 @@
   --nav-track-bg: color-mix(in srgb, var(--bubble) 30%, transparent);
 
   /* ── Skeleton shimmer ── */
-  --skeleton-shimmer-start: color-mix(in srgb, var(--text-soft) 15%, transparent);
-  --skeleton-shimmer-middle: color-mix(in srgb, var(--text-soft) 24%, transparent);
+  --skeleton-shimmer-start: color-mix(in srgb,
+      var(--text-soft) 15%,
+      transparent);
+  --skeleton-shimmer-middle: color-mix(in srgb,
+      var(--text-soft) 24%,
+      transparent);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -164,13 +180,26 @@
   box-sizing: border-box;
 }
 
+html {
+  /* Keep the document width stable while loading content grows. */
+  scrollbar-gutter: stable;
+}
+
 html,
 body {
   margin: 0;
   min-height: 100dvh;
   background: var(--bg);
   color: var(--text-primary);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
 }
 
 a {
