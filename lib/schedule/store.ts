@@ -4,7 +4,10 @@ import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
-import { buildDaysForWeek } from "@/lib/schedule/defaults";
+import {
+  buildDaysForWeek,
+  resolveDeadlineStatus,
+} from "@/lib/schedule/defaults";
 import type { ScheduleState, StatsOptions } from "@/lib/schedule/types";
 import { normalizeSettings } from "@/lib/settings/defaults";
 import { selectDashboardDeadlines } from "@/lib/schedule/selectors";
@@ -37,7 +40,7 @@ function toDeadline(d: Doc<"deadlines">) {
     text: d.text,
     description: d.description,
     date: d.date,
-    status: d.status,
+    status: resolveDeadlineStatus(d),
   };
 }
 

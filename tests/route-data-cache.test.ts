@@ -38,6 +38,7 @@ import {
   getDashboardData,
   getSettingsPageData,
   getDeadline,
+  getDeadlines,
 } from "../lib/schedule/store";
 
 async function renderLoads(...loads: Array<() => Promise<unknown>>) {
@@ -236,6 +237,44 @@ test("metadata/detail lookups share by ID, including null, and do not persist ac
     token: "other-token",
   });
 });
+
+test.each([
+  ["2026-10-14", "upcoming", "expired"],
+  ["2026-10-15", "upcoming", "today"],
+  ["2026-10-16", "upcoming", "upcoming"],
+  ["2026-10-14", "today", "expired"],
+  ["2026-10-14", "done", "done"],
+] as const)(
+  "deadline loaders refresh saved %s / %s status to %s",
+  async (date, status, expected) => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(2026, 9, 15, 12));
+    try {
+      const deadline = {
+        deadlineId: "task",
+        text: "Task",
+        description: "Detail",
+        date,
+        status,
+      };
+      runtime.query.mockResolvedValue(deadline);
+      expect((await getDeadline("owner", "task"))?.status).toBe(expected);
+
+      runtime.query.mockResolvedValue([deadline]);
+      expect((await getDeadlines()).map((item) => item.status)).toEqual([
+        expected,
+      ]);
+
+      runtime.query.mockResolvedValue({ ...dashboard, deadlines: [deadline] });
+      const data = await getDashboardData("owner", "2026-10-15");
+      expect(data.deadlineSelection.items.map((item) => item.status)).toEqual(
+        status === "done" ? [] : [expected],
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  },
+);
 
 test("all narrow loaders reject absent authentication before querying Convex", async () => {
   runtime.token.mockResolvedValue(undefined);
