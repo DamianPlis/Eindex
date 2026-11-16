@@ -3,6 +3,8 @@ import "server-only";
 import { load } from "cheerio";
 import { unstable_cache } from "next/cache";
 
+export const LUNCH_MENU_UNAVAILABLE = "Menu unavailable";
+
 /**
  * Normalizes text by converting non-breaking spaces to spaces, consolidating
  * multiple consecutive spaces, and trimming whitespace.
@@ -25,6 +27,13 @@ function normalizeText(text: string): string {
  */
 function stripDiacritics(text: string): string {
   return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+// The cafeteria uses regular meal rows for closure and cancellation notices.
+function isMenuNotice(text: string): boolean {
+  return /^(?:reditelske volno|statni svatek|(?:[a-z]+ )?prazdniny|druha varianta se dnes nevari|vyjezdni den)\b/i.test(
+    stripDiacritics(text),
+  );
 }
 
 /**
@@ -135,9 +144,14 @@ function pickMeal(
  *
  * @param html - The HTML response content from the lunch provider.
  * @param date - If provided, only extract this day's lunch, including soup.
+ * @param skipNotices - Whether to skip closure and cancellation rows.
  * @returns A mapping of ISO date strings to meal descriptions.
  */
-function extractPerDay(html: string, date?: string): Record<string, string> {
+function extractPerDay(
+  html: string,
+  date?: string,
+  skipNotices = false,
+): Record<string, string> {
   const perDay: Record<string, string> = {};
   const $ = load(html);
 
@@ -156,7 +170,7 @@ function extractPerDay(html: string, date?: string): Record<string, string> {
       }) || partNodes[0];
 
     if (!chosenPart) {
-      perDay[dateISO] = "Menu unavailable";
+      perDay[dateISO] = LUNCH_MENU_UNAVAILABLE;
       return;
     }
 
@@ -173,13 +187,13 @@ function extractPerDay(html: string, date?: string): Record<string, string> {
             const text = normalizeText(
               $(itemEl).find(".textJidla").first().text(),
             );
-            if (!text) return;
+            if (!text || (skipNotices && isMenuNotice(text))) return;
             items.push({ type, text });
           });
       });
 
     const pickedMeal = pickMeal(items, date !== undefined);
-    perDay[dateISO] = pickedMeal || "Menu unavailable";
+    perDay[dateISO] = pickedMeal || LUNCH_MENU_UNAVAILABLE;
   });
 
   return perDay;
@@ -214,14 +228,16 @@ const fetchMenuHtml = unstable_cache(
  * to return a mapping of daily ISO date keys to meal name strings.
  *
  * @param date - If provided, only return this day's lunch, including soup.
+ * @param options - Set publishedOnly to look for the date in the cafeteria's default menu.
  * @returns A promise resolving to the menu mapping object.
  */
 export async function getLunchPerDay(
   date?: string,
+  { publishedOnly = false } = {},
 ): Promise<Record<string, string>> {
   try {
-    const html = await fetchMenuHtml(date);
-    return extractPerDay(html, date);
+    const html = await fetchMenuHtml(publishedOnly ? undefined : date);
+    return extractPerDay(html, date, publishedOnly);
   } catch (err) {
     console.error("[lunch] getLunchPerDay failed:", err);
     return {};
