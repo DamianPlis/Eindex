@@ -110,34 +110,41 @@ function removeLeadingSoup(text: string): string {
  * Picks the most appropriate meal from a list of items, prioritizing main courses.
  *
  * @param items - List of item objects containing type and text.
- * @returns The picked and cleaned meal name string.
+ * @param includeSoup - Whether to keep soup in the daily menu.
+ * @returns The picked meal name, optionally with soup.
  */
-function pickMeal(items: Array<{ type: string; text: string }>): string {
+function pickMeal(
+  items: Array<{ type: string; text: string }>,
+  includeSoup: boolean,
+): string {
   const mainCourse = items.find(
     (item) => isMainCourseLabel(item.type) && !isSoupLabel(item.type),
   );
-  if (mainCourse) return removeLeadingSoup(mainCourse.text);
+  const meal = mainCourse ?? items.find((item) => !isSoupLabel(item.type));
+  if (!includeSoup)
+    return removeLeadingSoup(meal?.text ?? items[0]?.text ?? "");
 
-  const nonSoup = items.find((item) => !isSoupLabel(item.type));
-  if (nonSoup) return removeLeadingSoup(nonSoup.text);
-
-  return removeLeadingSoup(items[0]?.text || "");
+  const soup = items.find((item) => isSoupLabel(item.type));
+  if (!soup) return meal?.text ?? "";
+  const main = removeLeadingSoup(meal?.text ?? "");
+  return main ? `${soup.text}, ${main}` : soup.text;
 }
 
 /**
  * Extracts lunch menu details per day from raw HTML content.
  *
  * @param html - The HTML response content from the lunch provider.
+ * @param date - If provided, only extract this day's lunch, including soup.
  * @returns A mapping of ISO date strings to meal descriptions.
  */
-function extractPerDay(html: string): Record<string, string> {
+function extractPerDay(html: string, date?: string): Record<string, string> {
   const perDay: Record<string, string> = {};
   const $ = load(html);
 
   $(".den.container-fluid").each((_, dayEl) => {
     const dateLabel = normalizeText($(dayEl).find(".datum").first().text());
     const dateISO = parseDateToISO(dateLabel);
-    if (!dateISO) return;
+    if (!dateISO || (date && dateISO !== date)) return;
 
     const partNodes = $(dayEl).find(".castDne").toArray();
     const chosenPart =
@@ -171,7 +178,7 @@ function extractPerDay(html: string): Record<string, string> {
           });
       });
 
-    const pickedMeal = pickMeal(items);
+    const pickedMeal = pickMeal(items, date !== undefined);
     perDay[dateISO] = pickedMeal || "Menu unavailable";
   });
 
@@ -179,9 +186,14 @@ function extractPerDay(html: string): Record<string, string> {
 }
 
 const fetchMenuHtml = unstable_cache(
-  async () => {
-    const jidelnaId = "2069";
-    const targetUrl = `https://www.jidelna.cz/jidelni-listek/?jidelna=${encodeURIComponent(jidelnaId)}`;
+  async (date?: string) => {
+    const targetUrl = new URL(
+      "https://www.jidelna.cz/jidelni-listek/?jidelna=2069",
+    );
+    if (date) {
+      targetUrl.searchParams.set("zacatek", date);
+      targetUrl.searchParams.set("delka", "P1D");
+    }
     const response = await fetch(targetUrl, {
       next: { revalidate: 60 * 60 * 12 },
       headers: {
@@ -201,12 +213,15 @@ const fetchMenuHtml = unstable_cache(
  * Fetches the raw HTML menu from the jidelna.cz provider and parses it
  * to return a mapping of daily ISO date keys to meal name strings.
  *
+ * @param date - If provided, only return this day's lunch, including soup.
  * @returns A promise resolving to the menu mapping object.
  */
-export async function getLunchPerDay(): Promise<Record<string, string>> {
+export async function getLunchPerDay(
+  date?: string,
+): Promise<Record<string, string>> {
   try {
-    const html = await fetchMenuHtml();
-    return extractPerDay(html);
+    const html = await fetchMenuHtml(date);
+    return extractPerDay(html, date);
   } catch (err) {
     console.error("[lunch] getLunchPerDay failed:", err);
     return {};
